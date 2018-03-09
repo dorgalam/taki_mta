@@ -24,13 +24,15 @@ body {
   display: inline-block;
   width: 110px;
   height: 170px;
-  border-radius: 4px;
+  border-radius: 12px;
   background: rgb(255, 238, 221);
   -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
   transition: 200ms ease all;
   margin: 10px;
-  background-image: url();
+  background-image: url('C:/Users/Dor/Desktop/cards/1_blue.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 .playable:hover {
