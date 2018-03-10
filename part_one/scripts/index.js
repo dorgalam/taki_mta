@@ -1,7 +1,9 @@
 var deck = [];
 
-var player = new Player('player-one', true);
-var bot = new Player('bot', false);
+var mainDeck = new Deck('deck', false);
+var played = new Deck('played', true);
+var player = new Deck('player-one', true);
+var bot = new Deck('bot', false);
 
 window.onload = function () {
   resetDeck();
@@ -17,81 +19,66 @@ function distributeCards() {
   }
 }
 
-function Player(elementId, isFacedUp) {
+function Deck(elementId, isFacedUp, cardClasses = '') {
   this.deck = [];
   this.elementId = elementId;
   this.isFacedUp = isFacedUp;
+  this.cardClasses = cardClasses;
 }
 
-Player.prototype.render = function () {
+
+function isPlayAble(card) {
+  var name = card.split('_');
+  var cardNum = Number(name[0]);
+  var color = name[1];
+  if (isNaN(cardNum)) {
+    return true; // card is not
+  }
+}
+
+Deck.prototype.render = function () {
   var isFacedUp = this.isFacedUp;
+  var classes = this.cardClasses;
   document.getElementById(this.elementId).innerHTML = `
     ${
       this.deck.map(function(card) {
-        return `<div class="card ${isFacedUp ? `card_${card}` : 'card_back'}"></div>`;
+        return `<div class="card ${classes} ${isFacedUp ? `playable card_${card}` : 'card_back'}"></div>`;
       }).join('\n')
     }
   `;
 }
 
-Player.prototype.addCard = function (card) {
+Deck.prototype.addCard = function (card) {
   this.deck.push(card);
 }
 
 
 function resetDeck() {
-  deck = [
-    '1_blue',
-    '1_blue',
-    '1_red',
-    '1_yellow',
-    '2plus_blue',
-    '2plus_green',
-    '2plus_red',
-    '2plus_yellow',
-    '3_blue',
-    '3_green',
-    '3_red',
-    '3_yellow',
-    '4_blue',
-    '4_green',
-    '4_red',
-    '4_yellow',
-    '5_blue',
-    '5_green',
-    '5_red',
-    '5_yellow',
-    '6_blue',
-    '6_green',
-    '6_red',
-    '6_yellow',
-    '7_blue',
-    '7_green',
-    '7_red',
-    '7_yellow',
-    '8_blue',
-    '8_green',
-    '8_red',
-    '8_yellow',
-    '9_blue',
-    '9_green',
-    '9_red',
-    '9_yellow',
-    'change_colorful',
-    'plus_blue',
-    'plus_green',
-    'plus_red',
-    'plus_yellow',
-    'stop_blue',
-    'stop_green',
-    'stop_red',
-    'stop_yellow',
-    'taki_blue',
-    'taki_colorful',
-    'taki_green',
-    'taki_red',
-    'taki_yellow'
-  ]
+  deck = createCardsArray();
+  deck.forEach(function (card) {
+    mainDeck.addCard(card);
+  });
+  mainDeck.render();
+}
+
+function createCardsArray() {
+  var cards = ['1', '2plus', '3', '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus'];
+  var colors = ['red', 'blue', 'green', 'yellow'];
+  var arr = [];
+  var card;
+  cards.forEach(function (number) {
+    colors.forEach(function (color) {
+      card = String(number) + '_' + color;
+      arr.push(card);
+      arr.push(card);
+    })
+  });
+  colors.forEach(function (color) {
+    arr.push('change_colorful');
+  })
+  arr.push('taki_colorful');
+  arr.push('taki_colorful');
+  return arr;
 }
 
 function getRandom(max) {
@@ -118,9 +105,9 @@ Array.prototype.popRandomIndex = function () {
   return this.popIndex(rand);
 }
 
-Array.prototype.map = function(callback) {
+Array.prototype.map = function (callback) {
   var arr = [];
-  for(var i = 0; i < this.length; i++) {
+  for (var i = 0; i < this.length; i++) {
     arr.push(callback(this[i]));
   }
   return arr;

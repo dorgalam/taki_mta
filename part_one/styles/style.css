@@ -40,9 +40,14 @@ body {
   cursor: pointer;
 }
 
-.deck {
+#deck {
   position: absolute;
-  right: 0;
+  top: 25%;
+  right: 130px;
+}
+
+#deck > .card {
+  position: absolute;
 }
 
 .centered {
