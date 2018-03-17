@@ -1,124 +1,82 @@
-let mainDeck = new Deck('deck', false, true);
-let pile = new Deck('pile', true);
-let player = new Deck('player-one', true);
-let bot = new Deck('bot', false);
-let p1stats = new Stats('p1-stats', true);
-let botstats = new Stats('bot-stats', false);
-
 const FACED_UP = true;
 
 const FACED_DOWN = false;
 
-window.onload = function () {
-  resetDeck();
-  distributeCards();
-  bot.render();
-  player.render();
-  mainDeck.render();
-  setInterval(() => {
-    addCardToPile(mainDeck.popCard());
-    mainDeck.render();
-  }, 500);
-}
+const STACK = false;
 
-function Stats(elementId, isplayer) {
-  this.turns = 0;
-  if (isplayer) {
-    this.timepass = 0;
-    this.turnstime = [];
-  }
-}
-
-function distributeCards() {
-  for (let i = 0; i < 8; ++i) {
-    player.addCard(mainDeck.popCard());
-    bot.addCard(mainDeck.popCard());
-  }
-}
-
-function Deck(elementId, isFacedUp, isStack = false) {
-  this.deck = [];
-  this.elementId = elementId;
-  this.isFacedUp = isFacedUp;
-  this.isStack = isStack;
-}
+// function Stats(elementId, isplayer) {
+//   this.turns = 0;
+//   if (isplayer) {
+//     this.timepass = 0;
+//     this.turnstime = [];
+//   }
+// }
 
 
-function isPlayAble(card) {
-  let name = card.split('_');
-  let cardNum = Number(name[0]);
-  let color = name[1];
-  if (isNaN(cardNum)) {
-    return true; // card is not
-  }
-}
+// function wDeck(elementId, isFacedUp, isStack = false) {
+//   this.deck = [];
+//   this.elementId = elementId;
+//   this.isFacedUp = isFacedUp;
+//   this.isStack = isStack;
+// }
 
-Deck.prototype.render = function () {
-  let isFacedUp = this.isFacedUp;
-  let isStack = this.isStack;
-  document.getElementById(this.elementId).innerHTML = `
-    ${
-      this.deck.map(function(card, index) {
-        return `
-          <div 
-            ${isStack ? `style="margin: ${index / 3}px ${index / 3}px"` : ''} 
-            class="card ${isFacedUp ? `playable card_${card}` : 'card_back'}">
-          </div>
-        `;
-      }).join('\n')
-    }
-  `;
-}
 
-Deck.prototype.addCard = function (card) {
-  this.deck.push(card);
-}
+// function isPlayAble(card) {
+//   let name = card.split('_');
+//   let cardNum = Number(name[0]);
+//   let color = name[1];
+//   if (isNaN(cardNum)) {
+//     return true; // card is not
+//   }
+// }
 
-Deck.prototype.popCard = function () {
-  return this.deck.popRandomIndex();
-}
+// Deck.prototype.render = function () {
+//   let isFacedUp = this.isFacedUp;
+//   let isStack = this.isStack;
+//   document.getElementById(this.elementId).innerHTML = `
+//     ${
+//       this.deck.map(function(card, index) {
+//         return `
+//           <div 
+//             ${isStack ? `style="margin: ${index / 3}px ${index / 3}px"` : ''} 
+//             class="card ${isFacedUp ? `playable card_${card}` : 'card_back'}">
+//           </div>
+//         `;
+//       }).join('\n')
+//     }
+//   `;
+// }
 
-function addCardToPile(card) {
-  pile.addCard(card);
-  document.getElementById(pile.elementId).innerHTML = `
-   ${document.getElementById(pile.elementId).innerHTML}
-    <div class="card card_${card}" 
-      style="transform: rotate(${-60 + Math.floor(Math.random() * 120)}deg); 
-      margin: ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px "">
-    </div>
-  `;
-}
+// Deck.prototype.addCard = function (card) {
+//   this.deck.push(card);
+// }
 
-function resetDeck() {
-  deck = createCardsArray();
-  deck.forEach(function (card) {
-    mainDeck.addCard(card);
-  });
-}
+// Deck.prototype.popRandom = function () {
+//   return this.deck.popRandomIndex();
+// }
 
-function createCardsArray() {
-  let cards = ['1', '2plus', '3', '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus'];
-  let colors = ['red', 'blue', 'green', 'yellow'];
-  let arr = [];
-  let card;
-  cards.forEach(function (number) {
-    colors.forEach(function (color) {
-      card = String(number) + '_' + color;
-      arr.push(card);
-      arr.push(card);
-    })
-  });
-  colors.forEach(function (color) {
-    arr.push('change_colorful');
-  })
-  arr.push('taki_colorful');
-  arr.push('taki_colorful');
-  return arr;
-}
+// function addCardToPile(card) {
+//   pile.addCard(card);
+//   document.getElementById(pile.elementId).innerHTML = `
+//    ${document.getElementById(pile.elementId).innerHTML}
+//     <div class="card card_${card}" 
+//       style="transform: rotate(${-60 + Math.floor(Math.random() * 120)}deg); 
+//       margin: ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px "">
+//     </div>
+//   `;
+// }
 
-function getRandom(max) {
-  return Math.floor(Math.random() * max);
-}
+// function resetDeck() {
+//   deck = createCardsArray();
+//   deck.forEach(function (card) {
+//     mainDeck.addCard(card);
+//   });
+// }
+
+
+// function getRandom(max) {
+//   return Math.floor(Math.random() * max);
+// }
 
 Array.prototype.popIndex = function (index) {
   if (index < 0 || index >= this.length) {
@@ -138,14 +96,6 @@ Array.prototype.popIndex = function (index) {
 Array.prototype.popRandomIndex = function () {
   let rand = Math.floor(Math.random() * this.length);
   return this.popIndex(rand);
-}
-
-Array.prototype.map = function (callback) {
-  let arr = [];
-  for (let i = 0; i < this.length; i++) {
-    arr.push(callback(this[i], i));
-  }
-  return arr;
 }
 
 function chooseCard(card, active) { //the comp well aware of the cards he has (this.cards)
@@ -195,19 +145,18 @@ function handleSpecial(color, type) {
   }
 }
 
-new Card(name, CSSUtils.getFacedUpStyles())
-
+const render = (innerHTML, elementId) => document.getElementById(elementId).innerHTML = innerHTML;
 
 class Card {
-  constructor(name,classes = '', styles = '', attributes ='') {
+  constructor(name, classes = '', styles = '', attributes = '') {
     const splitName = name.split('_');
     this.name = name;
-    this.color = splitName[0];
-    this.number = splitName[1];
+    this.number = splitName[0];
+    this.color = splitName[1];
     this.styles = styles;
-    this.cardClasses = classes; 
+    this.cardClasses = classes;
     this.cardIndex = -1;
-   }
+  }
 
   getHtml() {
     return `
@@ -218,16 +167,16 @@ class Card {
     </div>
     `;
   }
-  
+
   setClasses(classes) {
     this.cardClasses = classes;
   }
 
-  setClickable(index){
+  setClickable(index) {
     this.cardIndex = index;
   }
 
-  removeClickable(){
+  removeClickable() {
     this.cardIndex = -1;
   }
 }
@@ -239,48 +188,74 @@ class Deck {
     this.isFacedUp = isFacedUp;
     this.isStack = isStack;
   }
-  
+
   getHtml() {
+    console.log('called');
     return `
-      <div>
+      <div class="cards">
         ${
-          this.cards.map(card => card.getHtml(FACED_UP)).join('\n')
+          this.deck.map(card => card.getHtml(FACED_UP)).join('\n')
         }
       </div>
     `;
   }
 
+  setDeck(cards) {
+    cards.forEach(card => this.addCard(card));
+  }
+
+  shuffle() {
+    const times = 5 + Math.floor(Math.random() * 10);
+    for (let i = 0; i < times; ++i) {
+      const cardsToRemove = Math.floor(Math.random() * this.deck.length);
+      let up = Math.floor(Math.random() * 2);
+      const portions = [
+        this.deck.slice(0, cardsToRemove / 2),
+        this.deck.slice(cardsToRemove / 2 + 1, cardsToRemove / 2 + 1 + cardsToRemove),
+        this.deck.slice(cardsToRemove / 2 + 1 + cardsToRemove + 1)
+      ];
+      if (up) {
+        this.deck = [].concat(portions[0]).concat(portions[2]).concat(portions[1]);
+      } else {
+        this.deck = [].concat(portions[1]).concat(portions[0]).concat(portions[2]);
+      }
+    }
+  }
+
   addCard(card) {
     let style = this.isStack ? CSSUtils.getMainDeckStyle : '';
-    if(this.elementId == "pile")
+    if (this.elementId == "pile")
       style = CSSUtils.getPileStyles;
-    let classes = style ? '' : CSSUtils.getPlayerClasses(this.isFacedUp,card);
-    this.deck.push(new Card(card,classes,style));
+    let classes = style ? '' : CSSUtils.getPlayerClasses(this.isFacedUp, card);
+    this.deck.push(new Card(card, classes, style));
   }
 
-  removeCard(index){
-    this.deck.splice(index,1);
+  removeCard(index) {
+    return this.deck.filter((item, i) => i !== index);
   }
 
-  popCard(){//only on the main deck
-    if(this.elementId == "mainDeck")
-      this.deck.popRandomIndex();
+  popRandomCard() {
+    return this.deck.popRandomIndex();
   }
 
-  getCard(index){
+  popCard() {
+    return this.deck.pop().name;
+  }
+
+  getCard(index) {
     return this.deck[index];
   }
 
-  getPlayableIndexes(){
+  getPlayableIndexes() {
     let indexes;
     this.deck.forEach((cardElem, index) => {
-    if(isPlayableCard(card,cardElem))
-      indexes.push(index);
+      if (isPlayableCard(card, cardElem))
+        indexes.push(index);
     });
     return indexes;
   }
 
-  isPlayableCard(card,cardElem){
+  isPlayableCard(card, cardElem) {
     return (card.color === cardElem.color || card.number === cardElem.number || cardElem.color === "colorful");
   }
 
@@ -289,24 +264,17 @@ class Deck {
 document.handleCardClick = index => player.playCard(index)
 
 
-[1, 2, 3].map(item => {
-  return item * s;
-})
-
-
 const CSSUtils = {
   getMainDeckStyle: (index) => `margin: ${index / 3}px ${index / 3}px`,
   getPileStyles: () => `transform: rotate(${-60 + Math.floor(Math.random() * 120)}deg); margin: ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px`,
-  getPlayerClasses: (isFacedUp,card) => `card ${isFacedUp ? `playable card_${card}` : 'card_back'}`
+  getPlayerClasses: (isFacedUp, card) => `card ${isFacedUp ? `playable card_${card}` : 'card_back'}`
 
 }
 
-CSSUtils.getFacedUpStyles()
-
 class Player {
   constructor(deck) {
-    this.playableIndexes =[];
-    this.deck = deck;
+    this.playableIndexes = [];
+    this.deck = new Deck(deck, false);
   }
 
   getPlayableDeck(card) {
@@ -314,26 +282,80 @@ class Player {
   }
 
   playCard(index) {
-    if(this.playableIndexes.includes(index)){
+    if (this.playableIndexes.includes(index)) {
       const card = this.deck.getCard(index);
       this.deck.removeCard(index);
       this.playableIndexes = this.playableIndexes.filter((item, i) => i !== index);
       return card;
-    }
-    else
+    } else
       return false;
+  }
+
+  addCard(card) {
+    this.deck.addCard(card);
+    console.log(this.deck);
+  }
+
+  getHtml() {
+    return this.deck.getHtml();
   }
 }
 
-class Game{
-  constructor(){
-    this.mainDeck = new Deck('deck');
-    this.pile = new Deck('pile');
-    this.player = new Player('player-one');
-    this.bot = new Player('bot');
+class Game {
+
+  start() {
+    this.createDataMembers();
+    this.mainDeck.setDeck(this.createCardsArray());
+    this.distributeCards();
+    this.renderAll();
   }
 
-  startGame(){
-
+  renderAll() {
+    render(this.mainDeck.getHtml(), 'deck');
+    render(this.pile.getHtml(), 'pile');
+    render(this.player.getHtml(), 'player');
+    render(this.bot.getHtml(), 'bot');
   }
+
+  createDataMembers() {
+    this.mainDeck = new Deck('deck', FACED_DOWN, STACK);
+    this.pile = new Deck('pile', FACED_UP);
+    this.player = new Player();
+    this.bot = new Player();
+  }
+
+  createCardsArray() {
+    let cards = ['1', '2plus', '3', '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus'];
+    let colors = ['red', 'blue', 'green', 'yellow'];
+    let arr = [];
+    let card;
+    cards.forEach(function (number) {
+      colors.forEach(function (color) {
+        card = String(number) + '_' + color;
+        arr.push(card);
+        arr.push(card);
+      })
+    });
+    colors.forEach(function (color) {
+      arr.push('change_colorful');
+    })
+    arr.push('taki_colorful');
+    arr.push('taki_colorful');
+    return arr;
+  }
+
+  distributeCards() {
+    this.mainDeck.shuffle();
+    for (let i = 0; i < 8; ++i) {
+      this.player.addCard(this.mainDeck.popCard());
+      this.bot.addCard(this.mainDeck.popCard());
+    }
+    this.pile.addCard(this.mainDeck.popCard());
+  }
+}
+
+
+window.onload = function () {
+  const game = new Game();
+  game.start();
 }
