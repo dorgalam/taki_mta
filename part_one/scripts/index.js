@@ -1,9 +1,9 @@
-var mainDeck = new Deck('deck', false, true);
-var pile = new Deck('pile', true);
-var player = new Deck('player-one', true);
-var bot = new Deck('bot', false);
-var p1stats = new Stats('p1-stats', true);
-var botstats = new Stats('bot-stats', false);
+let mainDeck = new Deck('deck', false, true);
+let pile = new Deck('pile', true);
+let player = new Deck('player-one', true);
+let bot = new Deck('bot', false);
+let p1stats = new Stats('p1-stats', true);
+let botstats = new Stats('bot-stats', false);
 
 const FACED_UP = true;
 
@@ -30,7 +30,7 @@ function Stats(elementId, isplayer) {
 }
 
 function distributeCards() {
-  for (var i = 0; i < 8; ++i) {
+  for (let i = 0; i < 8; ++i) {
     player.addCard(mainDeck.popCard());
     bot.addCard(mainDeck.popCard());
   }
@@ -45,17 +45,17 @@ function Deck(elementId, isFacedUp, isStack = false) {
 
 
 function isPlayAble(card) {
-  var name = card.split('_');
-  var cardNum = Number(name[0]);
-  var color = name[1];
+  let name = card.split('_');
+  let cardNum = Number(name[0]);
+  let color = name[1];
   if (isNaN(cardNum)) {
     return true; // card is not
   }
 }
 
 Deck.prototype.render = function () {
-  var isFacedUp = this.isFacedUp;
-  var isStack = this.isStack;
+  let isFacedUp = this.isFacedUp;
+  let isStack = this.isStack;
   document.getElementById(this.elementId).innerHTML = `
     ${
       this.deck.map(function(card, index) {
@@ -97,10 +97,10 @@ function resetDeck() {
 }
 
 function createCardsArray() {
-  var cards = ['1', '2plus', '3', '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus'];
-  var colors = ['red', 'blue', 'green', 'yellow'];
-  var arr = [];
-  var card;
+  let cards = ['1', '2plus', '3', '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus'];
+  let colors = ['red', 'blue', 'green', 'yellow'];
+  let arr = [];
+  let card;
   cards.forEach(function (number) {
     colors.forEach(function (color) {
       card = String(number) + '_' + color;
@@ -124,9 +124,9 @@ Array.prototype.popIndex = function (index) {
   if (index < 0 || index >= this.length) {
     throw new Error();
   }
-  var item = this[index];
-  var write = 0;
-  for (var i = 0; i < this.length; i++) {
+  let item = this[index];
+  let write = 0;
+  for (let i = 0; i < this.length; i++) {
     if (index !== i) {
       this[write++] = this[i];
     }
@@ -136,30 +136,30 @@ Array.prototype.popIndex = function (index) {
 }
 
 Array.prototype.popRandomIndex = function () {
-  var rand = Math.floor(Math.random() * this.length);
+  let rand = Math.floor(Math.random() * this.length);
   return this.popIndex(rand);
 }
 
 Array.prototype.map = function (callback) {
-  var arr = [];
-  for (var i = 0; i < this.length; i++) {
+  let arr = [];
+  for (let i = 0; i < this.length; i++) {
     arr.push(callback(this[i], i));
   }
   return arr;
 }
 
 function chooseCard(card, active) { //the comp well aware of the cards he has (this.cards)
-  var cardArr = card.split("_");
-  var number = cardArr[0];
-  var color = cardArr[1];
+  let cardArr = card.split("_");
+  let number = cardArr[0];
+  let color = cardArr[1];
 
   if (number == "2plus" && active)
     return has2plus(); // options: card name, false (take a card from the pile)
-  var colorCount = getColorCount(color); // count number of cards with this color
-  var numberCount = getNumberCount(number); // count number of cards with this number
-  var plus = getPlusColor(color);
-  var stop = getStopColor(color);
-  var taki = getTakiColor(color); //check for taki in this color
+  let colorCount = getColorCount(color); // count number of cards with this color
+  let numberCount = getNumberCount(number); // count number of cards with this number
+  let plus = getPlusColor(color);
+  let stop = getStopColor(color);
+  let taki = getTakiColor(color); //check for taki in this color
 
   if (active && specialCard(number))
     return handleSpecial(color, number);
@@ -177,50 +177,44 @@ function chooseCard(card, active) { //the comp well aware of the cards he has (t
 }
 
 function handleSpecial(color, type) {
-  var colorCount = getColorCount(color); // count number of cards with this color
-  var numberCount = getNumberCount(type); // count number of cards with this number
+  let colorCount = getColorCount(color); // count number of cards with this color
+  let numberCount = getNumberCount(type); // count number of cards with this number
   if (type == "taki") { // handle taki
     if (numberCount > 0) {
       return allCard(color);
     }
   }
-  var res = hasSameCard(color, type);
+  let res = hasSameCard(color, type);
   if (res)
     return res;
-  var otherType = getTypeOtherColor(type);
+  let otherType = getTypeOtherColor(type);
   if (otherType && colorCount > 1)
     return otherType;
   if (numberCount > 0) {
     return selectNumberCard(color);
   }
-  /*if(number == "plus" && active){ // handle plus
-    if(plus)
-      return plus;
-    var otherplus = getPlus();
-    if(otherplus && getColorCount(otherplus.color) > 1)
-      return otherplus;
-    if(numberCount > 0){
-      return numberCard(color);
-    }
-  }*/
 }
 
 new Card(name, CSSUtils.getFacedUpStyles())
 
 
 class Card {
-  constructor(name) {
+  constructor(name,classes = '', styles = '', attributes ='') {
     const splitName = name.split('_');
     this.name = name;
     this.color = splitName[0];
     this.number = splitName[1];
-  }
+    this.styles = styles;
+    this.cardClasses = classes; 
+    this.cardIndex = -1;
+   }
 
-  getHtml(faceUp) {
+  getHtml() {
     return `
     <div 
       style="${this.styles}"
       class="${this.cardClasses}"
+      ${this.cardIndex > -1 ? `onclick="handleCardClick(${this.cardIndex})"` : ''}
     </div>
     `;
   }
@@ -228,13 +222,24 @@ class Card {
   setClasses(classes) {
     this.cardClasses = classes;
   }
+
+  setClickable(index){
+    this.cardIndex = index;
+  }
+
+  removeClickable(){
+    this.cardIndex = -1;
+  }
 }
 
 class Deck {
-  constructor(cards) {
-    this.cards = cards;
-
+  constructor(elementId, isFacedUp, isStack = false) {
+    this.deck = [];
+    this.elementId = elementId;
+    this.isFacedUp = isFacedUp;
+    this.isStack = isStack;
   }
+  
   getHtml() {
     return `
       <div>
@@ -244,7 +249,44 @@ class Deck {
       </div>
     `;
   }
+
+  addCard(card) {
+    let style = this.isStack ? CSSUtils.getMainDeckStyle : '';
+    if(this.elementId == "pile")
+      style = CSSUtils.getPileStyles;
+    let classes = style ? '' : CSSUtils.getPlayerClasses(this.isFacedUp,card);
+    this.deck.push(new Card(card,classes,style));
+  }
+
+  removeCard(index){
+    this.deck.splice(index,1);
+  }
+
+  popCard(){//only on the main deck
+    if(this.elementId == "mainDeck")
+      this.deck.popRandomIndex();
+  }
+
+  getCard(index){
+    return this.deck[index];
+  }
+
+  getPlayableIndexes(){
+    let indexes;
+    this.deck.forEach((cardElem, index) => {
+    if(isPlayableCard(card,cardElem))
+      indexes.push(index);
+    });
+    return indexes;
+  }
+
+  isPlayableCard(card,cardElem){
+    return (card.color === cardElem.color || card.number === cardElem.number || cardElem.color === "colorful");
+  }
+
 }
+
+document.handleCardClick = index => player.playCard(index)
 
 
 [1, 2, 3].map(item => {
@@ -253,9 +295,45 @@ class Deck {
 
 
 const CSSUtils = {
-  getFacedUpStyles: () => {
+  getMainDeckStyle: (index) => `margin: ${index / 3}px ${index / 3}px`,
+  getPileStyles: () => `transform: rotate(${-60 + Math.floor(Math.random() * 120)}deg); margin: ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px`,
+  getPlayerClasses: (isFacedUp,card) => `card ${isFacedUp ? `playable card_${card}` : 'card_back'}`
 
-  }
 }
 
 CSSUtils.getFacedUpStyles()
+
+class Player {
+  constructor(deck) {
+    this.playableIndexes =[];
+    this.deck = deck;
+  }
+
+  getPlayableDeck(card) {
+    this.playableIndexes = this.deck.getPlayableIndexes(card);
+  }
+
+  playCard(index) {
+    if(this.playableIndexes.includes(index)){
+      const card = this.deck.getCard(index);
+      this.deck.removeCard(index);
+      this.playableIndexes = this.playableIndexes.filter((item, i) => i !== index);
+      return card;
+    }
+    else
+      return false;
+  }
+}
+
+class Game{
+  constructor(){
+    this.mainDeck = new Deck('deck');
+    this.pile = new Deck('pile');
+    this.player = new Player('player-one');
+    this.bot = new Player('bot');
+  }
+
+  startGame(){
+
+  }
+}
