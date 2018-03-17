@@ -2,8 +2,12 @@ var mainDeck = new Deck('deck', false, true);
 var pile = new Deck('pile', true);
 var player = new Deck('player-one', true);
 var bot = new Deck('bot', false);
-var p1stats = new Stats('p1-stats',true);
-var botstats = new Stats('bot-stats',false);
+var p1stats = new Stats('p1-stats', true);
+var botstats = new Stats('bot-stats', false);
+
+const FACED_UP = true;
+
+const FACED_DOWN = false;
 
 window.onload = function () {
   resetDeck();
@@ -19,7 +23,7 @@ window.onload = function () {
 
 function Stats(elementId, isplayer) {
   this.turns = 0;
-  if(isplayer){
+  if (isplayer) {
     this.timepass = 0;
     this.turnstime = [];
   }
@@ -70,7 +74,7 @@ Deck.prototype.addCard = function (card) {
   this.deck.push(card);
 }
 
-Deck.prototype.popCard = function() {
+Deck.prototype.popCard = function () {
   return this.deck.popRandomIndex();
 }
 
@@ -143,52 +147,53 @@ Array.prototype.map = function (callback) {
   }
   return arr;
 }
-function chooseCard(card,active){//the comp well aware of the cards he has (this.cards)
+
+function chooseCard(card, active) { //the comp well aware of the cards he has (this.cards)
   var cardArr = card.split("_");
   var number = cardArr[0];
   var color = cardArr[1];
 
-  if(number == "2plus" && active)
-      return has2plus(); // options: card name, false (take a card from the pile)
+  if (number == "2plus" && active)
+    return has2plus(); // options: card name, false (take a card from the pile)
   var colorCount = getColorCount(color); // count number of cards with this color
   var numberCount = getNumberCount(number); // count number of cards with this number
   var plus = getPlusColor(color);
   var stop = getStopColor(color);
   var taki = getTakiColor(color); //check for taki in this color
- 
-  if(active && specialCard(number))
-    return handleSpecial(color,number);
-  if(taki && colorCount > 1)
+
+  if (active && specialCard(number))
+    return handleSpecial(color, number);
+  if (taki && colorCount > 1)
     return taki;
-  if(stop && (colorCount > 1 || otherColorStop(color)))
+  if (stop && (colorCount > 1 || otherColorStop(color)))
     return stop;
-  if(plus && (colorCount > 1 || otherColorPlus(color)))
+  if (plus && (colorCount > 1 || otherColorPlus(color)))
     return plus;
-  if(colorCount > 0)
+  if (colorCount > 0)
     return selectColorCard(color); //select the best card with my color (has two of the same number)
-  if(numberCount > 0)
+  if (numberCount > 0)
     return selectNumberCard(number); //select the best card with my number (has two of the same color)
   return hasChangeColor(); // true = best color for me , false = take a card from the pile
 }
 
-function handleSpecial(color,type){
+function handleSpecial(color, type) {
   var colorCount = getColorCount(color); // count number of cards with this color
   var numberCount = getNumberCount(type); // count number of cards with this number
-  if(type == "taki"){ // handle taki
-    if(numberCount > 0){
+  if (type == "taki") { // handle taki
+    if (numberCount > 0) {
       return allCard(color);
     }
   }
-  var res = hasSameCard(color,type); 
-  if(res)
+  var res = hasSameCard(color, type);
+  if (res)
     return res;
   var otherType = getTypeOtherColor(type);
-  if(otherType && colorCount > 1)
+  if (otherType && colorCount > 1)
     return otherType;
-  if(numberCount > 0){
+  if (numberCount > 0) {
     return selectNumberCard(color);
   }
-   /*if(number == "plus" && active){ // handle plus
+  /*if(number == "plus" && active){ // handle plus
     if(plus)
       return plus;
     var otherplus = getPlus();
@@ -199,3 +204,58 @@ function handleSpecial(color,type){
     }
   }*/
 }
+
+new Card(name, CSSUtils.getFacedUpStyles())
+
+
+class Card {
+  constructor(name) {
+    const splitName = name.split('_');
+    this.name = name;
+    this.color = splitName[0];
+    this.number = splitName[1];
+  }
+
+  getHtml(faceUp) {
+    return `
+    <div 
+      style="${this.styles}"
+      class="${this.cardClasses}"
+    </div>
+    `;
+  }
+  
+  setClasses(classes) {
+    this.cardClasses = classes;
+  }
+}
+
+class Deck {
+  constructor(cards) {
+    this.cards = cards;
+
+  }
+  getHtml() {
+    return `
+      <div>
+        ${
+          this.cards.map(card => card.getHtml(FACED_UP)).join('\n')
+        }
+      </div>
+    `;
+  }
+}
+
+
+[1, 2, 3].map(item => {
+  return item * s;
+})
+
+
+const CSSUtils = {
+  getFacedUpStyles: () => {
+
+  }
+}
+
+CSSUtils.getFacedUpStyles()
