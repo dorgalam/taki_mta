@@ -1,5 +1,3 @@
-
-
 var mainDeck = new Deck('deck', false, true);
 var pile = new Deck('pile', true);
 var player = new Deck('player-one', true);
