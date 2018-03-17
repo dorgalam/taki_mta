@@ -4,17 +4,27 @@ var mainDeck = new Deck('deck', false, true);
 var pile = new Deck('pile', true);
 var player = new Deck('player-one', true);
 var bot = new Deck('bot', false);
+var p1stats = new Stats('p1-stats',true);
+var botstats = new Stats('bot-stats',false);
 
 window.onload = function () {
   resetDeck();
   distributeCards();
   bot.render();
   player.render();
-  mainDeck.render();  
+  mainDeck.render();
   setInterval(() => {
     addCardToPile(mainDeck.popCard());
     mainDeck.render();
   }, 500);
+}
+
+function Stats(elementId, isplayer) {
+  this.turns = 0;
+  if(isplayer){
+    this.timepass = 0;
+    this.turnstime = [];
+  }
 }
 
 function distributeCards() {
@@ -134,4 +144,60 @@ Array.prototype.map = function (callback) {
     arr.push(callback(this[i], i));
   }
   return arr;
+}
+function chooseCard(card,active){//the comp well aware of the cards he has (this.cards)
+  var cardArr = card.split("_");
+  var number = cardArr[0];
+  var color = cardArr[1];
+
+  if(number == "2plus" && active)
+      return has2plus(); // options: card name, false (take a card from the pile)
+  var colorCount = getColorCount(color); // count number of cards with this color
+  var numberCount = getNumberCount(number); // count number of cards with this number
+  var plus = getPlusColor(color);
+  var stop = getStopColor(color);
+  var taki = getTakiColor(color); //check for taki in this color
+ 
+  if(active && specialCard(number))
+    return handleSpecial(color,number);
+  if(taki && colorCount > 1)
+    return taki;
+  if(stop && (colorCount > 1 || otherColorStop(color)))
+    return stop;
+  if(plus && (colorCount > 1 || otherColorPlus(color)))
+    return plus;
+  if(colorCount > 0)
+    return selectColorCard(color); //select the best card with my color (has two of the same number)
+  if(numberCount > 0)
+    return selectNumberCard(number); //select the best card with my number (has two of the same color)
+  return hasChangeColor(); // true = best color for me , false = take a card from the pile
+}
+
+function handleSpecial(color,type){
+  var colorCount = getColorCount(color); // count number of cards with this color
+  var numberCount = getNumberCount(type); // count number of cards with this number
+  if(type == "taki"){ // handle taki
+    if(numberCount > 0){
+      return allCard(color);
+    }
+  }
+  var res = hasSameCard(color,type); 
+  if(res)
+    return res;
+  var otherType = getTypeOtherColor(type);
+  if(otherType && colorCount > 1)
+    return otherType;
+  if(numberCount > 0){
+    return selectNumberCard(color);
+  }
+   /*if(number == "plus" && active){ // handle plus
+    if(plus)
+      return plus;
+    var otherplus = getPlus();
+    if(otherplus && getColorCount(otherplus.color) > 1)
+      return otherplus;
+    if(numberCount > 0){
+      return numberCard(color);
+    }
+  }*/
 }
