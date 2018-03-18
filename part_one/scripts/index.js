@@ -77,7 +77,7 @@ const STACK = true;
 // function getRandom(max) {
 //   return Math.floor(Math.random() * max);
 // }
-
+let game;
 Array.prototype.popIndex = function (index) {
   if (index < 0 || index >= this.length) {
     throw new Error();
@@ -197,7 +197,7 @@ class Deck {
     return this.deck;
   }
 
-  getHtml() {
+  getDeckHtml() {
     console.log('called');
     return `
       <div class="cards">
@@ -254,6 +254,10 @@ class Deck {
   getCard(index) {
     return this.deck[index];
   }
+  
+  getCardName(index){
+    return this.deck[index].getName();
+  }
 
   getPlayableIndexes(card) {
     let indexes =[];
@@ -293,7 +297,8 @@ class Player {
 
   playCard(index) {
     if (this.playableIndexes.includes(index)) {
-      const card = this.deck.removeCard(index);
+      const card = this.deck.getCardName(index);
+      this.deck = this.deck.removeCard(index);
       this.playableIndexes = this.playableIndexes.filter((item, i) => i !== index);
       return card;
     } else
@@ -306,7 +311,7 @@ class Player {
   }
 
   getHtml() {
-    return this.deck.getHtml();
+    return this.deck.getDeckHtml();
   }
 
   setCardsClickable(){
@@ -382,6 +387,14 @@ class Game {
     //}
   }
 
+  playCard(index){
+    return this.player.playCard(index);
+  }
+
+  addCardToPile(card){
+    this.pile.addCard(card);
+  }
+
   playerTurn(){
     this.player.getPlayableIndexes(this.pile.getCard(0));
     this.player.setCardsClickable();
@@ -394,8 +407,8 @@ class Game {
   }
 
   renderAll() {
-    render(this.mainDeck.getHtml(), 'deck');
-    render(this.pile.getHtml(), 'pile');
+    render(this.mainDeck.getDeckHtml(), 'deck');
+    render(this.pile.getDeckHtml(), 'pile');
     render(this.player.getHtml(), 'player');
     render(this.bot.getHtml(), 'bot');
   }
@@ -439,10 +452,14 @@ class Game {
 
 
 window.onload = function () {
-  let game = new Game();
+  game = new Game();
   //document.handleCardClick = index => game.player.playCard(index);
   game.start();
   let player = game.player
 }
-document.handleCardClick = index => console.log(player.innerHTML);
+document.handleCardClick = index => {
+  let card = game.playCard(index);
+  game.addCardToPile(card);
+  game.renderAll();
+}
 
