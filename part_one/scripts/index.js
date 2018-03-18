@@ -2,7 +2,7 @@ const FACED_UP = true;
 
 const FACED_DOWN = false;
 
-const STACK = false;
+const STACK = true;
 
 // function Stats(elementId, isplayer) {
 //   this.turns = 0;
@@ -98,7 +98,7 @@ Array.prototype.popRandomIndex = function () {
   return this.popIndex(rand);
 }
 
-function chooseCard(card, active) { //the comp well aware of the cards he has (this.cards)
+function chooseCard(card, active) { //the bot well aware of the cards he has (this.cards)
   let cardArr = card.split("_");
   let number = cardArr[0];
   let color = cardArr[1];
@@ -158,6 +158,10 @@ class Card {
     this.cardIndex = -1;
   }
 
+  getName(){
+    return this.name;
+  }
+
   getHtml() {
     return `
     <div 
@@ -189,25 +193,29 @@ class Deck {
     this.isStack = isStack;
   }
 
+  getDeck(){
+    return this.deck;
+  }
+
   getHtml() {
     console.log('called');
     return `
       <div class="cards">
         ${
-          this.deck.map(card => card.getHtml(FACED_UP)).join('\n')
+          this.deck.map(card => card.getHtml(this.isFacedUp)).join('\n')
         }
       </div>
     `;
   }
 
   setDeck(cards) {
-    cards.forEach(card => this.addCard(card));
+    cards.forEach((card,index) => this.addCard(card,index));
   }
 
   shuffle() {
     const times = 5 + Math.floor(Math.random() * 10);
     for (let i = 0; i < times; ++i) {
-      const cardsToRemove = Math.floor(Math.random() * this.deck.length);
+      const cardsToRemove = Math.floor(Math.random() * this.deck.length/2);
       let up = Math.floor(Math.random() * 2);
       const portions = [
         this.deck.slice(0, cardsToRemove / 2),
@@ -215,18 +223,19 @@ class Deck {
         this.deck.slice(cardsToRemove / 2 + 1 + cardsToRemove + 1)
       ];
       if (up) {
-        this.deck = [].concat(portions[0]).concat(portions[2]).concat(portions[1]);
-      } else {
         this.deck = [].concat(portions[1]).concat(portions[0]).concat(portions[2]);
+      } else {
+        this.deck = [].concat(portions[0]).concat(portions[2]).concat(portions[1]);
       }
     }
   }
 
-  addCard(card) {
-    let style = this.isStack ? CSSUtils.getMainDeckStyle : '';
+  addCard(card,index) {
+    let style = this.isStack ? CSSUtils.getMainDeckStyle(index) : '';
     if (this.elementId == "pile")
-      style = CSSUtils.getPileStyles;
-    let classes = style ? '' : CSSUtils.getPlayerClasses(this.isFacedUp, card);
+      style = CSSUtils.getPileStyles();
+    let classes = CSSUtils.getPlayerClasses(this.isFacedUp, card);
+    style = style ? style : CSSUtils.getPlayerStyle(this.isFacedUp,index);
     this.deck.push(new Card(card, classes, style));
   }
 
@@ -235,7 +244,7 @@ class Deck {
   }
 
   popRandomCard() {
-    return this.deck.popRandomIndex();
+    return this.deck.popRandomIndex().getName();
   }
 
   popCard() {
@@ -246,10 +255,10 @@ class Deck {
     return this.deck[index];
   }
 
-  getPlayableIndexes() {
-    let indexes;
+  getPlayableIndexes(card) {
+    let indexes =[];
     this.deck.forEach((cardElem, index) => {
-      if (isPlayableCard(card, cardElem))
+      if (this.isPlayableCard(card, cardElem))
         indexes.push(index);
     });
     return indexes;
@@ -261,53 +270,127 @@ class Deck {
 
 }
 
-document.handleCardClick = index => player.playCard(index)
+
 
 
 const CSSUtils = {
-  getMainDeckStyle: (index) => `margin: ${index / 3}px ${index / 3}px`,
+  getMainDeckStyle: (index) => `margin: ${0}px ${0}px `,
   getPileStyles: () => `transform: rotate(${-60 + Math.floor(Math.random() * 120)}deg); margin: ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px`,
-  getPlayerClasses: (isFacedUp, card) => `card ${isFacedUp ? `playable card_${card}` : 'card_back'}`
+  getPlayerClasses: (isFacedUp, card) => `card ${isFacedUp ? `playable card_${card}` : 'card_back'} `,
+  getPlayerStyle: (isFacedUp,index) => `position:absolute; left:${120}px `
 
 }
 
 class Player {
-  constructor(deck) {
+  constructor(deck,isFacedUp) {
     this.playableIndexes = [];
-    this.deck = new Deck(deck, false);
+    this.deck = new Deck(deck, isFacedUp);
   }
 
-  getPlayableDeck(card) {
+  getPlayableIndexes(card) {
     this.playableIndexes = this.deck.getPlayableIndexes(card);
   }
 
   playCard(index) {
     if (this.playableIndexes.includes(index)) {
-      const card = this.deck.getCard(index);
-      this.deck.removeCard(index);
+      const card = this.deck.removeCard(index);
       this.playableIndexes = this.playableIndexes.filter((item, i) => i !== index);
       return card;
     } else
       return false;
   }
 
-  addCard(card) {
-    this.deck.addCard(card);
-    console.log(this.deck);
+  addCard(card,index) {
+    this.deck.addCard(card,index);
+    console.log(this.deck,index);
   }
 
   getHtml() {
     return this.deck.getHtml();
   }
+
+  setCardsClickable(){
+    this.deck.getDeck().forEach((element,index) => {
+      if(this.playableIndexes.includes(index))
+        element.setClickable(index);
+    });
+  }
+
+  chooseCard(card, active = true) { //the bot well aware of the cards he has (this.cards)
+    let cardArr = card.split("_");
+    let number = cardArr[0];
+    let color = cardArr[1];
+  
+    if (number == "2plus" && active)
+      return has2plus(); // options: card name, false (take a card from the pile)
+    let colorCount = getColorCount(color); // count number of cards with this color
+    let numberCount = getNumberCount(number); // count number of cards with this number
+    let plus = getPlusColor(color);
+    let stop = getStopColor(color);
+    let taki = getTakiColor(color); //check for taki in this color
+  
+    if (active && specialCard(number))
+      return handleSpecial(color, number);
+    if (taki && colorCount > 1)
+      return taki;
+    if (stop && (colorCount > 1 || otherColorStop(color)))
+      return stop;
+    if (plus && (colorCount > 1 || otherColorPlus(color)))
+      return plus;
+    if (colorCount > 0)
+      return selectColorCard(color); //select the best card with my color (has two of the same number)
+    if (numberCount > 0)
+      return selectNumberCard(number); //select the best card with my number (has two of the same color)
+    return hasChangeColor(); // true = best color for me , false = take a card from the pile
+  }
+  
+  handleSpecial(color, type) {
+    let colorCount = getColorCount(color); // count number of cards with this color
+    let numberCount = getNumberCount(type); // count number of cards with this number
+    if (type == "taki") { // handle taki
+      if (numberCount > 0) {
+        return allCard(color);
+      }
+    }
+
+  hasSameCard(color, type);
+    if (res)
+      return res;
+    let otherType = getTypeOtherColor(type);
+    if (otherType && colorCount > 1)
+      return otherType;
+    if (numberCount > 0) {
+      return selectNumberCard(color);
+    }
+  }
+
 }
+
 
 class Game {
 
+
   start() {
+    this.finished = false;
     this.createDataMembers();
     this.mainDeck.setDeck(this.createCardsArray());
     this.distributeCards();
     this.renderAll();
+    //while(!this.finished){
+      this.playerTurn();
+      //this.botTurn();
+    //}
+  }
+
+  playerTurn(){
+    this.player.getPlayableIndexes(this.pile.getCard(0));
+    this.player.setCardsClickable();
+    render(this.player.getHtml(),'player');
+  }
+
+  botTurn(){
+    this.bot.chooseCard(this.pile.getCard(0));
+    render(this.bot.getHtml(),'bot');
   }
 
   renderAll() {
@@ -320,8 +403,8 @@ class Game {
   createDataMembers() {
     this.mainDeck = new Deck('deck', FACED_DOWN, STACK);
     this.pile = new Deck('pile', FACED_UP);
-    this.player = new Player();
-    this.bot = new Player();
+    this.player = new Player('player',FACED_UP);
+    this.bot = new Player('bot',FACED_DOWN);
   }
 
   createCardsArray() {
@@ -347,8 +430,8 @@ class Game {
   distributeCards() {
     this.mainDeck.shuffle();
     for (let i = 0; i < 8; ++i) {
-      this.player.addCard(this.mainDeck.popCard());
-      this.bot.addCard(this.mainDeck.popCard());
+      this.player.addCard(this.mainDeck.popRandomCard(),i);
+      this.bot.addCard(this.mainDeck.popRandomCard(),i);
     }
     this.pile.addCard(this.mainDeck.popCard());
   }
@@ -356,6 +439,10 @@ class Game {
 
 
 window.onload = function () {
-  const game = new Game();
+  let game = new Game();
+  //document.handleCardClick = index => game.player.playCard(index);
   game.start();
+  let player = game.player
 }
+document.handleCardClick = index => console.log(player.innerHTML);
+
