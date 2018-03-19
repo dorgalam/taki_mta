@@ -165,6 +165,7 @@ class Card {
   getHtml() {
     return `
     <div 
+      id = "card_number_${this.cardIndex}"
       style="${this.styles}"
       class="${this.cardClasses}"
       ${this.cardIndex > -1 ? `onclick="handleCardClick(${this.cardIndex})"` : ''}
@@ -298,7 +299,7 @@ class Player {
   playCard(index) {
     if (this.playableIndexes.includes(index)) {
       const card = this.deck.getCardName(index);
-      this.deck = this.deck.removeCard(index);
+      this.deck.deck = this.deck.removeCard(index);
       this.playableIndexes = this.playableIndexes.filter((item, i) => i !== index);
       return card;
     } else
@@ -318,6 +319,12 @@ class Player {
     this.deck.getDeck().forEach((element,index) => {
       if(this.playableIndexes.includes(index))
         element.setClickable(index);
+    });
+  }
+
+  removeCardsClickable(){
+    this.deck.getDeck().forEach((element) => {
+        element.removeClickable();
     });
   }
 
@@ -369,6 +376,10 @@ class Player {
     }
   }
 
+  clearPlayable(){
+    this.playableIndexes = [];
+  }
+
 }
 
 
@@ -376,6 +387,7 @@ class Game {
 
 
   start() {
+    this.turn = 0;
     this.finished = false;
     this.createDataMembers();
     this.mainDeck.setDeck(this.createCardsArray());
@@ -391,12 +403,17 @@ class Game {
     return this.player.playCard(index);
   }
 
+  clearClickable(){
+    this.player.removeCardsClickable();
+    this.player.clearPlayable();
+  }
+
   addCardToPile(card){
     this.pile.addCard(card);
   }
 
   playerTurn(){
-    this.player.getPlayableIndexes(this.pile.getCard(0));
+    this.player.getPlayableIndexes(this.pile.getCard(this.pile.deck.length-1));
     this.player.setCardsClickable();
     render(this.player.getHtml(),'player');
   }
@@ -448,18 +465,24 @@ class Game {
     }
     this.pile.addCard(this.mainDeck.popCard());
   }
+  myTurn(){
+    return 1-this.turn;
+  }
 }
 
 
 window.onload = function () {
   game = new Game();
-  //document.handleCardClick = index => game.player.playCard(index);
   game.start();
-  let player = game.player
 }
-document.handleCardClick = index => {
-  let card = game.playCard(index);
-  game.addCardToPile(card);
-  game.renderAll();
-}
+document.handleCardClick = (index) => {
+  if(game.myTurn()){ //player turn
+    let card = game.playCard(index);
+    if(card){ //legit card
+      game.addCardToPile(card);
+      game.clearClickable();
+      game.renderAll();
+    }
+  }
+};
 
