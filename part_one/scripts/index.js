@@ -162,13 +162,13 @@ class Card {
     return this.name;
   }
 
-  getHtml() {
+  getHtml(index) {
     return `
-    <div 
-      id = "card_number_${this.cardIndex}"
+    <div
+      id="card_number_${index}"
       style="${this.styles}"
-      class="${this.cardClasses}"
-      ${this.cardIndex > -1 ? `onclick="handleCardClick(${this.cardIndex})"` : ''}
+      class="${this.cardClasses} ${this.cardIndex > -1 ? 'playable' : ''}"
+      ${this.cardIndex > -1 ? `onclick="handleCardClick(${this.cardIndex})"` : ''}>
     </div>
     `;
   }
@@ -199,11 +199,10 @@ class Deck {
   }
 
   getDeckHtml() {
-    console.log('called');
     return `
       <div class="cards">
         ${
-          this.deck.map(card => card.getHtml(this.isFacedUp)).join('\n')
+          this.deck.map((card, i) => card.getHtml(i)).join('\n')
         }
       </div>
     `;
@@ -279,11 +278,10 @@ class Deck {
 
 
 const CSSUtils = {
-  getMainDeckStyle: (index) => `margin: ${0}px ${0}px `,
+  getMainDeckStyle: (index) => `margin: ${index / 3}px ${index / 3}px `,
   getPileStyles: () => `transform: rotate(${-60 + Math.floor(Math.random() * 120)}deg); margin: ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px ${Math.floor(Math.random() * 40)}px`,
-  getPlayerClasses: (isFacedUp, card) => `card ${isFacedUp ? `playable card_${card}` : 'card_back'} `,
-  getPlayerStyle: (isFacedUp,index) => `position:absolute; left:${120}px `
-
+  getPlayerClasses: (isFacedUp, card) => `card ${isFacedUp ? `card_${card}` : 'card_back'} `,
+  getPlayerStyle: (isFacedUp,index) => ``
 }
 
 class Player {
@@ -308,7 +306,6 @@ class Player {
 
   addCard(card,index) {
     this.deck.addCard(card,index);
-    console.log(this.deck,index);
   }
 
   getHtml() {

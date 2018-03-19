@@ -1,29 +1,44 @@
+@media only screen and (max-width: 930px) {
+  body .card {
+    width: 80px;
+    height: 123px;
+  }
+}
+@media only screen and (max-width: 680px) {
+  body .card {
+    width: 50px;
+    height: 77px;
+  }
+}
+
 body {
   background-color: #00a000;
 }
 
-.cards {
-  text-align: center;
-  display: inline-block;
-  position: absolute;
+.cards {  
+  margin: auto;
 }
 
 #bot {
   position: absolute;
-  left: 10%;
-  right: 0;
   top: 0;
+  left:0;
+  right:0;
+  display: inline-block;
+  text-align: center;
 }
 
 #player {
   position: absolute;
-  bottom: 30%;
-  left: 10%;
-  right: 0;
+  bottom: 0;
+  left:0;
+  right:0;
+  display: inline-block;
+  text-align: center;
 }
 
 #pile {
-  position:absolute;
+  position: absolute;
   top: 50%;
   left: 50%;
   width: 210px;
@@ -32,9 +47,7 @@ body {
   margin-left: -105px; /*set to a negative number 1/2 of your width*/
 }
 
-#pile > .card {
-  left: 0;
-  top: 0;
+#pile > .cards > .card {
   position: absolute;
 }
 
@@ -45,14 +58,14 @@ body {
   border-radius: 12px;
   background: rgb(255, 238, 221);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
-  transition: 200ms ease all;
+  transition: 200ms ease margin;
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
 
 .playable:hover {
   margin-bottom: 30px;
-  transition: 200ms ease all;
+  transition: 200ms ease margin;
   cursor: pointer;
 }
 
@@ -62,8 +75,7 @@ body {
   right: 15%;
 }
 
-#deck > .card {
-  right: 0;
+#deck > .cards > .card {
   position: absolute;
 }
 
