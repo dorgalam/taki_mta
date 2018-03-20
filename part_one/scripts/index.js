@@ -2,6 +2,9 @@ const FACED_UP = true;
 
 const FACED_DOWN = false;
 
+const PLAYER = 0;
+const BOT = 1;
+
 const STACK = true;
 
 // function Stats(elementId, isplayer) {
@@ -76,8 +79,7 @@ const STACK = true;
 
 // function getRandom(max) {
 //   return Math.floor(Math.random() * max);
-// }
-let game;
+// }let game;
 Array.prototype.popIndex = function (index) {
   if (index < 0 || index >= this.length) {
     throw new Error();
@@ -97,7 +99,7 @@ Array.prototype.popRandomIndex = function () {
   let rand = Math.floor(Math.random() * this.length);
   return this.popIndex(rand);
 }
-
+/*
 function chooseCard(card, active) { //the bot well aware of the cards he has (this.cards)
   let cardArr = card.split("_");
   let number = cardArr[0];
@@ -112,7 +114,7 @@ function chooseCard(card, active) { //the bot well aware of the cards he has (th
   let taki = getTakiColor(color); //check for taki in this color
 
   if (active && specialCard(number))
-    return handleSpecial(color, number);
+    return this.handleSpecial(color, number);
   if (taki && colorCount > 1)
     return taki;
   if (stop && (colorCount > 1 || otherColorStop(color)))
@@ -126,7 +128,9 @@ function chooseCard(card, active) { //the bot well aware of the cards he has (th
   return hasChangeColor(); // true = best color for me , false = take a card from the pile
 }
 
-function handleSpecial(color, type) {
+hasChangeColor
+
+handleSpecial(color, type) {
   let colorCount = getColorCount(color); // count number of cards with this color
   let numberCount = getNumberCount(type); // count number of cards with this number
   if (type == "taki") { // handle taki
@@ -143,8 +147,7 @@ function handleSpecial(color, type) {
   if (numberCount > 0) {
     return selectNumberCard(color);
   }
-}
-
+}*/
 const render = (innerHTML, elementId) => document.getElementById(elementId).innerHTML = innerHTML;
 
 class Card {
@@ -168,7 +171,7 @@ class Card {
       id="card_number_${index}"
       style="${this.styles}"
       class="${this.cardClasses} ${this.cardIndex > -1 ? 'playable' : ''}"
-      ${this.cardIndex > -1 ? `onclick="handleCardClick(${this.cardIndex})"` : ''}>
+      ${this.cardIndex > -1 || this.cardIndex === -2? `onclick="handleCardClick(${this.cardIndex})"` : ''}>
     </div>
     `;
   }
@@ -269,12 +272,16 @@ class Deck {
   }
 
   isPlayableCard(card, cardElem) {
+    if(card.number === "2plus")
+      return cardElem.number === "2plus";
     return (card.color === cardElem.color || card.number === cardElem.number || cardElem.color === "colorful");
+  }
+  
+  setLastCardClickable(){
+    this.deck[this.deck.length-1].cardIndex = -2;
   }
 
 }
-
-
 
 
 const CSSUtils = {
@@ -296,7 +303,7 @@ class Player {
 
   playCard(index) {
     if (this.playableIndexes.includes(index)) {
-      const card = this.deck.getCardName(index);
+      const card = this.deck.getCard(index);
       this.deck.deck = this.deck.removeCard(index);
       this.playableIndexes = this.playableIndexes.filter((item, i) => i !== index);
       return card;
@@ -306,6 +313,15 @@ class Player {
 
   addCard(card,index) {
     this.deck.addCard(card,index);
+  }
+
+  removeCardByCard(card){
+    let index;
+    this.deck.getDeck().forEach((element,i) => {
+      if(element === card)
+         index = i;
+    });
+    this.deck.deck = this.deck.removeCard(index); 
   }
 
   getHtml() {
@@ -325,21 +341,65 @@ class Player {
     });
   }
 
+  getColorCount(color){
+    let count = 0;
+    this.deck.getDeck().forEach((element) => {
+      if(element.color === color){
+        count++;
+      }
+    });
+    return count;
+  }
+
+  getNumberCount(number){
+    let count = 0;
+    this.deck.getDeck().forEach((element) => {
+      if(element.number === number){
+        count++;
+      }
+    });
+    return count;
+  }
+
+  getSpecialTypeColor(color,specialType){
+    let special = false;
+    this.deck.getDeck().forEach((element) => {
+      if(element.color === color && element.number === specialType){
+        special = element;
+      }
+    });
+    return special;
+  }
+
+  has2plus(){
+    this.deck.getDeck().forEach((element) => {
+      if(element.number === "2plus"){
+        return element;
+      }
+    });
+    return false;
+  }
+
+  specialCard(card){
+    if(card.number === "taki" || card.number === "stop" || card.number === "plus" || card.color == "colorful"){
+      return true;
+    }
+    return false;
+  }
+
   chooseCard(card, active = true) { //the bot well aware of the cards he has (this.cards)
-    let cardArr = card.split("_");
-    let number = cardArr[0];
-    let color = cardArr[1];
-  
-    if (number == "2plus" && active)
-      return has2plus(); // options: card name, false (take a card from the pile)
-    let colorCount = getColorCount(color); // count number of cards with this color
-    let numberCount = getNumberCount(number); // count number of cards with this number
-    let plus = getPlusColor(color);
-    let stop = getStopColor(color);
-    let taki = getTakiColor(color); //check for taki in this color
-  
-    if (active && specialCard(number))
-      return handleSpecial(color, number);
+    let number = card.number;
+    let color = card.color;
+    if (number == "2plus")
+      return this.has2plus(); // options: card name, false (take a card from the pile)
+    if (active && this.specialCard(card)){
+      return this.handleSpecial(color, number);
+    }
+    let colorCount = this.getColorCount(color); // count number of cards with this color
+    let numberCount = this.getNumberCount(number); // count number of cards with this number
+    let plus = this.getSpecialTypeColor(color,"plus");
+    let stop = this.getSpecialTypeColor(color,"stop");
+    let taki = this.getSpecialTypeColor(color,"taki"); //check for taki in this color
     if (taki && colorCount > 1)
       return taki;
     if (stop && (colorCount > 1 || otherColorStop(color)))
@@ -347,34 +407,87 @@ class Player {
     if (plus && (colorCount > 1 || otherColorPlus(color)))
       return plus;
     if (colorCount > 0)
-      return selectColorCard(color); //select the best card with my color (has two of the same number)
+      return this.selectColorCard(color); //select the best card with my color (has two of the same number)
     if (numberCount > 0)
-      return selectNumberCard(number); //select the best card with my number (has two of the same color)
-    return hasChangeColor(); // true = best color for me , false = take a card from the pile
+      return this.selectNumberCard(number); //select the best card with my number (has two of the same color)
+    return this.hasChangeColor(); // true = best color for me , false = take a card from the pile
+  }
+
+  hasChangeColor(){
+    const deck = this.deck.getDeck();
+    for(let i=0;i<deck.length;i++){
+      if(deck[i].color === "colorful")
+        return deck[i];
+    }
+    return false;
+  }
+
+  selectColorCard(color){
+    const deck = this.deck.getDeck();
+    for(let i=0;i<deck.length;i++){
+      if(deck[i].color === color)
+        return deck[i];
+    }
+    return false;
+  }
+
+  selectNumberCard(number){
+    const deck = this.deck.getDeck();
+    for(let i=0;i<deck.length;i++){
+      if(deck[i].number === number)
+        return deck[i];
+    }
+    return false;
   }
   
   handleSpecial(color, type) {
-    let colorCount = getColorCount(color); // count number of cards with this color
-    let numberCount = getNumberCount(type); // count number of cards with this number
+    let colorCount = this.getColorCount(color); // count number of cards with this color
     if (type == "taki") { // handle taki
-      if (numberCount > 0) {
-        return allCard(color);
+      if (colorCount > 1) {
+        return this.selectColorCard(color);
       }
+      return false;
     }
-
-  hasSameCard(color, type);
+    let res = this.hasSameCard(color, type);
     if (res)
       return res;
-    let otherType = getTypeOtherColor(type);
-    if (otherType && colorCount > 1)
+    let otherType = this.getTypeOtherColor(type);
+    if (otherType && this.getColorCount(otherType.color) > 1)
       return otherType;
-    if (numberCount > 0) {
-      return selectNumberCard(color);
+    if (colorCount > 0) {
+      return this.selectNumberCard(color);
     }
+    return otherType; //can be false
+  }
+
+  getTypeOtherColor(type){
+    const deck = this.deck.getDeck();
+    for(let i=0;i<deck.length;i++){
+      if(deck[i].type === type)
+        return deck[i];
+    }
+    return false;
+  }
+
+  hasSameCard(color,type){
+    const deck = this.deck.getDeck();
+    for(let i=0;i<deck.length;i++){
+      if(deck[i].type === type && deck[i].color === color)
+        return deck[i];
+    }
+    return false;
   }
 
   clearPlayable(){
     this.playableIndexes = [];
+  }
+
+  pickColor(){
+    return "red";
+  }
+
+  choosingSpecial(card){
+
   }
 
 }
@@ -400,6 +513,10 @@ class Game {
     return this.player.playCard(index);
   }
 
+  specialCard(card){
+    return this.bot.specialCard(card);
+  }
+
   clearClickable(){
     this.player.removeCardsClickable();
     this.player.clearPlayable();
@@ -412,12 +529,17 @@ class Game {
   playerTurn(){
     this.player.getPlayableIndexes(this.pile.getCard(this.pile.deck.length-1));
     this.player.setCardsClickable();
+    this.mainDeck.setLastCardClickable();
     render(this.player.getHtml(),'player');
+    render(this.mainDeck.getDeckHtml(),'deck');
   }
 
   botTurn(){
-    this.bot.chooseCard(this.pile.getCard(0));
-    render(this.bot.getHtml(),'bot');
+    let card = this.bot.chooseCard(this.pile.getCard(this.pile.deck.length-1));
+    this.bot.removeCardByCard(card);
+    if(this.specialCard(card))
+      card = this.bot.choosingSpecial(card);
+    return card;
   }
 
   renderAll() {
@@ -465,6 +587,21 @@ class Game {
   myTurn(){
     return 1-this.turn;
   }
+
+  takeCardFromMainDeck(player){
+    if(player == PLAYER){
+      this.player.addCard(this.mainDeck.popCard());
+    }
+    else{
+      this.bot.addCard(this.mainDeck.popCard());
+    }
+  }
+
+  pickColor(card){
+    let color = this.player.pickColor();
+    let number = card.number == "taki" ? "taki_" : "_"; 
+    return new Card(number + color);
+  }
 }
 
 
@@ -472,14 +609,49 @@ window.onload = function () {
   game = new Game();
   game.start();
 }
+
 document.handleCardClick = (index) => {
-  if(game.myTurn()){ //player turn
-    let card = game.playCard(index);
-    if(card){ //legit card
-      game.addCardToPile(card);
-      game.clearClickable();
+  if(game.myTurn() && index === -2){
+      game.takeCardFromMainDeck(PLAYER);
       game.renderAll();
+      return;
+  }
+  let card = false;
+  if(game.myTurn()){ //player turn
+    card = game.playCard(index);
+    if(card){ //legit card
+      if(card.color == "colorful"){
+        card = game.pickColor(card);
+      }
+      game.addCardToPile(card.name);
+      game.clearClickable();
+    }
+    else 
+      return;
+  }
+  else
+    return; 
+  game.renderAll();
+  if(game.specialCard(card)){
+    game.playerTurn();
+    return ;
+  }
+  card = game.botTurn();
+  if(card){ //legit card
+    game.addCardToPile(card.name);
+    game.renderAll();
+  }
+  while(game.specialCard(card)){
+    card = game.botTurn();
+    if(card){ //legit card
+      game.addCardToPile(card.name);
     }
   }
+  if(!card){
+    game.takeCardFromMainDeck(BOT);
+  }
+  game.renderAll();
+  game.playerTurn();
+  
 };
 
