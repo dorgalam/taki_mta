@@ -1,6 +1,8 @@
 const FACED_UP = true;
 
 const FACED_DOWN = false;
+const ACTIVE = 1;
+const NOTACTIVE = 0;
 
 const PLAYER = 0;
 const BOT = 1;
@@ -262,17 +264,17 @@ class Deck {
     return this.deck[index].getName();
   }
 
-  getPlayableIndexes(card) {
+  getPlayableIndexes(card,active) {
     let indexes =[];
     this.deck.forEach((cardElem, index) => {
-      if (this.isPlayableCard(card, cardElem))
+      if (this.isPlayableCard(card, cardElem,active))
         indexes.push(index);
     });
     return indexes;
   }
 
-  isPlayableCard(card, cardElem) {
-    if(card.number === "2plus")
+  isPlayableCard(card, cardElem,active) {
+    if(active && card.number === "2plus")
       return cardElem.number === "2plus";
     return (card.color === cardElem.color || card.number === cardElem.number || cardElem.color === "colorful");
   }
@@ -297,8 +299,8 @@ class Player {
     this.deck = new Deck(deck, isFacedUp);
   }
 
-  getPlayableIndexes(card) {
-    this.playableIndexes = this.deck.getPlayableIndexes(card);
+  getPlayableIndexes(card,active) {
+    this.playableIndexes = this.deck.getPlayableIndexes(card,active);
   }
 
   playCard(index) {
@@ -402,9 +404,9 @@ class Player {
     let taki = this.getSpecialTypeColor(color,"taki"); //check for taki in this color
     if (taki && colorCount > 1)
       return taki;
-    if (stop && (colorCount > 1 || otherColorStop(color)))
+    if (stop && (colorCount > 1 || this.getTypeOtherColor("stop")))
       return stop;
-    if (plus && (colorCount > 1 || otherColorPlus(color)))
+    if (plus && (colorCount > 1 || this.getTypeOtherColor("plus")))
       return plus;
     if (colorCount > 0)
       return this.selectColorCard(color); //select the best card with my color (has two of the same number)
@@ -463,7 +465,7 @@ class Player {
   getTypeOtherColor(type){
     const deck = this.deck.getDeck();
     for(let i=0;i<deck.length;i++){
-      if(deck[i].type === type)
+      if(deck[i].number === type)
         return deck[i];
     }
     return false;
@@ -472,7 +474,7 @@ class Player {
   hasSameCard(color,type){
     const deck = this.deck.getDeck();
     for(let i=0;i<deck.length;i++){
-      if(deck[i].type === type && deck[i].color === color)
+      if(deck[i].number === type && deck[i].color === color)
         return deck[i];
     }
     return false;
@@ -497,16 +499,15 @@ class Game {
 
 
   start() {
+    this.takinCount = 1;
+    this.active = ACTIVE;
     this.turn = 0;
     this.finished = false;
     this.createDataMembers();
     this.mainDeck.setDeck(this.createCardsArray());
     this.distributeCards();
     this.renderAll();
-    //while(!this.finished){
-      this.playerTurn();
-      //this.botTurn();
-    //}
+    this.playerTurn();
   }
 
   playCard(index){
@@ -523,11 +524,17 @@ class Game {
   }
 
   addCardToPile(card){
+    const splitName = card.split('_');
+    let number = splitName[0];
+    if(number === "2plus"){
+      this.takinCount = this.takinCount === 1 ? 0 : this.takinCount;
+      this.takinCount += 2;
+    }
     this.pile.addCard(card);
   }
 
   playerTurn(){
-    this.player.getPlayableIndexes(this.pile.getCard(this.pile.deck.length-1));
+    this.player.getPlayableIndexes(this.pile.getCard(this.pile.deck.length-1),this.active);
     this.player.setCardsClickable();
     this.mainDeck.setLastCardClickable();
     render(this.player.getHtml(),'player');
@@ -535,7 +542,7 @@ class Game {
   }
 
   botTurn(){
-    let card = this.bot.chooseCard(this.pile.getCard(this.pile.deck.length-1));
+    let card = this.bot.chooseCard(this.pile.getCard(this.pile.deck.length-1),this.active);
     this.bot.removeCardByCard(card);
     if(this.specialCard(card))
       card = this.bot.choosingSpecial(card);
@@ -589,6 +596,8 @@ class Game {
   }
 
   takeCardFromMainDeck(player){
+    this.active = NOTACTIVE;
+    this.takinCount = 1;
     if(player == PLAYER){
       this.player.addCard(this.mainDeck.popCard());
     }
@@ -599,25 +608,68 @@ class Game {
 
   pickColor(card){
     let color = this.player.pickColor();
-    let number = card.number == "taki" ? "taki_" : "_"; 
-    return new Card(number + color);
+    let number = card.number == "taki" ? "taki" : ""; 
+    return new Card(number + '_' + color);
+  }
+
+  takinNumber(){
+    return this.takinCount;
   }
 }
 
 
-window.onload = function () {
+window.onload = function () { //active handle
   game = new Game();
   game.start();
 }
+function doBot(){
+  card = game.botTurn();
+  if(card){ //legit card
+    game.addCardToPile(card.name);
+    game.renderAll();
+  }
+  else{
+    const count = game.takinNumber();
+    for(let i=0;i<count;i++){
+      game.takeCardFromMainDeck(BOT);
+      game.renderAll();
+    }
+    game.renderAll();
+    game.playerTurn();
+    return;
+  }
+  while(game.specialCard(card)){
+    card = game.botTurn();
+    if(card){ //legit card
+      game.addCardToPile(card.name);
+    }
+    else{
+      const count = game.takinNumber();
+      for(let i=0;i<count;i++){
+        game.takeCardFromMainDeck(BOT);
+        game.renderAll();
+      }
+      game.renderAll();
+      game.playerTurn();
+      return;
+    }
+  }
+  game.renderAll();
+  game.playerTurn();
+}
+
+
 
 document.handleCardClick = (index) => {
-  if(game.myTurn() && index === -2){
-      game.takeCardFromMainDeck(PLAYER);
-      game.renderAll();
-      return;
+  if(index === -2){
+    const count = game.takinNumber();
+      for(let i=0;i<count;i++){
+        game.takeCardFromMainDeck(PLAYER);
+        game.renderAll();    
+      }
+    doBot();
   }
   let card = false;
-  if(game.myTurn()){ //player turn
     card = game.playCard(index);
     if(card){ //legit card
       if(card.color == "colorful"){
@@ -627,31 +679,12 @@ document.handleCardClick = (index) => {
       game.clearClickable();
     }
     else 
-      return;
-  }
-  else
-    return; 
+      return; 
   game.renderAll();
   if(game.specialCard(card)){
     game.playerTurn();
     return ;
   }
-  card = game.botTurn();
-  if(card){ //legit card
-    game.addCardToPile(card.name);
-    game.renderAll();
-  }
-  while(game.specialCard(card)){
-    card = game.botTurn();
-    if(card){ //legit card
-      game.addCardToPile(card.name);
-    }
-  }
-  if(!card){
-    game.takeCardFromMainDeck(BOT);
-  }
-  game.renderAll();
-  game.playerTurn();
-  
+  doBot();
 };
 
