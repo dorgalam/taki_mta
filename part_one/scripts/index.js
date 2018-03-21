@@ -365,7 +365,7 @@ class Player {
 
   getSpecialTypeColor(color,specialType){
     let special = false;
-    this.deck.getDeck().forEach((element) => {
+    this.deck.getDeck().forEach(function(element) {
       if(element.color === color && element.number === specialType){
         special = element;
       }
@@ -374,12 +374,14 @@ class Player {
   }
 
   has2plus(){
-    this.deck.getDeck().forEach((element) => {
+    let elem = false;
+    this.deck.getDeck().forEach(function(element) {
+      console.log(element)
       if(element.number === "2plus"){
-        return element;
+        elem = element;
       }
     });
-    return false;
+    return elem;
   }
 
   specialCard(card){
@@ -488,9 +490,6 @@ class Player {
     return "red";
   }
 
-  choosingSpecial(card){
-
-  }
 
 }
 
@@ -531,21 +530,21 @@ class Game {
       this.takinCount += 2;
     }
     this.pile.addCard(card);
+    this.active = ACTIVE;
   }
 
   playerTurn(){
     this.player.getPlayableIndexes(this.pile.getCard(this.pile.deck.length-1),this.active);
     this.player.setCardsClickable();
     this.mainDeck.setLastCardClickable();
-    render(this.player.getHtml(),'player');
-    render(this.mainDeck.getDeckHtml(),'deck');
+    this.renderAll();
   }
 
   botTurn(){
     let card = this.bot.chooseCard(this.pile.getCard(this.pile.deck.length-1),this.active);
     this.bot.removeCardByCard(card);
-    if(this.specialCard(card))
-      card = this.bot.choosingSpecial(card);
+    if(card.color === "colorful")
+      card = this.pickColor(card);
     return card;
   }
 
@@ -632,7 +631,6 @@ function doBot(){
     const count = game.takinNumber();
     for(let i=0;i<count;i++){
       game.takeCardFromMainDeck(BOT);
-      game.renderAll();
     }
     game.renderAll();
     game.playerTurn();
