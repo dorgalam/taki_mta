@@ -498,15 +498,16 @@ class Game {
 
 
   start() {
+    this.taki = false;
     this.takinCount = 1;
     this.active = ACTIVE;
-    this.turn = 0;
+    this.turn = PLAYER;
     this.finished = false;
     this.createDataMembers();
     this.mainDeck.setDeck(this.createCardsArray());
     this.distributeCards();
     this.renderAll();
-    this.playerTurn();
+    this.switchToPlayerTurn();
   }
 
   playCard(index){
@@ -533,7 +534,7 @@ class Game {
     this.active = ACTIVE;
   }
 
-  playerTurn(){
+  switchToPlayerTurn(){
     this.player.getPlayableIndexes(this.pile.getCard(this.pile.deck.length-1),this.active);
     this.player.setCardsClickable();
     this.mainDeck.setLastCardClickable();
@@ -541,6 +542,7 @@ class Game {
   }
 
   botTurn(){
+    this.switchTurn();
     let card = this.bot.chooseCard(this.pile.getCard(this.pile.deck.length-1),this.active);
     this.bot.removeCardByCard(card);
     if(card.color === "colorful")
@@ -590,8 +592,13 @@ class Game {
     }
     this.pile.addCard(this.mainDeck.popCard());
   }
-  myTurn(){
-    return 1-this.turn;
+
+  switchTurn(){
+    this.turn = 1 - this.turn;
+  }
+
+  getTurn(){
+    return this.turn;
   }
 
   takeCardFromMainDeck(player){
@@ -614,6 +621,16 @@ class Game {
   takinNumber(){
     return this.takinCount;
   }
+
+  openTaki(){
+    this.taki = true;
+    document.getElementById("closeTaki").style.display = "block";
+    //this.showMsgTakiToPlayer();
+  }
+
+  closeTaki(){
+    this.taki = false;
+  }
 }
 
 
@@ -621,7 +638,15 @@ window.onload = function () { //active handle
   game = new Game();
   game.start();
 }
-function doBot(){
+
+function closeTaki(){
+  alert(1);
+  document.getElementById("closeTaki").style.display = "none";
+  game.closeTaki();
+  doBotTurn();
+}
+
+function doBotTurn(){
   card = game.botTurn();
   if(card){ //legit card
     game.addCardToPile(card.name);
@@ -633,7 +658,7 @@ function doBot(){
       game.takeCardFromMainDeck(BOT);
     }
     game.renderAll();
-    game.playerTurn();
+    game.switchToPlayerTurn();
     return;
   }
   while(game.specialCard(card)){
@@ -648,12 +673,12 @@ function doBot(){
         game.renderAll();
       }
       game.renderAll();
-      game.playerTurn();
+      game.switchToPlayerTurn();
       return;
     }
   }
   game.renderAll();
-  game.playerTurn();
+  game.switchToPlayerTurn();
 }
 
 
@@ -665,7 +690,7 @@ document.handleCardClick = (index) => {
         game.takeCardFromMainDeck(PLAYER);
         game.renderAll();    
       }
-    doBot();
+    doBotTurn();
   }
   let card = false;
     card = game.playCard(index);
@@ -680,9 +705,11 @@ document.handleCardClick = (index) => {
       return; 
   game.renderAll();
   if(game.specialCard(card)){
-    game.playerTurn();
+    if(card.number === "taki")
+      game.openTaki();
+    game.switchToPlayerTurn();
     return ;
   }
-  doBot();
+  doBotTurn();
 };
 
