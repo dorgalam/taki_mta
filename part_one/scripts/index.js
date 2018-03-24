@@ -256,6 +256,10 @@ class Deck {
     return this.deck.pop().name;
   }
 
+  lastOne(){
+    return this.deck.length === 1;
+  }
+
   getCard(index) {
     return this.deck[index];
   }
@@ -280,7 +284,8 @@ class Deck {
   }
   
   setLastCardClickable(){
-    this.deck[this.deck.length-1].cardIndex = -2;
+    if(this.deck.length !== 0)
+      this.deck[this.deck.length-1].cardIndex = -2;
   }
 
 }
@@ -543,7 +548,8 @@ class Game {
 
   botTurn(){
     this.switchTurn();
-    let card = this.bot.chooseCard(this.pile.getCard(this.pile.deck.length-1),this.active);
+    let lastCard = this.taki ? new Card("taki_" + this.pile.getCard(this.pile.deck.length-1).color) : this.pile.getCard(this.pile.deck.length-1);
+    let card = this.bot.chooseCard(lastCard,this.active);
     this.bot.removeCardByCard(card);
     if(card.color === "colorful")
       card = this.pickColor(card);
@@ -601,9 +607,22 @@ class Game {
     return this.turn;
   }
 
+  buildMainFromPile(){
+    let cards = this.pile.getDeck();
+    this.pile.deck = this.pile.getCard(this.pile.deck.length-1);
+    cards.pop();
+    cards.forEach((element,index) => {
+      this.mainDeck.addCard(element.name,index);  
+    });
+  }
+
   takeCardFromMainDeck(player){
     this.active = NOTACTIVE;
     this.takinCount = 1;
+    if(this.mainDeck.lastOne()){
+      this.buildMainFromPile();
+
+    }
     if(player == PLAYER){
       this.player.addCard(this.mainDeck.popCard());
     }
@@ -662,11 +681,20 @@ function doBotTurn(){
     return;
   }
   while(game.specialCard(card)){
+    if(card.number === "taki"){
+      game.taki = true;
+    }
     card = game.botTurn();
     if(card){ //legit card
       game.addCardToPile(card.name);
     }
     else{
+      if(game.taki){
+        game.taki = false;
+        game.renderAll();
+        game.switchToPlayerTurn();
+        return;
+      }
       const count = game.takinNumber();
       for(let i=0;i<count;i++){
         game.takeCardFromMainDeck(BOT);
@@ -705,9 +733,9 @@ document.handleCardClick = (index) => {
       return; 
   game.renderAll();
   if(game.specialCard(card)){
-    if(card.number === "taki")
+    /*if(card.number === "taki")
       game.openTaki();
-    game.switchToPlayerTurn();
+    */game.switchToPlayerTurn();
     return ;
   }
   doBotTurn();
