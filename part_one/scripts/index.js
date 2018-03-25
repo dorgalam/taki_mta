@@ -7,6 +7,8 @@ const NOTACTIVE = 0;
 const PLAYER = 0;
 const BOT = 1;
 
+const NOTFINISH = -1;
+
 const STACK = true;
 
 // function Stats(elementId, isplayer) {
@@ -237,7 +239,7 @@ class Deck {
 
   addCard(card,index) {
     let style = this.isStack ? CSSUtils.getMainDeckStyle(index) : '';
-    if (this.elementId == "pile")
+    if (this.elementId === "pile")
       style = CSSUtils.getPileStyles();
     let classes = CSSUtils.getPlayerClasses(this.isFacedUp, card);
     style = style ? style : CSSUtils.getPlayerStyle(this.isFacedUp,index);
@@ -399,7 +401,7 @@ class Player {
   chooseCard(card, active = true) { //the bot well aware of the cards he has (this.cards)
     let number = card.number;
     let color = card.color;
-    if (number == "2plus")
+    if (number === "2plus")
       return this.has2plus(); // options: card name, false (take a card from the pile)
     if (active && this.specialCard(card)){
       return this.handleSpecial(color, number);
@@ -451,7 +453,7 @@ class Player {
   
   handleSpecial(color, type) {
     let colorCount = this.getColorCount(color); // count number of cards with this color
-    if (type == "taki") { // handle taki
+    if (type === "taki") { // handle taki
       if (colorCount > 1) {
         return this.selectColorCard(color);
       }
@@ -494,7 +496,10 @@ class Player {
   pickColor(){
     return "red";
   }
-
+  
+  won(){
+    return this.deck.getDeck().length=== 0; 
+  }
 
 }
 
@@ -544,6 +549,11 @@ class Game {
     this.player.setCardsClickable();
     this.mainDeck.setLastCardClickable();
     this.renderAll();
+    let winner;
+    if((winner = this.getWinner()) !==NOTFINISH){
+      goToWinner(winner);
+      return;
+    }
   }
 
   botTurn(){
@@ -623,7 +633,7 @@ class Game {
       this.buildMainFromPile();
 
     }
-    if(player == PLAYER){
+    if(player === PLAYER){
       this.player.addCard(this.mainDeck.popCard());
     }
     else{
@@ -650,11 +660,25 @@ class Game {
   closeTaki(){
     this.taki = false;
   }
+
+  getWinner(){
+    if(this.player.won()){
+      return PLAYER;
+    }
+    else if(this.bot.won()){
+      return BOT;
+    }
+    return NOTFINISH;
+  }
 }
 
 
 window.onload = function () { //active handle
+  
+}
+function startGame(){
   game = new Game();
+  document.getElementById("startGame").style.display = "none"; 
   game.start();
 }
 
@@ -665,7 +689,16 @@ function closeTaki(){
   doBotTurn();
 }
 
+function goToWinner(winner){
+  alert(winner);
+}
+
 function doBotTurn(){
+  let winner;
+  if((winner = game.getWinner()) !==NOTFINISH){
+    goToWinner(winner);
+    return;
+  }
   card = game.botTurn();
   if(card){ //legit card
     game.addCardToPile(card.name);

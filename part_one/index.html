@@ -6,6 +6,9 @@
 </head>
 
 <body>
+  <button type="button" id ="startGame" onclick="startGame();return false;" style="border-radius: 50%;font-size:24px;color:blue;text-align: center;
+  font-size: 28px;padding: 20px;position: absolute;right: 50%;border: 3px solid green;" >Start</button>
+
   <div id="bot">
   </div>
   <div id="pile"></div>
@@ -26,6 +29,13 @@
 </body>
 
 </html>
+
+<script defer="defer">
+    function myFunction() {
+        document.getElementById("player").style.display = "none";
+    }
+    </script>
+
 <!--style="text-align: center;width:12%;height:55%;border-style: solid;padding: .5em .875em;
   background-color: rgb(36, 44, 37);font-size: 12px;font-family: Arial,Helvetica,sans-serif;top:0;left:0;"<!--" position: absolute;opacity: 0.5;
   filter: alpha(opacity=50);
