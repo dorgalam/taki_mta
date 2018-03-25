@@ -695,10 +695,10 @@ function goToWinner(winner){
 
 function doBotTurn(){
   let winner;
-  if((winner = game.getWinner()) !==NOTFINISH){
+  /*if((winner = game.getWinner()) !==NOTFINISH){
     goToWinner(winner);
     return;
-  }
+  }*/
   card = game.botTurn();
   if(card){ //legit card
     game.addCardToPile(card.name);
