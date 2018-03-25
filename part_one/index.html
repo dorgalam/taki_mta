@@ -25,16 +25,16 @@
   <div class = "turn" >
     <img src="./styles/assets/yourturn.png" alt="turn"/>
   </div>
-  <button id="closeTaki" onclick="closeTaki();" style="position:absolute;z-index:2;" >סיום תור</button>
+  <div id="pickColor" style="position:absolute;z-index:2;display:none;">
+    <button id="red" onclick="return 0;"  >אדום</button>
+    <button id="yellow" onclick="return 1;" >צהוב</button>
+    <button id="green" onclick="return 2;" >ירוק</button>
+    <button id="blue" onclick="return 3;" >כחול</button>
+  </div>
+  <button id="closeTaki" onclick="closeTaki();" style="position:absolute;z-index:2;display:none;" >סיום תור</button>
 </body>
 
 </html>
-
-<script defer="defer">
-    function myFunction() {
-        document.getElementById("player").style.display = "none";
-    }
-    </script>
 
 <!--style="text-align: center;width:12%;height:55%;border-style: solid;padding: .5em .875em;
   background-color: rgb(36, 44, 37);font-size: 12px;font-family: Arial,Helvetica,sans-serif;top:0;left:0;"<!--" position: absolute;opacity: 0.5;

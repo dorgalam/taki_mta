@@ -279,7 +279,7 @@ class Deck {
     return indexes;
   }
 
-  isPlayableCard(card, cardElem,active) {
+  isPlayableCard(card, cardElem,active) { //need to check on taki
     if(active && card.number === "2plus")
       return cardElem.number === "2plus";
     return (card.color === cardElem.color || card.number === cardElem.number || cardElem.color === "colorful");
@@ -494,7 +494,7 @@ class Player {
   }
 
   pickColor(){
-    return "red";
+    document.getElementById("pickColor").style.display = "block";
   }
   
   won(){
@@ -549,11 +549,11 @@ class Game {
     this.player.setCardsClickable();
     this.mainDeck.setLastCardClickable();
     this.renderAll();
-    let winner;
+    /*let winner;
     if((winner = this.getWinner()) !==NOTFINISH){
       goToWinner(winner);
       return;
-    }
+    }*/
   }
 
   botTurn(){
@@ -619,7 +619,7 @@ class Game {
 
   buildMainFromPile(){
     let cards = this.pile.getDeck();
-    this.pile.deck = this.pile.getCard(this.pile.deck.length-1);
+    [this.pile.deck] = this.pile.getCard(this.pile.deck.length-1);
     cards.pop();
     cards.forEach((element,index) => {
       this.mainDeck.addCard(element.name,index);  
@@ -683,7 +683,6 @@ function startGame(){
 }
 
 function closeTaki(){
-  alert(1);
   document.getElementById("closeTaki").style.display = "none";
   game.closeTaki();
   doBotTurn();
@@ -766,9 +765,9 @@ document.handleCardClick = (index) => {
       return; 
   game.renderAll();
   if(game.specialCard(card)){
-    /*if(card.number === "taki")
+    if(card.number === "taki")
       game.openTaki();
-    */game.switchToPlayerTurn();
+      game.switchToPlayerTurn();
     return ;
   }
   doBotTurn();
