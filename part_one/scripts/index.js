@@ -254,6 +254,10 @@ class Deck {
     return this.deck.popRandomIndex().getName();
   }
 
+  pushCardToStart(card) {
+    return this.deck.unshift(card);
+  }
+
   popCard() {
     return this.deck.pop().name;
   }
@@ -270,19 +274,19 @@ class Deck {
     return this.deck[index].getName();
   }
 
-  getPlayableIndexes(card,active) {
+  getPlayableIndexes(card,active,taki) {
     let indexes =[];
     this.deck.forEach((cardElem, index) => {
-      if (this.isPlayableCard(card, cardElem,active))
+      if (this.isPlayableCard(card, cardElem,active,taki))
         indexes.push(index);
     });
     return indexes;
   }
 
-  isPlayableCard(card, cardElem,active) { //need to check on taki
+  isPlayableCard(card, cardElem,active,taki) { //need to check on taki
     if(active && card.number === "2plus")
       return cardElem.number === "2plus";
-    if(active && card.number === "taki"){
+    if(active && taki){
       return card.color === cardElem.color;  
     }
     return (card.color === cardElem.color || card.number === cardElem.number || cardElem.color === "colorful");
@@ -309,8 +313,8 @@ class Player {
     this.deck = new Deck(deck, isFacedUp);
   }
 
-  getPlayableIndexes(card,active) {
-    this.playableIndexes = this.deck.getPlayableIndexes(card,active);
+  getPlayableIndexes(card,active,taki) {
+    this.playableIndexes = this.deck.getPlayableIndexes(card,active,taki);
   }
 
   playCard(index) {
@@ -548,8 +552,7 @@ class Game {
   }
 
   switchToPlayerTurn(){
-    this.taki = false;
-    this.player.getPlayableIndexes(this.pile.getCard(this.pile.deck.length-1),this.active);
+    this.player.getPlayableIndexes(this.pile.getCard(this.pile.getDeck().length-1),this.active,this.taki);
     this.player.setCardsClickable();
     this.mainDeck.setLastCardClickable();
     this.renderAll();
@@ -591,7 +594,7 @@ class Game {
 
   botTurn(){
     this.switchTurn();
-    let lastCard = this.taki ? new Card("taki_" + this.pile.getCard(this.pile.deck.length-1).color) : this.pile.getCard(this.pile.deck.length-1);
+    let lastCard = this.taki ? new Card("taki_" + this.pile.getCard(this.pile.getDeck().length-1).color) : this.pile.getCard(this.pile.getDeck().length-1);
     let card = this.bot.chooseCard(lastCard,this.active);
     this.bot.removeCardByCard(card);
     if(card.color === "colorful"){
@@ -646,7 +649,15 @@ class Game {
       this.player.addCard(this.mainDeck.popRandomCard(),i);
       this.bot.addCard(this.mainDeck.popRandomCard(),i);
     }
-    this.pile.addCard(this.mainDeck.popCard());
+    let card,cardName;
+    while((cardName = this.mainDeck.popCard())){
+      card = new Card(cardName);
+      if(!this.specialCard(card) && card.number !== "2plus"){
+        this.pile.addCard(cardName);
+        break;
+      }
+      this.mainDeck.pushCardToStart(card);
+    }
   }
 
   switchTurn(){
@@ -775,6 +786,7 @@ function doBotTurn(){
     else{
       if(game.taki){
         game.taki = false;
+        game.active = false;
         game.renderAll();
         game.switchToPlayerTurn();
         return;
@@ -828,7 +840,11 @@ document.handleCardClick = (index) => {
     if(card.number === "taki")
       game.openTaki();
     game.switchToPlayerTurn();
-    return ;
+    return;
+  }
+  else if(game.taki){
+    game.switchToPlayerTurn();
+    return;  
   }
   doBotTurn();
 };
