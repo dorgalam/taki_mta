@@ -282,6 +282,9 @@ class Deck {
   isPlayableCard(card, cardElem,active) { //need to check on taki
     if(active && card.number === "2plus")
       return cardElem.number === "2plus";
+    if(active && card.number === "taki"){
+      return card.color === cardElem.color;  
+    }
     return (card.color === cardElem.color || card.number === cardElem.number || cardElem.color === "colorful");
   }
   
@@ -545,6 +548,7 @@ class Game {
   }
 
   switchToPlayerTurn(){
+    this.taki = false;
     this.player.getPlayableIndexes(this.pile.getCard(this.pile.deck.length-1),this.active);
     this.player.setCardsClickable();
     this.mainDeck.setLastCardClickable();
@@ -556,13 +560,49 @@ class Game {
     }*/
   }
 
+  botPickColor(){
+    let red,yellow,blue,green;
+    let cards = this.bot.deck.getDeck();
+    cards.forEach(element=>{
+      switch(element.color){
+        case "red": 
+            red++;
+            break;
+          case "yellow": 
+            yellow++;
+            break;
+          case "blue": 
+            blue++;
+            break;
+          case "green": 
+            green++;
+            break;
+      }
+    });
+    let max =   Math.max(red,yellow,green,blue);
+    if(max === red)
+      return "red";
+    if(max === green)
+      return "green";
+    if(max === blue)
+      return "blue";
+    return "yellow";
+  }
+
   botTurn(){
     this.switchTurn();
     let lastCard = this.taki ? new Card("taki_" + this.pile.getCard(this.pile.deck.length-1).color) : this.pile.getCard(this.pile.deck.length-1);
     let card = this.bot.chooseCard(lastCard,this.active);
     this.bot.removeCardByCard(card);
-    if(card.color === "colorful")
-      card = this.pickColor(card);
+    if(card.color === "colorful"){
+      if(card.number ==="taki")
+        card.color = lastCard.color;
+      else{
+        card.number = "";
+        card.color = this.botPickColor(card);
+      }
+      card.name = card.number + "_" + card.color;
+    }
     return card;
   }
 
@@ -619,7 +659,9 @@ class Game {
 
   buildMainFromPile(){
     let cards = this.pile.getDeck();
-    [this.pile.deck] = this.pile.getCard(this.pile.deck.length-1);
+    let lcard = this.pile.getCard(this.pile.deck.length-1);
+    this.pile.deck = [];
+    this.pile.deck.push(lcard);
     cards.pop();
     cards.forEach((element,index) => {
       this.mainDeck.addCard(element.name,index);  
@@ -643,8 +685,8 @@ class Game {
 
   pickColor(card){
     let color = this.player.pickColor();
-    let number = card.number == "taki" ? "taki" : ""; 
-    return new Card(number + '_' + color);
+    //let number = card.number == "taki" ? "taki" : ""; 
+    //return new Card(number + '_' + color);
   }
 
   takinNumber(){
@@ -690,6 +732,16 @@ function closeTaki(){
 
 function goToWinner(winner){
   alert(winner);
+}
+
+function selectColor(color){
+  let card = game.pile.popCard();
+  card = "_" + color.id;
+  game.addCardToPile(card);
+  document.getElementById("pickColor").style.display = "none";
+  game.renderAll();
+  doBotTurn();
+
 }
 
 function doBotTurn(){
@@ -755,8 +807,16 @@ document.handleCardClick = (index) => {
   let card = false;
     card = game.playCard(index);
     if(card){ //legit card
-      if(card.color == "colorful"){
-        card = game.pickColor(card);
+      if(card.color === "colorful"){
+        if(card.number === "taki"){
+          card.name = card.number + "_" + game.pile.deck[game.pile.deck.length-1].color;
+        }
+        else{
+          game.pickColor(card);
+          game.addCardToPile(card.name);
+          game.clearClickable();
+          return;  
+        }
       }
       game.addCardToPile(card.name);
       game.clearClickable();
@@ -767,7 +827,7 @@ document.handleCardClick = (index) => {
   if(game.specialCard(card)){
     if(card.number === "taki")
       game.openTaki();
-      game.switchToPlayerTurn();
+    game.switchToPlayerTurn();
     return ;
   }
   doBotTurn();
