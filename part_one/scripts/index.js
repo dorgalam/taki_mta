@@ -301,10 +301,12 @@ function doBotTurn(){
     if(card["card"].number === "taki"){
       game.taki = true; // taki flag on
     }
-    switchTurn(BOT,BOT); 
+    switchTurn(BOT,BOT);
+    return;
   }
   else if(game.taki){ // regular card but on taki - need to do bot turns until no card in this color
-    game.botTurn();
+    switchTurn(BOT,BOT);
+    return;
   }
   switchTurn(BOT,PLAYER); // bot finish turn
 }
