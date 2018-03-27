@@ -84,6 +84,18 @@ const STACK = true;
 // function getRandom(max) {
 //   return Math.floor(Math.random() * max);
 // }let game;
+
+class Stats{
+  constructor(elementId, isplayer) {
+    this.turns = 0;
+    this.elementId = elementId;
+    if (isplayer) {
+      this.timepass = 0; // maybe new time
+      this.turnstime = [];
+    }
+  }
+}
+
 Array.prototype.popIndex = function (index) {
   if (index < 0 || index >= this.length) {
     throw new Error();
@@ -103,59 +115,11 @@ Array.prototype.popRandomIndex = function () {
   let rand = Math.floor(Math.random() * this.length);
   return this.popIndex(rand);
 }
-/*
-function chooseCard(card, active) { //the bot well aware of the cards he has (this.cards)
-  let cardArr = card.split("_");
-  let number = cardArr[0];
-  let color = cardArr[1];
 
-  if (number == "2plus" && active)
-    return has2plus(); // options: card name, false (take a card from the pile)
-  let colorCount = getColorCount(color); // count number of cards with this color
-  let numberCount = getNumberCount(number); // count number of cards with this number
-  let plus = getPlusColor(color);
-  let stop = getStopColor(color);
-  let taki = getTakiColor(color); //check for taki in this color
-
-  if (active && specialCard(number))
-    return this.handleSpecial(color, number);
-  if (taki && colorCount > 1)
-    return taki;
-  if (stop && (colorCount > 1 || otherColorStop(color)))
-    return stop;
-  if (plus && (colorCount > 1 || otherColorPlus(color)))
-    return plus;
-  if (colorCount > 0)
-    return selectColorCard(color); //select the best card with my color (has two of the same number)
-  if (numberCount > 0)
-    return selectNumberCard(number); //select the best card with my number (has two of the same color)
-  return hasChangeColor(); // true = best color for me , false = take a card from the pile
-}
-
-hasChangeColor
-
-handleSpecial(color, type) {
-  let colorCount = getColorCount(color); // count number of cards with this color
-  let numberCount = getNumberCount(type); // count number of cards with this number
-  if (type == "taki") { // handle taki
-    if (numberCount > 0) {
-      return allCard(color);
-    }
-  }
-  let res = hasSameCard(color, type);
-  if (res)
-    return res;
-  let otherType = getTypeOtherColor(type);
-  if (otherType && colorCount > 1)
-    return otherType;
-  if (numberCount > 0) {
-    return selectNumberCard(color);
-  }
-}*/
 const render = (innerHTML, elementId) => document.getElementById(elementId).innerHTML = innerHTML;
 
 class Card {
-  constructor(name, classes = '', styles = '', attributes = '') {
+  constructor(name, classes = '', styles = '', attributes = '',origName ='') {
     const splitName = name.split('_');
     this.name = name;
     this.number = splitName[0];
@@ -163,6 +127,7 @@ class Card {
     this.styles = styles;
     this.cardClasses = classes;
     this.cardIndex = -1;
+    this.original = origName === '' ? name : origName; 
   }
 
   getName(){
@@ -190,6 +155,13 @@ class Card {
 
   removeClickable() {
     this.cardIndex = -1;
+  }
+
+  setOriginalName(){
+    this.name = this.original;
+    const splitName = this.name.split('_');
+    this.number = splitName[0];
+    this.color = splitName[1];
   }
 }
 
@@ -237,13 +209,13 @@ class Deck {
     }
   }
 
-  addCard(card,index) {
+  addCard(card,index,origName) {
     let style = this.isStack ? CSSUtils.getMainDeckStyle(index) : '';
     if (this.elementId === "pile")
       style = CSSUtils.getPileStyles();
     let classes = CSSUtils.getPlayerClasses(this.isFacedUp, card);
     style = style ? style : CSSUtils.getPlayerStyle(this.isFacedUp,index);
-    this.deck.push(new Card(card, classes, style));
+    this.deck.push(new Card(card, classes, style,"",origName));
   }
 
   removeCard(index) {
@@ -297,6 +269,11 @@ class Deck {
       this.deck[this.deck.length-1].cardIndex = -2;
   }
 
+  setLastCardUnClickable(){
+    if(this.deck.length !== 0)
+      this.deck[this.deck.length-1].cardIndex = -1;
+  }
+
 }
 
 
@@ -327,8 +304,8 @@ class Player {
       return false;
   }
 
-  addCard(card,index) {
-    this.deck.addCard(card,index);
+  addCard(card,index,orig) {
+    this.deck.addCard(card,index,orig);
   }
 
   removeCardByCard(card){
@@ -461,7 +438,7 @@ class Player {
   handleSpecial(color, type) {
     let colorCount = this.getColorCount(color); // count number of cards with this color
     if (type === "taki") { // handle taki
-      if (colorCount > 1) {
+      if (colorCount >= 1) {
         return this.selectColorCard(color);
       }
       return false;
@@ -536,19 +513,20 @@ class Game {
     this.player.clearPlayable();
   }
 
-  addCardToPile(card){
+  addCardToPile(card,origName = false){
     const splitName = card.split('_');
     let number = splitName[0];
     if(number === "2plus"){
       this.takinCount = this.takinCount === 1 ? 0 : this.takinCount;
       this.takinCount += 2;
     }
-    this.pile.addCard(card);
+    this.pile.addCard(card,false,origName);
     this.active = ACTIVE;
     this.renderAll();
   }
 
   switchToPlayerTurn(){
+    this.renderAll();
     this.player.getPlayableIndexes(this.lastCard(),this.active,this.taki);
     this.player.setCardsClickable();
     this.mainDeck.setLastCardClickable();
@@ -558,6 +536,10 @@ class Game {
       goToWinner(winner);
       return;
     }
+  }
+
+  setLastCardUnClickable(){
+    this.mainDeck.setLastCardUnClickable();    
   }
 
   botPickColor(){
@@ -594,6 +576,7 @@ class Game {
     let lastCard = this.taki ? new Card("taki_" + this.lastCard().color) : this.lastCard();
     let card = this.bot.chooseCard(lastCard,this.active);
     this.bot.removeCardByCard(card);
+    let orig = card.name;
     if(card.color === "colorful"){
       if(card.number ==="taki")
         card.color = lastCard.color;
@@ -603,7 +586,7 @@ class Game {
       }
       card.name = card.number + "_" + card.color;
     }
-    return card;
+    return {card,orig};
   }
 
   renderAll() {
@@ -672,7 +655,7 @@ class Game {
     this.pile.deck.push(lcard);
     cards.pop();
     cards.forEach((element,index) => {
-      this.mainDeck.addCard(element.name,index);  
+      this.mainDeck.addCard(element.original,index);  
     });
   }
 
@@ -750,10 +733,10 @@ function goToWinner(winner){
 }
 
 function selectColor(color){
-  let card = game.pile.popCard();
-  card = "_" + color.id;
+  let orig = game.pile.popCard();
+  let card = "_" + color.id;
   document.getElementById("pickColor").style.display = "none";
-  game.addCardToPile(card);
+  game.addCardToPile(card,orig);
   doBotTurn();
 }
 /*
@@ -812,14 +795,14 @@ function doBotTurn(){
 }*/
 
 function doBotTurn(){
-  let winner;
+  /*let winner;
   if((winner = game.getWinner()) !==NOTFINISH){
     goToWinner(winner);
     return;
-  }
+  }*/
   card = game.botTurn();
-  if(card){ //legit card
-    game.addCardToPile(card.name);
+  if(card["card"]){ //legit card
+    game.addCardToPile(card["card"].name,card["orig"]);
   }
   else{ // if was taki no need to take a card , else take cards (as needed maybe 2plus)
     if(!game.taki){
@@ -838,11 +821,14 @@ function doBotTurn(){
     game.switchToPlayerTurn();
     return;
   }
-  if(game.specialCard(card)){ // do again bot turn
-    if(card.number === "taki"){
+  if(game.specialCard(card["card"])){ // do again bot turn
+    if(card["card"].number === "taki"){
       game.taki = true;
     }
     doBotTurn();
+  }
+  else if(game.taki){
+    game.botTurn();
   }
   game.switchToPlayerTurn();
 }
@@ -853,22 +839,27 @@ function doBotTurn(){
 document.handleCardClick = (index) => {
   if(index === -2){ // taking card from deck
     const count = game.takinNumber();
-      for(let i=0;i<count;i++){
-        game.takeCardFromMainDeck(PLAYER);
-        game.renderAll();    
-      }
+    closeTaki();
+    for(let i=0;i<count;i++){
+      game.takeCardFromMainDeck(PLAYER);
+      game.renderAll();    
+    }
+    game.setLastCardUnClickable();
     doBotTurn();
     return;
   }
   let card = game.playCard(index);
+  let name = card.name;
   if(card){ //legit card
     if(card.color === "colorful"){
       if(card.number === "taki")
         card.name = card.number + "_" + game.lastCard().color;
-      else
+      else{
+        game.setLastCardUnClickable();
         game.pickColor(card);
+      }
     }
-    game.addCardToPile(card.name);
+    game.addCardToPile(card.name,name);
     game.clearClickable();
   }
   else // never should get here
@@ -878,13 +869,18 @@ document.handleCardClick = (index) => {
   if(game.specialCard(card)){
     if(card.number === "taki")
       game.openTaki();
-    game.switchToPlayerTurn();
+    if(card.color !== "colorful")
+      game.switchToPlayerTurn();
     return;
   }
   else if(game.taki){
     game.switchToPlayerTurn();
     return;
   }
+  else if(card.number ===""){
+    return;
+  }
+  game.setLastCardUnClickable();
   doBotTurn();
 };
 
