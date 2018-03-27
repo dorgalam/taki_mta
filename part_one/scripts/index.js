@@ -294,7 +294,7 @@ function doBotTurn(){
         return;
       } 
     }
-    game.switchTurn(BOT,PLAYER);
+    switchTurn(BOT,PLAYER);
     return;
   }
   if(game.specialCard(card["card"])){ // do again bot turn(plus,stop,taki)
@@ -314,7 +314,7 @@ function switchTurn(from,to){
       //turns++;
       gameOver(); //check if game over
   }
-  if(to == PLAYER)
+  if(to === PLAYER)
     game.switchToPlayerTurn();
   else
     doBotTurn();
@@ -365,5 +365,5 @@ document.handleCardClick = (index) => {
     return;
   }
   game.setLastCardUnClickable();
-  switchTurn(player,BOT);
+  switchTurn(PLAYER,BOT);
 };
