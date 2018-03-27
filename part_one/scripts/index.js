@@ -130,7 +130,7 @@ class Card {
     this.original = origName === '' ? name : origName; 
   }
 
-  getName(){
+  getName(){ // useless?
     return this.name;
   }
 
@@ -145,23 +145,12 @@ class Card {
     `;
   }
 
-  setClasses(classes) {
-    this.cardClasses = classes;
-  }
-
   setClickable(index) {
     this.cardIndex = index;
   }
 
   removeClickable() {
     this.cardIndex = -1;
-  }
-
-  setOriginalName(){
-    this.name = this.original;
-    const splitName = this.name.split('_');
-    this.number = splitName[0];
-    this.color = splitName[1];
   }
 }
 
@@ -191,7 +180,7 @@ class Deck {
     cards.forEach((card,index) => this.addCard(card,index));
   }
 
-  shuffle() {
+  shuffle() { // demonstrate human shuffle
     const times = 5 + Math.floor(Math.random() * 10);
     for (let i = 0; i < times; ++i) {
       const cardsToRemove = Math.floor(Math.random() * this.deck.length/2);
@@ -231,19 +220,15 @@ class Deck {
   }
 
   popCard() {
-    return this.deck.pop().name;
+    return this.deck.pop().getName();
   }
 
-  lastOne(){
+  isLastOne(){
     return this.deck.length === 1;
   }
 
   getCard(index) {
     return this.deck[index];
-  }
-  
-  getCardName(index){
-    return this.deck[index].getName();
   }
 
   getPlayableIndexes(card,active,taki) {
@@ -273,7 +258,6 @@ class Deck {
     if(this.deck.length !== 0)
       this.deck[this.deck.length-1].cardIndex = -1;
   }
-
 }
 
 
@@ -418,21 +402,54 @@ class Player {
   }
 
   selectColorCard(color){
+    let numbersArr = {
+      "1": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "plus": 0,
+      "stop": 0,
+      "taki": 0,
+      "2plus": 0,
+    };
     const deck = this.deck.getDeck();
     for(let i=0;i<deck.length;i++){
       if(deck[i].color === color)
-        return deck[i];
+        numbersArr[deck[i].number]++;
     }
-    return false;
+    let max = Object.keys(numbersArr).reduce(function(a, b){ return numbersArr[a] > numbersArr[b] ? a : b });
+    if(numbersArr[max] === 0)
+      return false;
+    for(let i=0;i<deck.length;i++){
+      if(deck[i].color === color && deck[i].number === max)
+        return deck[i];
+    } 
+    
   }
 
   selectNumberCard(number){
+    let colorsArr = {
+      "red": 0,
+      "blue": 0,
+      "green": 0,
+      "yellow": 0,
+    };
     const deck = this.deck.getDeck();
-    for(let i=0;i<deck.length;i++){
+    for(let i = 0;i < deck.length;i++){
       if(deck[i].number === number)
+      colorsArr[deck[i].color]++;
+    }
+    let max = Object.keys(colorsArr).reduce(function(a, b){ return colorsArr[a] > colorsArr[b] ? a : b });
+    if(colorsArr[max] === 0)
+      return false;
+    for(let i = 0;i < deck.length;i++){
+      if(deck[i].number === number && deck[i].color === max)
         return deck[i];
     }
-    return false;
   }
   
   handleSpecial(color, type) {
@@ -567,7 +584,7 @@ class Game {
   }
 
   botTurn(){
-    this.switchTurn();
+    //this.switchTurn();
     let lastCard = this.taki ? new Card("taki_" + this.lastCard().color) : this.lastCard();
     let card = this.bot.chooseCard(lastCard,this.active);
     this.bot.removeCardByCard(card);
@@ -635,9 +652,9 @@ class Game {
     }
   }
 
-  switchTurn(){
+  /*switchTurn(){
     this.turn = 1 - this.turn;
-  }
+  }*/
 
   getTurn(){
     return this.turn;
@@ -657,7 +674,7 @@ class Game {
   takeCardFromMainDeck(player){
     this.active = NOTACTIVE;
     this.takinCount = 1;
-    if(this.mainDeck.lastOne()){
+    if(this.mainDeck.isLastOne()){
       this.buildMainFromPile();
 
     }
