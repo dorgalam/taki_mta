@@ -82,7 +82,6 @@ class Player {
   has2plus(){
     let elem = false;
     this.deck.getDeck().forEach(function(element) {
-      console.log(element)
       if(element.number === "2plus"){
         elem = element;
       }

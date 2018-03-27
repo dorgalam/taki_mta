@@ -66,9 +66,9 @@ class Deck {
         const cardsToRemove = Math.floor(Math.random() * this.deck.length/2);
         let up = Math.floor(Math.random() * 2);
         const portions = [
-          this.deck.slice(0, cardsToRemove / 2),
+          this.deck.slice(0, cardsToRemove / 2 + 1),
           this.deck.slice(cardsToRemove / 2 + 1, cardsToRemove / 2 + 1 + cardsToRemove),
-          this.deck.slice(cardsToRemove / 2 + 1 + cardsToRemove + 1)
+          this.deck.slice(cardsToRemove / 2 + cardsToRemove + 1)
         ];
         if (up) {
           this.deck = [].concat(portions[1]).concat(portions[0]).concat(portions[2]);
