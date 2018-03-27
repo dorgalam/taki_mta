@@ -531,11 +531,6 @@ class Game {
     this.player.setCardsClickable();
     this.mainDeck.setLastCardClickable();
     this.renderAll();
-    let winner;
-    if((winner = this.getWinner()) !==NOTFINISH){
-      goToWinner(winner);
-      return;
-    }
   }
 
   setLastCardUnClickable(){
@@ -543,7 +538,7 @@ class Game {
   }
 
   botPickColor(){
-    let red,yellow,blue,green;
+    let red=0,yellow=0,blue=0,green =0;
     let cards = this.bot.deck.getDeck();
     cards.forEach(element=>{
       switch(element.color){
@@ -712,10 +707,14 @@ class Game {
   }
 }
 
-
-window.onload = function () { //active handle
-  
+function gameOver(){
+  let winner;
+  if((winner = game.getWinner()) !== NOTFINISH){
+    goToWinner(winner);
+    return;
+  }
 }
+
 function startGame(){
   game = new Game();
   document.getElementById("startGame").style.display = "none"; 
@@ -795,11 +794,7 @@ function doBotTurn(){
 }*/
 
 function doBotTurn(){
-  /*let winner;
-  if((winner = game.getWinner()) !==NOTFINISH){
-    goToWinner(winner);
-    return;
-  }*/
+  gameOver();
   card = game.botTurn();
   if(card["card"]){ //legit card
     game.addCardToPile(card["card"].name,card["orig"]);
@@ -819,6 +814,7 @@ function doBotTurn(){
       } 
     }
     game.switchToPlayerTurn();
+    gameOver();
     return;
   }
   if(game.specialCard(card["card"])){ // do again bot turn
@@ -831,6 +827,7 @@ function doBotTurn(){
     game.botTurn();
   }
   game.switchToPlayerTurn();
+  gameOver();
 }
 
 
@@ -877,7 +874,7 @@ document.handleCardClick = (index) => {
     game.switchToPlayerTurn();
     return;
   }
-  else if(card.number ===""){
+  else if(card.number === ""){
     return;
   }
   game.setLastCardUnClickable();
