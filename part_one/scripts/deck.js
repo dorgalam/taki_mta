@@ -61,7 +61,7 @@ class Deck {
     }
   
     shuffle() { // demonstrate human shuffle
-      const times = 5 + Math.floor(Math.random() * 10);
+      const times = 5 + Math.floor(Math.random() * 15);
       for (let i = 0; i < times; ++i) {
         const cardsToRemove = Math.floor(Math.random() * this.deck.length/2);
         let up = Math.floor(Math.random() * 2);

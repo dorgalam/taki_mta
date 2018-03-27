@@ -45,8 +45,6 @@ Array.prototype.popRandomIndex = function () {
 const render = (innerHTML, elementId) => document.getElementById(elementId).innerHTML = innerHTML;
 
 class Game {
-
-
   start() {
     this.taki = false;
     this.takinCount = 1;
@@ -278,7 +276,6 @@ function selectColor(color){
 }
 
 function doBotTurn(){
-  gameOver(); //check if game over
   card = game.botTurn(); //get card from bot deck -- choosen by a smart algo
   if(card["card"]){ //legit card
     game.addCardToPile(card["card"].name,card["orig"]);
@@ -293,25 +290,34 @@ function doBotTurn(){
     else{ //finish my taki turn
       game.taki = false;
       if(game.specialCard(game.lastCard())&& game.lastCard().number !== "taki"){
-        doBotTurn(); // check if last card was "stop" or "plus" need to get another turn
+        switchTurn(BOT,BOT); // check if last card was "stop" or "plus" need to get another turn
         return;
       } 
     }
-    game.switchToPlayerTurn();
-    gameOver();
+    game.switchTurn(BOT,PLAYER);
     return;
   }
   if(game.specialCard(card["card"])){ // do again bot turn(plus,stop,taki)
     if(card["card"].number === "taki"){
       game.taki = true; // taki flag on
     }
-    doBotTurn();
+    switchTurn(BOT,BOT); 
   }
   else if(game.taki){ // regular card but on taki - need to do bot turns until no card in this color
     game.botTurn();
   }
-  game.switchToPlayerTurn(); // bot finish turn
-  gameOver(); // check if game over
+  switchTurn(BOT,PLAYER); // bot finish turn
+}
+
+function switchTurn(from,to){
+  if(from !== to){
+      //turns++;
+      gameOver(); //check if game over
+  }
+  if(to == PLAYER)
+    game.switchToPlayerTurn();
+  else
+    doBotTurn();
 }
 
 document.handleCardClick = (index) => {
@@ -323,7 +329,7 @@ document.handleCardClick = (index) => {
       game.renderAll();
     }
     game.setLastCardUnClickable();
-    doBotTurn();
+    switchTurn(PLAYER,BOT); 
     return;
   }
   let card = game.playCard(index);
@@ -348,16 +354,16 @@ document.handleCardClick = (index) => {
     if(card.number === "taki")
       game.openTaki();
     if(card.color !== "colorful")
-      game.switchToPlayerTurn();
+      switchTurn(PLAYER,PLAYER);
     return;
   }
   else if(game.taki){
-    game.switchToPlayerTurn();
+    switchTurn(PLAYER,PLAYER);
     return;
   }
   else if(card.number === ""){
     return;
   }
   game.setLastCardUnClickable();
-  doBotTurn();
+  switchTurn(player,BOT);
 };
