@@ -96,7 +96,7 @@ class Game {
   }
 
   botPickColor(){
-    let colorsArr = {"red":0,"blue":0,"yellow":0,"green":0};
+    let colorsArr = {"red":0,"blue":0,"yellow":0,"green":0,"colorful":-5};
     let cards = this.bot.deck.getDeck();
     cards.forEach(element=>{
       colorsArr[element.color]++;
@@ -298,9 +298,10 @@ function doBotTurn(){
     return;
   }
   if(game.specialCard(card["card"])){ // do again bot turn(plus,stop,taki)
-    if(card["card"].number === "taki"){
+    if(card["card"].number === "taki")
       game.taki = true; // taki flag on
-    }
+    else
+      game.taki = false;
     switchTurn(BOT,BOT);
     return;
   }
