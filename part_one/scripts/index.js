@@ -313,8 +313,9 @@ function doBotTurn(){
 
 function switchTurn(from,to){
   if(from !== to){
-      //turns++;
-      gameOver(); //check if game over
+    game.taki = false;
+    //turns++;
+  gameOver(); //check if game over
   }
   if(to === PLAYER)
     game.switchToPlayerTurn();
@@ -325,7 +326,7 @@ function switchTurn(from,to){
 document.handleCardClick = (index) => {
   if(index === -2){ // taking card from deck
     const count = game.takinNumber();
-    closeTaki();
+    //closeTaki();
     for(let i=0;i<count;i++){ //in the right amount(maybe was 2plus)
       game.takeCardFromMainDeck(PLAYER);
       game.renderAll();
