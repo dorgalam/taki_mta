@@ -24,8 +24,12 @@
     <h2 style="font-size: 100%;">זמן ממוצע : <a id="avg_time"  style="color:rgb(105, 224, 115);">0</a></h2>
     <h2 style="font-size: 90%;"> כרטיס אחרון "הכרזה" <a id="last_one" style="color:rgb(105, 224, 115);">0</a></h2>
   </div>
-  <div class = "turn" >
+  <div id = "turn" class = "turn" >
     <img src="./styles/assets/yourturn.png" alt="turn"/>
+  </div>
+  <div id = "celebrate" style="display:none;position: absolute;left:30%;top:20%;">
+    <img src="./styles/assets/barney-celebrate.gif" alt="gif" />
+    <img src="./styles/assets/great-job.gif" alt="gif" />
   </div>
   <div id="pickColor" style="position:absolute;z-index:2;display:none;">
     <button id="red" onclick="selectColor(red)"  >אדום</button>
@@ -35,7 +39,7 @@
   </div>
   <button id="closeTaki" onclick="closeTaki();" style="position:absolute;z-index:2;display:none;" >סגור טאקי</button>
   <!--<button id="quit" onclick="quit();" style="position:absolute;z-index:1;" >פרוש מהמשחק</button>
- !--> 
+ !-->
 
 </body>
 

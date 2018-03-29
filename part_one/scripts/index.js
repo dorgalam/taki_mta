@@ -252,7 +252,13 @@ function closeTaki(){
 }
 
 function goToWinner(winner){
-  alert(winner);
+  document.getElementById("celebrate").style.display = "block";
+  document.getElementById("bot").style.display = "none";
+  document.getElementById("turn").style.display = "none";
+  document.getElementById("pile").style.display = "none";
+  document.getElementById("player").style.display = "none";
+  document.getElementById("deck").style.display = "none";
+  clearInterval(timerVar);
 }
 
 function selectColor(color){
