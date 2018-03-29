@@ -309,10 +309,14 @@ function doBotTurn(){
 
 function switchTurn(from,to){
   if(from !== to){
-    if(to === PLAYER)
+    if(to === PLAYER){
+      document.getElementById("turn").style.display = "block";
       lstTime = totalSeconds;
-    else
+    }
+    else{
+      document.getElementById("turn").style.display = "none";
       game.player.setTurnTime(totalSeconds,lstTime);
+    }
     let player = from === BOT ? game.bot : game.player;
     game.taki = false;
     player.setStats();
@@ -327,11 +331,9 @@ function switchTurn(from,to){
 
 function renderStats(){
   let pstats = game.player.getStats();
-  pstats.forEach(element =>{
-    console.log(document.getElementById(element.key).innerHTML);
-    document.getElementById(element.key).innerHTML = element.value;
-    console.log(document.getElementById(element.key).innerHTML);
-  });
+  for(let element in pstats){
+    document.getElementById(element).innerHTML = pstats[element];
+  }
   let bstats = game.bot.getStats();
 
 }

@@ -27,7 +27,7 @@ class Player {
 
   getStats(){
     let avg = this.stats.getAvgTime();
-    return [{"key":"num_turns","value":this.stats.turns},{"key":"last_one","value":this.stats.last},{"key":"avg_time","value":avg}];
+    return {"num_turns":this.stats.turns,"last_one":this.stats.last,"avg_time":avg};
   }
 
   setTurnTime(curTime,startedTime){
