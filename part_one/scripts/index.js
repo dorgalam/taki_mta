@@ -1,26 +1,12 @@
 const FACED_UP = true;
-
 const FACED_DOWN = false;
 const ACTIVE = 1;
 const NOTACTIVE = 0;
-
 const PLAYER = 0;
 const BOT = 1;
-
 const NOTFINISH = -1;
-
 const STACK = true;
 
-class Stats{
-  constructor(elementId, isplayer) {
-    this.turns = 0;
-    this.elementId = elementId;
-    if (isplayer) {
-      this.timepass = 0; // maybe new time
-      this.turnstime = [];
-    }
-  }
-}
 
 Array.prototype.popIndex = function (index) {
   if (index < 0 || index >= this.length) {
@@ -133,7 +119,7 @@ class Game {
     this.mainDeck = new Deck('deck', FACED_DOWN, STACK);
     this.pile = new Deck('pile', FACED_UP);
     this.player = new Player('player',FACED_UP);
-    this.bot = new Player('bot',FACED_DOWN);
+    this.bot = new Bot('bot',FACED_DOWN);
   }
 
   createCardsArray() {
@@ -255,12 +241,14 @@ function startGame(){
   game = new Game();
   document.getElementById("startGame").style.display = "none"; 
   game.start();
+  timerVar = setInterval(countTimer, 1000);
 }
 
 function closeTaki(){
   document.getElementById("closeTaki").style.display = "none";
   if(game.closeTaki())
-    doBotTurn();
+    switchTurn(PLAYER,BOT);
+    //doBotTurn();
 }
 
 function goToWinner(winner){
@@ -272,7 +260,8 @@ function selectColor(color){
   let card = "_" + color.id;
   document.getElementById("pickColor").style.display = "none";
   game.addCardToPile(card,orig);
-  doBotTurn();
+  //doBotTurn();
+  switchTurn(PLAYER,BOT);
 }
 
 function doBotTurn(){
@@ -314,14 +303,31 @@ function doBotTurn(){
 
 function switchTurn(from,to){
   if(from !== to){
+    if(to === PLAYER)
+      lstTime = totalSeconds;
+    else
+      game.player.setTurnTime(totalSeconds,lstTime);
+    let player = from === BOT ? game.bot : game.player;
     game.taki = false;
-    //turns++;
-  gameOver(); //check if game over
+    player.setStats();
+    renderStats();
+    gameOver(); //check if game over
   }
   if(to === PLAYER)
     game.switchToPlayerTurn();
   else
     doBotTurn();
+}
+
+function renderStats(){
+  let pstats = game.player.getStats();
+  pstats.forEach(element =>{
+    console.log(document.getElementById(element.key).innerHTML);
+    document.getElementById(element.key).innerHTML = element.value;
+    console.log(document.getElementById(element.key).innerHTML);
+  });
+  let bstats = game.bot.getStats();
+
 }
 
 document.handleCardClick = (index) => {
@@ -371,3 +377,13 @@ document.handleCardClick = (index) => {
   game.setLastCardUnClickable();
   switchTurn(PLAYER,BOT);
 };
+let lstTime = 0;
+let timerVar;
+let totalSeconds = 0;
+function countTimer() {
+   ++totalSeconds;
+   let hour = Math.floor(totalSeconds /3600);
+   let minute = Math.floor((totalSeconds - hour*3600)/60);
+   let seconds = totalSeconds - (hour*3600 + minute*60);
+   document.getElementById("timer").innerHTML = hour + ":" + minute + ":" + seconds;
+}

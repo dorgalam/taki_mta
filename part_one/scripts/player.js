@@ -1,8 +1,45 @@
 
+class Stats{
+  constructor(elementId, isplayer) {
+    this.turns = 0;
+    this.last = 0;
+    this.elementId = elementId + "-stats";
+    this.turnstime =  new Array();
+  }
+
+  getAvgTime(){
+    let sum = 0;
+    if(this.turns === 0)//shouldn't happen
+      return 0;
+      this.turnstime.forEach(element=>{
+        sum+=element;
+      });
+    return sum/this.turns;
+  }
+}
+
 class Player {
   constructor(deck,isFacedUp) {
     this.playableIndexes = [];
     this.deck = new Deck(deck, isFacedUp);
+    this.stats = new Stats(isFacedUp,isFacedUp);
+  }
+
+  getStats(){
+    let avg = this.stats.getAvgTime();
+    return [{"key":"num_turns","value":this.stats.turns},{"key":"last_one","value":this.stats.last},{"key":"avg_time","value":avg}];
+  }
+
+  setTurnTime(curTime,startedTime){
+    this.stats.turnstime[this.stats.turns] = curTime - startedTime;
+  }
+
+  setStats(){
+    this.stats.turns++;
+    if(this.deck.isLastOne())
+      this.incLastOne();
+    //times
+ 
   }
 
   getPlayableIndexes(card,active,taki) {
@@ -49,6 +86,56 @@ class Player {
     });
   }
 
+  specialCard(card){
+    if(card.number === "taki" || card.number === "stop" || card.number === "plus" || card.color == "colorful"){
+      return true;
+    }
+    return false;
+  }
+
+  clearPlayable(){
+    this.playableIndexes = [];
+  }
+
+  incLastOne(){
+    this.stats.last++;
+  }
+  
+  won(){
+    return this.deck.getDeck().length === 0; 
+  }
+}
+
+class Bot extends Player{
+  constructor(deck,isFacedUp) {
+    super(deck,isFacedUp);
+  }
+  chooseCard(card,active = true) { //the bot well aware of the cards he has (this.cards)
+    let number = card.number;
+    let color = card.color;
+    if (active && number === "2plus")
+      return this.has2plus(); // options: card name, false (take a card from the pile)
+    if (active && this.specialCard(card)){
+      return this.handleSpecial(color, number);
+    }
+    let colorCount = this.getColorCount(color); // count number of cards with this color
+    let numberCount = this.getNumberCount(number); // count number of cards with this number
+    let plus = this.getSpecialTypeColor(color,"plus");
+    let stop = this.getSpecialTypeColor(color,"stop");
+    let taki = this.getSpecialTypeColor(color,"taki"); //check for taki in this color
+    if (taki && colorCount > 1)
+      return taki;
+    if (stop && (colorCount > 1 || this.getTypeOtherColor("stop")))
+      return stop;
+    if (plus && (colorCount > 1 || this.getTypeOtherColor("plus")))
+      return plus;
+    if (colorCount > 0)
+      return this.selectColorCard(color); //select the best card with my color (has two of the same number)
+    if (numberCount > 0)
+      return this.selectNumberCard(number); //select the best card with my number (has two of the same color)
+    return this.hasChangeColor(); // true = best color for me , false = take a card from the pile
+  }
+
   getColorCount(color){
     let count = 0;
     this.deck.getDeck().forEach((element) => {
@@ -87,39 +174,6 @@ class Player {
       }
     });
     return elem;
-  }
-
-  specialCard(card){
-    if(card.number === "taki" || card.number === "stop" || card.number === "plus" || card.color == "colorful"){
-      return true;
-    }
-    return false;
-  }
-
-  chooseCard(card,active = true) { //the bot well aware of the cards he has (this.cards)
-    let number = card.number;
-    let color = card.color;
-    if (active && number === "2plus")
-      return this.has2plus(); // options: card name, false (take a card from the pile)
-    if (active && this.specialCard(card)){
-      return this.handleSpecial(color, number);
-    }
-    let colorCount = this.getColorCount(color); // count number of cards with this color
-    let numberCount = this.getNumberCount(number); // count number of cards with this number
-    let plus = this.getSpecialTypeColor(color,"plus");
-    let stop = this.getSpecialTypeColor(color,"stop");
-    let taki = this.getSpecialTypeColor(color,"taki"); //check for taki in this color
-    if (taki && colorCount > 1)
-      return taki;
-    if (stop && (colorCount > 1 || this.getTypeOtherColor("stop")))
-      return stop;
-    if (plus && (colorCount > 1 || this.getTypeOtherColor("plus")))
-      return plus;
-    if (colorCount > 0)
-      return this.selectColorCard(color); //select the best card with my color (has two of the same number)
-    if (numberCount > 0)
-      return this.selectNumberCard(number); //select the best card with my number (has two of the same color)
-    return this.hasChangeColor(); // true = best color for me , false = take a card from the pile
   }
 
   hasChangeColor(){
@@ -201,13 +255,5 @@ class Player {
         return deck[i];
     }
     return false;
-  }
-
-  clearPlayable(){
-    this.playableIndexes = [];
-  }
-  
-  won(){
-    return this.deck.getDeck().length === 0; 
   }
 }
