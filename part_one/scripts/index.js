@@ -123,7 +123,7 @@ class Game {
   }
 
   createCardsArray() {
-    let cards = ['1', '2plus', '3']; // '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus'
+    let cards = ['1', '2plus', '3' , '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus']; 
     let colors = ['red', 'blue', 'green', 'yellow'];
     let arr = [];
     let card;
