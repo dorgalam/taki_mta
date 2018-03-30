@@ -123,7 +123,7 @@ class Game {
   }
 
   createCardsArray() {
-    let cards = ['1', '2plus', '3', '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus'];
+    let cards = ['1', '2plus', '3']; // '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus'
     let colors = ['red', 'blue', 'green', 'yellow'];
     let arr = [];
     let card;
@@ -185,6 +185,7 @@ class Game {
       this.buildMainFromPile();
     }
     if(player === PLAYER){
+      document.getElementById("closeTaki").style.display = "none";
       this.player.addCard(this.mainDeck.popCard());
     }
     else{
@@ -252,12 +253,17 @@ function closeTaki(){
 }
 
 function goToWinner(winner){
-  document.getElementById("celebrate").style.display = "block";
   document.getElementById("bot").style.display = "none";
   document.getElementById("turn").style.display = "none";
   document.getElementById("pile").style.display = "none";
   document.getElementById("player").style.display = "none";
   document.getElementById("deck").style.display = "none";
+  
+  if(winner === PLAYER){
+    document.getElementById("celebrate").style.display = "block";
+  }
+  else
+  document.getElementById("loser").style.display = "block";
   clearInterval(timerVar);
 }
 
@@ -321,7 +327,8 @@ function switchTurn(from,to){
     game.taki = false;
     player.setStats();
     renderStats();
-    gameOver(); //check if game over
+    if(!(game.active && game.lastCard().number === "2plus"))
+      gameOver(); //check if game over
   }
   if(to === PLAYER)
     game.switchToPlayerTurn();
@@ -340,8 +347,7 @@ function renderStats(){
 
 document.handleCardClick = (index) => {
   if(index === -2){ // taking card from deck
-    const count = game.takinNumber();
-    //closeTaki();
+    const count = game.taki ? 1 : game.takinNumber();
     for(let i=0;i<count;i++){ //in the right amount(maybe was 2plus)
       game.takeCardFromMainDeck(PLAYER);
       game.renderAll();

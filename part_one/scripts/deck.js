@@ -121,11 +121,11 @@ class Deck {
     }
   
     isPlayableCard(card, cardElem,active,taki) { //need to check on taki
-      if(active && card.number === "2plus")
-        return cardElem.number === "2plus";
       if(active && taki){
         return card.color === cardElem.color;  
       }
+      if(active && card.number === "2plus")
+        return cardElem.number === "2plus";
       return (card.color === cardElem.color || card.number === cardElem.number || cardElem.color === "colorful");
     }
     
