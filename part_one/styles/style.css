@@ -80,13 +80,18 @@ body {
 }
 
 div.stats {
-  position: absolute;opacity: 0.8;top: 35%;right: 25%;
+  position: absolute;opacity: 0.8;top: 40%;right: 25%;
   background-color: rgb(61, 66, 62);text-align: center;width:16%;
   color:rgb(221, 216, 216);border-radius: 10px;
   
 }
+div.bot_stats{
+  position: absolute;opacity: 0.8;top: 40%;left: 10%;
+  background-color: rgb(61, 66, 62);text-align: center;width:16%;
+  color:rgb(221, 216, 216);border-radius: 10px;
+}
 div.turn {
-  position: absolute;top: 35%;left: 20%;opacity: 1;
+  position: absolute;top: 35%;left: 25%;opacity: 1;
 }
 img {
   border-radius:50px;border: 10px solid transparent;

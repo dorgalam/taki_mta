@@ -124,7 +124,7 @@ class Game {
   }
 
   createCardsArray() {
-    let cards = ['1', '2plus', '3' , '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus']; 
+    let cards = ['1', '3' , '4', '5', '6', '7', '8', '9', 'taki', 'stop', 'plus']; ///removed 2plus,taki_colorful
     let colors = ['red', 'blue', 'green', 'yellow'];
     let arr = [];
     let card;
@@ -138,8 +138,8 @@ class Game {
     colors.forEach(function (color) {
       arr.push('change_colorful');
     })
-    arr.push('taki_colorful');
-    arr.push('taki_colorful');
+    /// arr.push('taki_colorful');
+    /// arr.push('taki_colorful');
     return arr;
   }
 
@@ -177,6 +177,7 @@ class Game {
     cards.forEach((element,index) => {
       this.mainDeck.addCard(element.original,index);  
     });
+    this.mainDeck.shuffle();
   }
 
   takeCardFromMainDeck(player){
@@ -331,6 +332,11 @@ function switchTurn(from,to){
     if(!(game.active && game.lastCard().number === "2plus"))
       gameOver(); //check if game over
   }
+  else if(game.lastCard().number === "plus"){
+    let player = from === BOT ? game.bot : game.player;
+    player.setStats();
+    renderStats();
+  }
   if(to === PLAYER)
     game.switchToPlayerTurn();
   else
@@ -343,10 +349,13 @@ function renderStats(){
     document.getElementById(element).innerHTML = pstats[element];
   }
   let bstats = game.bot.getStats();
+  for(let element in bstats){
+    document.getElementById("bot_"+element).innerHTML = bstats[element];
+  }
 
 }
 
-document.handleCardClick = (index) => {
+document.takeCard = (index) => {
   if(index === -2){ // taking card from deck
     const count = game.taki ? 1 : game.takinNumber();
     for(let i=0;i<count;i++){ //in the right amount(maybe was 2plus)
@@ -357,6 +366,9 @@ document.handleCardClick = (index) => {
     switchTurn(PLAYER,BOT); 
     return;
   }
+}
+
+document.handleCardClick = (index) => {
   let card = game.playCard(index);
   let name = card.name;
   if(card){ //legit card
@@ -392,9 +404,11 @@ document.handleCardClick = (index) => {
   game.setLastCardUnClickable();
   switchTurn(PLAYER,BOT);
 };
+
 let lstTime = 0;
 let timerVar;
 let totalSeconds = 0;
+
 function countTimer() {
    ++totalSeconds;
    let hour = Math.floor(totalSeconds /3600);

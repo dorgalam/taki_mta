@@ -14,13 +14,14 @@ class Card {
     return this.name;
   }
 
-  getHtml(index) {
+  getHtml(index) { 
     return `
     <div
       id="card_number_${index}"
       style="${this.styles}"
       class="${this.cardClasses} ${this.cardIndex > -1 || this.cardIndex === -2? 'playable' : ''}"
-      ${this.cardIndex > -1 || this.cardIndex === -2? `onclick="handleCardClick(${this.cardIndex})"` : ''}>
+      ${this.cardIndex > -1 ? `onclick="handleCardClick(${this.cardIndex})"` : ''}
+      ${this.cardIndex === -2 ? `onclick="takeCard(${this.cardIndex})"` : ''}>
     </div>
     `;
   }

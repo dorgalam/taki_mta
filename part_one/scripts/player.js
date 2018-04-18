@@ -3,7 +3,7 @@ class Stats{
   constructor(elementId, isplayer) {
     this.turns = 0;
     this.last = 0;
-    this.elementId = elementId + "-stats";
+    this.elementId = elementId ? "p1-stats" : "bot-stats";
     this.turnstime =  new Array();
   }
 
@@ -27,7 +27,10 @@ class Player {
 
   getStats(){
     let avg = this.stats.getAvgTime();
-    return {"num_turns":this.stats.turns,"last_one":this.stats.last,"avg_time":avg};
+    if(this.stats.elementId === "bot-stats")
+      return {"num_turns":this.stats.turns,"last_one":this.stats.last};
+    else
+      return {"num_turns":this.stats.turns,"last_one":this.stats.last,"avg_time":avg};
   }
 
   setTurnTime(curTime,startedTime){
@@ -38,8 +41,6 @@ class Player {
     this.stats.turns++;
     if(this.deck.isLastOne())
       this.incLastOne();
-    //times
- 
   }
 
   getPlayableIndexes(card,active,taki) {
