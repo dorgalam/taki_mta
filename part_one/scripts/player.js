@@ -14,7 +14,7 @@ class Stats{
       this.turnstime.forEach(element=>{
         sum+=element;
       });
-    return sum/this.turns;
+    return (sum/this.turns).toFixed(2);
   }
 }
 

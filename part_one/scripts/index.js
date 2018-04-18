@@ -332,7 +332,7 @@ function switchTurn(from,to){
     if(!(game.active && game.lastCard().number === "2plus"))
       gameOver(); //check if game over
   }
-  else if(game.lastCard().number === "plus"){
+  else if(game.lastCard().number === "plus" ||game.lastCard().number === "stop"){
     let player = from === BOT ? game.bot : game.player;
     player.setStats();
     renderStats();
