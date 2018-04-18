@@ -19,7 +19,7 @@ class Card {
     <div
       id="card_number_${index}"
       style="${this.styles}"
-      class="${this.cardClasses} ${this.cardIndex > -1 ? 'playable' : ''}"
+      class="${this.cardClasses} ${this.cardIndex > -1 || this.cardIndex === -2? 'playable' : ''}"
       ${this.cardIndex > -1 || this.cardIndex === -2? `onclick="handleCardClick(${this.cardIndex})"` : ''}>
     </div>
     `;

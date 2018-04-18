@@ -97,6 +97,10 @@ class Player {
     this.playableIndexes = [];
   }
 
+  hasNoPlay(){
+    return this.playableIndexes.length === 0;
+  }
+
   incLastOne(){
     this.stats.last++;
   }

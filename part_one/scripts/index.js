@@ -73,7 +73,8 @@ class Game {
     this.renderAll();
     this.player.getPlayableIndexes(this.lastCard(),this.active,this.taki);
     this.player.setCardsClickable();
-    this.mainDeck.setLastCardClickable();
+    if(this.player.hasNoPlay())
+      this.mainDeck.setLastCardClickable();
     this.renderAll();
   }
 
