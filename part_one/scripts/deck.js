@@ -34,13 +34,13 @@ class Card {
     `;
   }
 
-  getChangeColorTooltipHtml() {
+  getChangeColorTooltipHtml(index) {
     return `
       <div class="color_tooltip">
-        <div onClick="selectColor('red')" class="color_tooltip_red"></div>
-        <div onClick="selectColor('yellow')" class="color_tooltip_yellow"></div>
-        <div onClick="selectColor('green')" class="color_tooltip_blue"></div>
-        <div onClick="selectColor('blue')" class="color_tooltip_green"></div>
+        <div onClick="selectColor('red', ${index})" class="color_tooltip_red"></div>
+        <div onClick="selectColor('yellow', ${index})" class="color_tooltip_yellow"></div>
+        <div onClick="selectColor('blue', ${index})" class="color_tooltip_blue"></div>
+        <div onClick="selectColor('green', ${index})" class="color_tooltip_green"></div>
       </div>
     `;
   }

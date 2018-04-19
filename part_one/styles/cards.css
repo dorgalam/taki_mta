@@ -1,17 +1,21 @@
 .card__blue {
-  background-color:blue;
+  background-image: url('./assets/change_blue.png');
+
 }
 
 .card__yellow {
-  background-color:rgb(188, 223, 33);
+  background-image: url('./assets/change_yellow.png');
+
 }
 
 .card__green {
-  background-color:rgb(31, 196, 72);
+  background-image: url('./assets/change_green.png');
+
 }
 
 .card__red {
-  background-color:rgb(228, 13, 13);
+  background-image: url('./assets/change_red.png');
+
 }
 
 .card_1_blue {

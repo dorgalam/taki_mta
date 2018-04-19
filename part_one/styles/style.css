@@ -86,17 +86,17 @@ body {
 }
 
 .color_tooltip_red {
-  background-color: #db6c53;
+  background-color: #db6e53;
   margin-left: 0 !important;
 }
 .color_tooltip_green {
-  background-color: #418142;
+  background-color: #8fc453;
 }
 .color_tooltip_yellow {
-  background-color: #fbc151;
+  background-color: #fff44c;
 }
 .color_tooltip_blue {
-  background-color: #8177a6;
+  background-color: #6bbce2;
 }
 
 .card {
