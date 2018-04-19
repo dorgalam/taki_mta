@@ -272,6 +272,8 @@ function goToWinner(winner){
 function selectColor(color, index){
   let card = "_" + color;
   game.addCardToPile(card);
+  game.player.removeCardByIndex(index);
+  game.renderAll();
   switchTurn(PLAYER,BOT);
 }
 

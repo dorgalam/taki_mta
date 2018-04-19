@@ -50,11 +50,15 @@ class Player {
   playCard(index) {
     if (this.playableIndexes.includes(index)) {
       const card = this.deck.getCard(index);
-      this.deck.deck = this.deck.removeCard(index);
-      this.playableIndexes = this.playableIndexes.filter((item, i) => i !== index);
+      this.removeCardByIndex(index);
       return card;
     } 
     return false;
+  }
+
+  removeCardByIndex(index){
+    this.deck.deck = this.deck.removeCard(index);
+    this.playableIndexes = this.playableIndexes.filter((item, i) => i !== index);
   }
 
   addCard(card,index,orig) {
