@@ -29,7 +29,7 @@ class Card {
           : ""
       }
       ${this.cardIndex === -2 ? `onclick="takeCard(${this.cardIndex})"` : ""}>
-      ${this.number === 'change' ? this.getChangeColorTooltipHtml(this.cardIndex) : ''}
+      ${(this.number === 'change' && this.cardIndex > -1) ? this.getChangeColorTooltipHtml(this.cardIndex) : ''}
     </div>
     `;
   }
