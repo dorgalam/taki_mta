@@ -338,8 +338,16 @@ function switchTurn(from,to){
   }
   if(to === PLAYER)
     game.switchToPlayerTurn();
-  else
-    doBotTurn();
+  else {
+    if (from === BOT) {
+      game.consecutiveBotTurn += 1; 
+    } else {
+      game.consecutiveBotTurn = 1;
+    }
+    setTimeout(() => {
+      doBotTurn();
+    }, game.consecutiveBotTurn * 500);
+  }
 }
 
 function renderStats(){
