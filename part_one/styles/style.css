@@ -3,9 +3,16 @@
     width: 80px;
     height: 123px;
   }
+  body .color_tooltip {
+    width: 80px;    
+  }
 }
 @media only screen and (max-width: 680px){
   body .card {
+    width: 50px;
+    height: 77px;
+  }
+  body .color_tooltip {
     width: 50px;
     height: 77px;
   }
@@ -49,6 +56,47 @@ body {
 
 #pile > .cards > .card {
   position: absolute;
+}
+
+.card_change_colorful:hover > .color_tooltip {
+  opacity: 1;
+  transition: 200ms ease all;
+}
+
+.color_tooltip {
+  position: absolute;
+  width: 110px;
+  display: flex;
+  top: -24;
+  opacity: 0;
+  transition: 200ms ease all;  
+}
+
+.color_tooltip:hover {
+  opacity: 1;
+}
+
+.color_tooltip > div {
+  cursor: pointer;
+  width: 22%;
+  border: 1px solid;
+  margin-left: 5px;
+  border-radius: 5px;
+  height: 20px;
+}
+
+.color_tooltip_red {
+  background-color: #db6c53;
+  margin-left: 0 !important;
+}
+.color_tooltip_green {
+  background-color: #418142;
+}
+.color_tooltip_yellow {
+  background-color: #fbc151;
+}
+.color_tooltip_blue {
+  background-color: #8177a6;
 }
 
 .card {

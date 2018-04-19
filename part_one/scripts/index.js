@@ -269,12 +269,9 @@ function goToWinner(winner){
   clearInterval(timerVar);
 }
 
-function selectColor(color){
-  let orig = game.pile.popCard();
-  let card = "_" + color.id;
-  document.getElementById("pickColor").style.display = "none";
-  game.addCardToPile(card,orig);
-  //doBotTurn();
+function selectColor(color, index){
+  let card = "_" + color;
+  game.addCardToPile(card);
   switchTurn(PLAYER,BOT);
 }
 
