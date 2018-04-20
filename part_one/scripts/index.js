@@ -257,6 +257,7 @@ function closeTaki(){
 }
 
 function goToWinner(winner){
+  document.getElementById("bot-stats").style.display = "block";
   document.getElementById("bot").style.display = "none";
   document.getElementById("turn").style.display = "none";
   document.getElementById("player").style.display = "none";
