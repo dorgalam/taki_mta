@@ -259,9 +259,9 @@ function closeTaki(){
 function goToWinner(winner){
   document.getElementById("bot").style.display = "none";
   document.getElementById("turn").style.display = "none";
-  document.getElementById("pile").style.display = "none";
   document.getElementById("player").style.display = "none";
   document.getElementById("deck").style.display = "none";
+  document.getElementById("quit").style.display = "none";
   
   if(winner === PLAYER){
     document.getElementById("celebrate").style.display = "block";
