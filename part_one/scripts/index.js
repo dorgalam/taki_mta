@@ -236,13 +236,15 @@ function gameOver(){
   let winner;
   if((winner = game.getWinner()) !== NOTFINISH){
     goToWinner(winner);
-    return;
+    return true;
   }
+  return false;
 }
 
 function startGame(){
   game = new Game();
   document.getElementById("startGame").style.display = "none"; 
+  document.getElementById("quit").style.display = "block";
   game.start();
   timerVar = setInterval(countTimer, 1000);
 }
@@ -329,14 +331,17 @@ function switchTurn(from,to){
     player.setStats();
     renderStats();
     if(!(game.active && game.lastCard().number === "2plus"))
-      gameOver(); //check if game over
+      if(gameOver())//check if game over
+        return; 
   }
   else if(!game.taki && (game.lastCard().number === "plus"||game.lastCard().number === "stop")){
     let player = from === BOT ? game.bot : game.player;
     player.setStats();
     renderStats();
-    if(game.lastCard().number === "stop")
-      gameOver();
+    if(game.lastCard().number === "stop"){
+      if(gameOver())//check if game over
+        return; 
+    }
   }
   if(to === PLAYER)
     game.switchToPlayerTurn();
