@@ -245,8 +245,16 @@ function startGame(){
   game = new Game();
   document.getElementById("startGame").style.display = "none"; 
   document.getElementById("quit").style.display = "block";
+  document.getElementById("quit").style.display = "block";
   document.getElementById("p1-stats").style.display = "block";
   document.getElementById("turn").style.display = "block";
+  document.getElementById("bot-stats").style.display = "none";///for restart --
+  document.getElementById("loser").style.display = "none";
+  document.getElementById("celebrate").style.display = "none";
+  document.getElementById("bot").style.display = "block"; 
+  document.getElementById("player").style.display = "block";
+  document.getElementById("deck").style.display = "block";
+  totalSeconds = 0; ///end of for restart
   game.start();
   timerVar = setInterval(countTimer, 1000);
 }
@@ -265,12 +273,12 @@ function goToWinner(winner){
   document.getElementById("player").style.display = "none";
   document.getElementById("deck").style.display = "none";
   document.getElementById("quit").style.display = "none";
+  document.getElementById("startGame").style.display = "block";
   
-  if(winner === PLAYER){
+  if(winner === PLAYER)
     document.getElementById("celebrate").style.display = "block";
-  }
   else
-  document.getElementById("loser").style.display = "block";
+    document.getElementById("loser").style.display = "block";
   clearInterval(timerVar);
 }
 
