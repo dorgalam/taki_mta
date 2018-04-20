@@ -245,6 +245,8 @@ function startGame(){
   game = new Game();
   document.getElementById("startGame").style.display = "none"; 
   document.getElementById("quit").style.display = "block";
+  document.getElementById("p1-stats").style.display = "block";
+  document.getElementById("turn").style.display = "block";
   game.start();
   timerVar = setInterval(countTimer, 1000);
 }
