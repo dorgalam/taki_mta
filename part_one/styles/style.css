@@ -1,13 +1,18 @@
-@media only screen and (max-width: 930px){
+@media only screen and (max-width: 930px) {
   body .card {
     width: 80px;
     height: 123px;
   }
   body .color_tooltip {
-    width: 80px;    
+    width: 80px;
+  }
+  body #content {
+    height: calc(100% - 284px);
+    min-height: 200px;
   }
 }
-@media only screen and (max-width: 680px){
+
+@media only screen and (max-width: 680px) {
   body .card {
     width: 50px;
     height: 77px;
@@ -16,32 +21,96 @@
     width: 50px;
     height: 77px;
   }
+  body #content {
+    height: calc(100% - 192px);
+    min-height: 100px;
+  }
+}
+
+#side-bar {
+  width: 200px;
+  height: 100%;
+  background-color: grey;
+  position: absolute;
+  left: -180px;
+  z-index: 100;
+}
+
+#side-bar:hover {
+  left: 0;
+  transition: 200ms all;
 }
 
 body {
   background-color: #00a000;
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
-.cards {  
+#turn-identifier {
+  height: 20%;
+  background-color: white;
+}
+
+#stats-section {
+  background-color: black;
+  height: 80%;
+}
+
+#actions-section {
+  background-color: aquamarine;
+  height: 20%;
+  display: flex;
+}
+
+.cards {
   margin: auto;
 }
 
+#content {
+  position: relative;
+  height: calc(100% - 378px);
+  min-height: 300px;
+}
+
+#actions-section>div {
+  width: 50%;
+  height: 100%;
+  border: 1px solid;
+}
+
+#wrapper {
+  min-height: 100%;
+}
+
 #bot {
-  position: absolute;
-  top: 0;
-  left:0;
-  right:0;
+  width: 100%;
   display: inline-block;
   text-align: center;
 }
 
 #player {
-  position: absolute;
-  bottom: 0;
-  left:0;
-  right:0;
+  position: relative;
+  width: 100%;
   display: inline-block;
   text-align: center;
+}
+
+#player>.cards>.card {
+  margin-top: 30px;
+}
+
+.start-game-button {
+  border-radius: 50%;
+  font-size: 24px;
+  color: blue;
+  text-align: center;
+  font-size: 28px;
+  padding: 20px;
+  position: absolute;
+  right: 50%;
+  border: 3px solid green;
 }
 
 #pile {
@@ -50,15 +119,17 @@ body {
   left: 50%;
   width: 210px;
   height: 200px;
-  margin-top: -100px; /*set to a negative number 1/2 of your height*/
-  margin-left: -105px; /*set to a negative number 1/2 of your width*/
+  margin-top: -100px;
+  /*set to a negative number 1/2 of your height*/
+  margin-left: -105px;
+  /*set to a negative number 1/2 of your width*/
 }
 
-#pile > .cards > .card {
+#pile>.cards>.card {
   position: absolute;
 }
 
-.card_change_colorful:hover > .color_tooltip {
+.card_change_colorful:hover>.color_tooltip {
   opacity: 1;
   transition: 200ms ease all;
 }
@@ -66,17 +137,18 @@ body {
 .color_tooltip {
   position: absolute;
   width: 110px;
+  z-index: 10000;
   display: flex;
   top: -24;
   opacity: 0;
-  transition: 200ms ease all;  
+  transition: 200ms ease all;
 }
 
 .color_tooltip:hover {
   opacity: 1;
 }
 
-.color_tooltip > div {
+.color_tooltip>div {
   cursor: pointer;
   width: 22%;
   border: 1px solid;
@@ -89,12 +161,15 @@ body {
   background-color: #db6e53;
   margin-left: 0 !important;
 }
+
 .color_tooltip_green {
   background-color: #8fc453;
 }
+
 .color_tooltip_yellow {
   background-color: #fff44c;
 }
+
 .color_tooltip_blue {
   background-color: #6bbce2;
 }
@@ -112,6 +187,7 @@ body {
 }
 
 .playable:hover {
+  margin-top: 0 !important;
   margin-bottom: 30px;
   transition: 200ms ease margin;
   cursor: pointer;
@@ -123,26 +199,44 @@ body {
   right: 15%;
 }
 
-#deck > .cards > .card {
+#deck>.cards>.card {
   position: absolute;
 }
 
 div.stats {
-  position: absolute;opacity: 0.8;top: 40%;right: 25%;
-  background-color: rgb(61, 66, 62);text-align: center;width:16%;
-  color:rgb(221, 216, 216);border-radius: 10px;
-  
+  background-color: rgb(61, 66, 62);
+  text-align: center;
+  width: 100%;
+  color: rgb(221, 216, 216);
+  border-radius: 10px;
 }
-div.bot_stats{
-  position: absolute;opacity: 0.8;top: 40%;left: 10%;
-  background-color: rgb(61, 66, 62);text-align: center;width:16%;
-  color:rgb(221, 216, 216);border-radius: 10px;
+
+h2>a {
+  color: rgb(105, 224, 115);
 }
+
+div.bot_stats {
+  position: absolute;
+  opacity: 0.8;
+  top: 40%;
+  left: 10%;
+  background-color: rgb(61, 66, 62);
+  text-align: center;
+  width: 16%;
+  color: rgb(221, 216, 216);
+  border-radius: 10px;
+}
+
 div.turn {
-  position: absolute;top: 35%;left: 25%;opacity: 1;
+  position: absolute;
+  top: 35%;
+  left: 25%;
+  opacity: 1;
 }
+
 img {
-  border-radius:50px;border: 10px solid transparent;
+  border-radius: 50px;
+  border: 10px solid transparent;
   padding: 15px;
   width: 150px;
   height: 150px;
