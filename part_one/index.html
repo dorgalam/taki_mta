@@ -45,14 +45,6 @@
       <button type="button" id="startGame" onclick="startGame();return false;" class="btn start-game-button">Start Game</button>
       <div id="pile"></div>
       <div id="deck"></div>
-      <div id="bot-stats" class="bot_stats" style="display:none;">
-        <h2>Number of bot turns:
-          <a id="bot_num_turns">0</a>
-        </h2>
-        <h2 style="font-size: 90%;">Last card declerations:
-          <a id="bot_last_one">0</a>
-        </h2>
-      </div>
       <div id="turn" class="turn" style="display:none;">
         <img id="turn-img" src="./styles/assets/yourturn.png" alt="turn" />
         <button class="btn" onClick="closeTaki()" id="closeTaki" style="display:none">Close taki</button>
@@ -63,6 +55,14 @@
       <div id="loser" style="display:none;position: absolute;left:30%;top:20%;">
         <img src="./styles/assets/loser.gif" alt="gif" />
         <img src="./styles/assets/cry.gif" alt="gif" />
+        <div id="bot-stats" class="bot_stats" style="display:none;">
+          <h2>Number of bot turns:
+            <a id="bot_num_turns">0</a>
+          </h2>
+          <h2 style="font-size: 90%;">Last card declerations:
+            <a id="bot_last_one">0</a>
+          </h2>
+        </div>
       </div>
     </div>
     <div id="player"></div>

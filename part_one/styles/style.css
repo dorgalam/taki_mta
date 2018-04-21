@@ -236,6 +236,10 @@ body {
   position: absolute;
 }
 
+#stats-section > #p1-stats > h2 {
+  margin-top: 0;
+}
+
 div.stats {
   background-color: rgb(61, 66, 62);
   text-align: left;
@@ -249,13 +253,10 @@ h2 > a {
 }
 
 div.bot_stats {
-  position: absolute;
   opacity: 0.8;
-  top: 80%;
-  left: 40%;
   background-color: rgb(61, 66, 62);
   text-align: center;
-  width: 16%;
+  width: fit-content;
   color: rgb(221, 216, 216);
   border-radius: 10px;
 }

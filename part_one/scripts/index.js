@@ -295,6 +295,7 @@ function startGame() {
   document.getElementById("startGame").style.display = "none";
   document.getElementById("p1-stats").style.display = "block";
   document.getElementById("quit-button").disabled = false;
+  document.getElementById("restart-button").disabled = true;
   document.getElementById("turn").style.display = "block";
   document.getElementById("pile").style.display = "block";
 
