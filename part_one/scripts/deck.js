@@ -21,15 +21,21 @@ class Card {
       id="card_number_${index}"
       style="${this.styles}; ${dynamicStyles}"
       class="${this.cardClasses} ${
-      ((this.cardIndex > -1 && this.number !== 'change') || this.cardIndex === -2) ? "playable" : ""
+      (this.cardIndex > -1 && this.number !== "change") || this.cardIndex === -2
+        ? "playable"
+        : ""
     }"
       ${
-        this.cardIndex > -1 && this.number !== 'change'
+        this.cardIndex > -1 && this.number !== "change"
           ? `onclick="handleCardClick(${this.cardIndex})"`
           : ""
       }
       ${this.cardIndex === -2 ? `onclick="takeCard(${this.cardIndex})"` : ""}>
-      ${(this.number === 'change' && this.cardIndex > -1) ? this.getChangeColorTooltipHtml(this.cardIndex) : ''}
+      ${
+        this.number === "change" && this.cardIndex > -1
+          ? this.getChangeColorTooltipHtml(this.cardIndex)
+          : ""
+      }
     </div>
     `;
   }
@@ -69,13 +75,15 @@ class Deck {
   getDeckHtml() {
     return `
         <div class="cards">
-          ${this.deck.map((card, i) => card.getHtml(i, this.getDynamicStyles(i))).join("\n")}
-        </div>
+          ${this.deck
+            .map((card, i) => card.getHtml(i, this.getDynamicStyles(i)))
+            .join("\n")}
+        </div> 
       `;
   }
 
   getDynamicStyles(i) {
-    return this.isStack ? CSSUtils.getMainDeckStyle(i) : '';
+    return this.isStack ? CSSUtils.getMainDeckStyle(i) : "";
   }
 
   setDeck(cards) {
@@ -111,11 +119,11 @@ class Deck {
   }
 
   addCard(card, index, origName) {
-    let style = '';
+    let style = "";
     if (this.elementId === "pile") style = CSSUtils.getPileStyles();
     let classes = CSSUtils.getPlayerClasses(this.isFacedUp, card);
     style = style ? style : CSSUtils.getPlayerStyle(this.isFacedUp, index);
-    this.deck.push(new Card(card, classes, style, "", origName, ));
+    this.deck.push(new Card(card, classes, style, "", origName));
   }
 
   removeCard(index) {

@@ -251,8 +251,8 @@ h2 > a {
 div.bot_stats {
   position: absolute;
   opacity: 0.8;
-  top: 40%;
-  left: 10%;
+  top: 80%;
+  left: 40%;
   background-color: rgb(61, 66, 62);
   text-align: center;
   width: 16%;

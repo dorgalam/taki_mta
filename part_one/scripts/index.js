@@ -116,6 +116,10 @@ class Game {
     render(this.bot.getHtml(), 'bot');
   }
 
+  reduceImageNumber() {
+    document.getElementById('')
+  }
+
   createDataMembers() {
     this.mainDeck = new Deck('deck', FACED_DOWN, STACK);
     this.pile = new Deck('pile', FACED_UP);
