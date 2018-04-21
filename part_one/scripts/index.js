@@ -391,10 +391,7 @@ function switchTurn(from, to) {
       if (gameOver())
         //check if game over
         return;
-  } else if (
-    !game.taki &&
-    (game.lastCard().number === "plus" || game.lastCard().number === "stop")
-  ) {
+  } else if (!game.taki &&(game.lastCard().number === "plus" || game.lastCard().number === "stop")) {
     let player = from === BOT ? game.bot : game.player;
     player.setStats();
     renderStats();
@@ -413,7 +410,7 @@ function switchTurn(from, to) {
     }
     setTimeout(() => {
       doBotTurn();
-    }, game.consecutiveBotTurn * 500);
+    }, game.consecutiveBotTurn * 400);
   }
 }
 
