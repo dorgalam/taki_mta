@@ -15,11 +15,12 @@
     </div> -->
     <div id="stats-section">
       <div id="p1-stats" class="stats" style="display:none;">
-        <h2>Turns played:
-          <a id="num_turns">0</a>
-        </h2>
         <h2>Clock
           <a id="timer">0:0:0</a>
+        </h2>
+        <h1>Your Stats:</h1>
+        <h2>Turns played:
+          <a id="num_turns">0</a>
         </h2>
         <h2 style="font-size: 100%;">Average turn time:
           <a id="avg_time">0</a>
@@ -49,20 +50,23 @@
         <img id="turn-img" src="./styles/assets/yourturn.png" alt="turn" />
         <button class="btn" onClick="closeTaki()" id="closeTaki" style="display:none">Close taki</button>
       </div>
-      <div id="celebrate" style="display:none;position: absolute;left:30%;top:20%;">
+      <div id="ending" style="position: absolute;left:30%;top:20%;">
+      <div id="celebrate" style="display:none;">
         <img src="./styles/assets/barney-celebrate.gif" alt="gif" />
       </div>
-      <div id="loser" style="display:none;position: absolute;left:30%;top:20%;">
+      <div id="loser" style="display:none;">
         <img src="./styles/assets/loser.gif" alt="gif" />
         <img src="./styles/assets/cry.gif" alt="gif" />
       </div>
         <div id="bot-stats" class="bot_stats" style="display:none;">
-          <h2>Number of bot turns:
+          <h1>Bot Stats:</h1>
+          <h2>Turns played:
             <a id="bot_num_turns">0</a>
           </h2>
           <h2 style="font-size: 90%;">Last card declerations:
           <a id="bot_last_one">0</a>
         </h2>
+      </div>
       </div>
     </div>
     <div id="player"></div>
