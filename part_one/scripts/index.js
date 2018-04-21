@@ -254,6 +254,7 @@ function restart(){
   document.getElementById("celebrate").style.display = "none";
   document.getElementById("bot").style.display = "block"; 
   document.getElementById("player").style.display = "block";
+  document.getElementById("pile").style.display = "block";
   document.getElementById("deck").style.display = "block";
   totalSeconds = 0; ///end of for restart
   lstTime = 0;
