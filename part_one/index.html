@@ -30,10 +30,10 @@
       </div>
     </div>
     <div id="actions-section">
-      <button onClick="goToWinner(1)" style="width: 50%; background-color: antiquewhite">
+      <button id="quit-button" disabled onClick="goToWinner(1)" style="width: 50%; background-color: antiquewhite">
         Quit
       </button>
-      <button onClick="restart()" style="width: 50%; background-color: antiquewhite">
+      <button id="restart-button" disabled onClick="restart()" style="width: 50%; background-color: antiquewhite">
         Restart
       </button>
     </div>
@@ -59,7 +59,6 @@
       </div>
       <div id="celebrate" style="display:none;position: absolute;left:30%;top:20%;">
         <img src="./styles/assets/barney-celebrate.gif" alt="gif" />
-        <img src="./styles/assets/great-job.gif" alt="gif" />
       </div>
       <div id="loser" style="display:none;position: absolute;left:30%;top:20%;">
         <img src="./styles/assets/loser.gif" alt="gif" />

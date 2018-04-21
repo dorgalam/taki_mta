@@ -21,7 +21,7 @@ class Card {
       id="card_number_${index}"
       style="${this.styles}; ${dynamicStyles}"
       class="${this.cardClasses} ${
-      (this.cardIndex > -1 || this.cardIndex === -2) && this.number !== 'change' ? "playable" : ""
+      ((this.cardIndex > -1 && this.number !== 'change') || this.cardIndex === -2) ? "playable" : ""
     }"
       ${
         this.cardIndex > -1 && this.number !== 'change'
@@ -69,9 +69,13 @@ class Deck {
   getDeckHtml() {
     return `
         <div class="cards">
-          ${this.deck.map((card, i) => card.getHtml(i, this.isStack ? CSSUtils.getMainDeckStyle(i) : '')).join("\n")}
+          ${this.deck.map((card, i) => card.getHtml(i, this.getDynamicStyles(i))).join("\n")}
         </div>
       `;
+  }
+
+  getDynamicStyles(i) {
+    return this.isStack ? CSSUtils.getMainDeckStyle(i) : '';
   }
 
   setDeck(cards) {

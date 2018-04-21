@@ -261,7 +261,9 @@ function startGame(){
   game = new Game();
   document.getElementById("startGame").style.display = "none"; 
   document.getElementById("p1-stats").style.display = "block";
+  document.getElementById("quit-button").disabled = false;
   document.getElementById("turn").style.display = "block";
+  
   game.start();
   timerVar = setInterval(countTimer, 1000);
 }
@@ -275,6 +277,8 @@ function closeTaki(){
 
 function goToWinner(winner){
   document.getElementById("bot-stats").style.display = "block";
+  document.getElementById("quit-button").disabled = true;  
+  document.getElementById("restart-button").disabled = false;  
   document.getElementById("bot").style.display = "none";
   document.getElementById("turn").style.display = "none";
   document.getElementById("player").style.display = "none";
