@@ -15,49 +15,47 @@
     </div> -->
     <div id="stats-section">
       <div id="p1-stats" class="stats" style="display:none;">
-        <h2>מס' תורות של שחקן |
+        <h2>Turns played:
           <a id="num_turns">0</a>
         </h2>
-        <h2>זמן משחק :
+        <h2>Clock
           <a id="timer">0:0:0</a>
         </h2>
-        <h2 style="font-size: 100%;">זמן ממוצע :
+        <h2 style="font-size: 100%;">Average turn time:
           <a id="avg_time">0</a>
         </h2>
-        <h2 style="font-size: 90%;"> כרטיס אחרון "הכרזה"
+        <h2 style="font-size: 90%;">Last card declerations:
           <a id="last_one">0</a>
         </h2>
       </div>
     </div>
     <div id="actions-section">
-        <button style="width: 50%; background-color: antiquewhite">
-            Quit
-         </button>
-         
-         <button style="width: 50%; background-color: antiquewhite">
-            Restart
-         </button>
+      <button onClick="goToWinner(1)" style="width: 50%; background-color: antiquewhite">
+        Quit
+      </button>
+      <button onClick="restart()" style="width: 50%; background-color: antiquewhite">
+        Restart
+      </button>
     </div>
   </div>
   <div id="wrapper">
 
     <div id="bot"></div>
     <div id="content">
-      <button type="button" id="startGame" onclick="startGame();return false;" class="start-game-button">התחל משחק</button>
-      <button type="button" style="display:none;" id="restart" onclick="restart();return false;" class="start-game-button">משחק חדש</button>
+      <button type="button" id="startGame" onclick="startGame();return false;" class="btn start-game-button">Start Game</button>
       <div id="pile"></div>
       <div id="deck"></div>
       <div id="bot-stats" class="bot_stats" style="display:none;">
-        <h2>מס' תורות של המחשב |
+        <h2>Number of bot turns:
           <a id="bot_num_turns">0</a>
         </h2>
-        <h2 style="font-size: 90%;"> כרטיס אחרון "הכרזה"
+        <h2 style="font-size: 90%;">Last card declerations:
           <a id="bot_last_one">0</a>
         </h2>
       </div>
-      <button id="quit" onclick="goToWinner(1);" style="position:absolute;z-index:2;display:none;">quit</button>
       <div id="turn" class="turn" style="display:none;">
-        <img src="./styles/assets/yourturn.png" alt="turn" />
+        <img id="turn-img" src="./styles/assets/yourturn.png" alt="turn" />
+        <button class="btn" onClick="closeTaki()" id="closeTaki" style="display:none">Close taki</button>
       </div>
       <div id="celebrate" style="display:none;position: absolute;left:30%;top:20%;">
         <img src="./styles/assets/barney-celebrate.gif" alt="gif" />
@@ -67,7 +65,6 @@
         <img src="./styles/assets/loser.gif" alt="gif" />
         <img src="./styles/assets/cry.gif" alt="gif" />
       </div>
-      <button id="closeTaki" onclick="closeTaki();" style="position:absolute;z-index:2;display:none;">סגור טאקי</button>
     </div>
     <div id="player"></div>
   </div>

@@ -15,11 +15,11 @@ class Card {
     return this.name;
   }
 
-  getHtml(index) {
+  getHtml(index, dynamicStyles) {
     return `
     <div
       id="card_number_${index}"
-      style="${this.styles}"
+      style="${this.styles}; ${dynamicStyles}"
       class="${this.cardClasses} ${
       (this.cardIndex > -1 || this.cardIndex === -2) && this.number !== 'change' ? "playable" : ""
     }"
@@ -69,7 +69,7 @@ class Deck {
   getDeckHtml() {
     return `
         <div class="cards">
-          ${this.deck.map((card, i) => card.getHtml(i)).join("\n")}
+          ${this.deck.map((card, i) => card.getHtml(i, this.isStack ? CSSUtils.getMainDeckStyle(i) : '')).join("\n")}
         </div>
       `;
   }
@@ -107,11 +107,11 @@ class Deck {
   }
 
   addCard(card, index, origName) {
-    let style = this.isStack ? CSSUtils.getMainDeckStyle(index) : "";
+    let style = '';
     if (this.elementId === "pile") style = CSSUtils.getPileStyles();
     let classes = CSSUtils.getPlayerClasses(this.isFacedUp, card);
     style = style ? style : CSSUtils.getPlayerStyle(this.isFacedUp, index);
-    this.deck.push(new Card(card, classes, style, "", origName));
+    this.deck.push(new Card(card, classes, style, "", origName, ));
   }
 
   removeCard(index) {

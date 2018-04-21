@@ -1,4 +1,15 @@
-@media only screen and (max-width: 930px) {
+@media only screen and (max-width: 1400px) {
+  body #side-bar {
+    left: -180px;
+    transition: 200ms all;
+  }
+  body #side-bar:hover {
+    transition: 200ms all;
+    left: 0px;
+  }
+}
+
+@media only screen and (max-width: 980px) {
   body .card {
     width: 80px;
     height: 123px;
@@ -10,9 +21,13 @@
     height: calc(100% - 284px);
     min-height: 200px;
   }
+  body #turn-img {
+    width: 100px;
+    height: 100px;
+  }
 }
 
-@media only screen and (max-width: 680px) {
+@media only screen and (max-width: 720px) {
   body .card {
     width: 50px;
     height: 77px;
@@ -25,6 +40,16 @@
     height: calc(100% - 192px);
     min-height: 100px;
   }
+  body #turn-img {
+    width: 60px;
+    height: 60px;
+  }
+  body #pile {
+    width: 100px;
+    height: 100px;
+    margin-left: -50px;
+    margin-top: -50px;
+  }
 }
 
 #side-bar {
@@ -32,7 +57,8 @@
   height: 100%;
   background-color: grey;
   position: absolute;
-  left: -180px;
+  transition: 200ms all;
+  left: 0;
   z-index: 100;
 }
 
@@ -74,9 +100,11 @@ body {
   min-height: 300px;
 }
 
-#actions-section>div {
+#actions-section > div {
   width: 50%;
   height: 100%;
+  margin-left: -100px;
+  margin-top: -100px;
   border: 1px solid;
 }
 
@@ -97,20 +125,26 @@ body {
   text-align: center;
 }
 
-#player>.cards>.card {
+#player > .cards > .card {
   margin-top: 30px;
 }
 
 .start-game-button {
-  border-radius: 50%;
-  font-size: 24px;
-  color: blue;
-  text-align: center;
-  font-size: 28px;
-  padding: 20px;
   position: absolute;
   right: 50%;
-  border: 3px solid green;
+}
+
+.btn {
+  background: #3498db;
+  background-image: linear-gradient(to bottom, #3498db, #2980b9);
+  -webkit-border-radius: 28;
+  -moz-border-radius: 28;
+  border-radius: 28px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
 }
 
 #pile {
@@ -125,11 +159,11 @@ body {
   /*set to a negative number 1/2 of your width*/
 }
 
-#pile>.cards>.card {
+#pile > .cards > .card {
   position: absolute;
 }
 
-.card_change_colorful:hover>.color_tooltip {
+.card_change_colorful:hover > .color_tooltip {
   opacity: 1;
   transition: 200ms ease all;
 }
@@ -139,7 +173,7 @@ body {
   width: 110px;
   z-index: 10000;
   display: flex;
-  top: -24;
+  top: 0;
   opacity: 0;
   transition: 200ms ease all;
 }
@@ -148,7 +182,7 @@ body {
   opacity: 1;
 }
 
-.color_tooltip>div {
+.color_tooltip > div {
   cursor: pointer;
   width: 22%;
   border: 1px solid;
@@ -199,19 +233,19 @@ body {
   right: 15%;
 }
 
-#deck>.cards>.card {
+#deck > .cards > .card {
   position: absolute;
 }
 
 div.stats {
   background-color: rgb(61, 66, 62);
-  text-align: center;
+  text-align: left;
   width: 100%;
   color: rgb(221, 216, 216);
   border-radius: 10px;
 }
 
-h2>a {
+h2 > a {
   color: rgb(105, 224, 115);
 }
 
@@ -230,11 +264,11 @@ div.bot_stats {
 div.turn {
   position: absolute;
   top: 35%;
-  left: 25%;
+  left: 15%;
   opacity: 1;
 }
 
-img {
+#turn-img {
   border-radius: 50px;
   border: 10px solid transparent;
   padding: 15px;

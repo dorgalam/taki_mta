@@ -205,11 +205,14 @@ class Game {
 
   openTaki(){
     this.taki = true;
+    document.getElementById("turn-img").style.display = "none";
     document.getElementById("closeTaki").style.display = "block";
   }
 
   closeTaki(){
     this.taki = false;
+    document.getElementById("turn-img").style.display = "block";
+    document.getElementById("closeTaki").style.display = "none";
     if(this.lastCard().number !== "taki" && this.specialCard(this.lastCard())){
       this.switchToPlayerTurn();
       return false;
@@ -257,9 +260,6 @@ function restart(){
 function startGame(){
   game = new Game();
   document.getElementById("startGame").style.display = "none"; 
-  document.getElementById("restart").style.display = "none";
-  document.getElementById("quit").style.display = "block";
-  document.getElementById("quit").style.display = "block";
   document.getElementById("p1-stats").style.display = "block";
   document.getElementById("turn").style.display = "block";
   game.start();
@@ -279,8 +279,7 @@ function goToWinner(winner){
   document.getElementById("turn").style.display = "none";
   document.getElementById("player").style.display = "none";
   document.getElementById("deck").style.display = "none";
-  document.getElementById("quit").style.display = "none";
-  document.getElementById("restart").style.display = "block";
+  document.getElementById("pile").style.display = "none";
   
   if(winner === PLAYER)
     document.getElementById("celebrate").style.display = "block";
