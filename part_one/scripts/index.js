@@ -93,7 +93,6 @@ class Game {
   }
 
   botTurn() {
-    //this.switchTurn();
     let lastCard = this.taki
       ? new Card("taki_" + this.lastCard().color)
       : this.lastCard();
@@ -190,10 +189,6 @@ class Game {
       this.mainDeck.pushCardToStart(card);
     }
   }
-
-  /*switchTurn(){
-    this.turn = 1 - this.turn;
-  }*/
 
   getTurn() {
     return this.turn;
@@ -335,18 +330,15 @@ function selectColor(color, index) {
 
 function doBotTurn() {
   card = game.botTurn(); //get card from bot deck -- choosen by a smart algo
-  if (card["card"]) {
-    //legit card
+  if (card["card"]) {//legit card
     game.addCardToPile(card["card"].name, card["orig"]);
-  } else {
-    // didnt find suitable card ,if was taki turn - no need to take a card , else take cards (as needed maybe 2plus)
+  } else {// didnt find suitable card ,if was taki turn - no need to take a card , else take cards (as needed maybe 2plus)
     if (!game.taki) {
       const count = game.takinNumber();
       for (let i = 0; i < count; i++) {
         game.takeCardFromMainDeck(BOT);
       }
-    } else {
-      //finish my taki turn
+    } else {//finish my taki turn
       game.taki = false;
       if (
         game.specialCard(game.lastCard()) &&
@@ -359,15 +351,14 @@ function doBotTurn() {
     switchTurn(BOT, PLAYER);
     return;
   }
-  if (game.specialCard(card["card"])) {
-    // do again bot turn(plus,stop,taki)
-    if (card["card"].number === "taki") game.taki = true;
-    // taki flag on
-    else game.taki = false;
+  if (game.specialCard(card["card"])) {// do again bot turn(plus,stop,taki)
+    if (card["card"].number === "taki") 
+      game.taki = true;// taki flag on
+    else 
+      game.taki = false;
     switchTurn(BOT, BOT);
     return;
-  } else if (game.taki) {
-    // regular card but on taki - need to do bot turns until no card in this color
+  } else if (game.taki) { // regular card but on taki - need to do bot turns until no card in this color
     switchTurn(BOT, BOT);
     return;
   }

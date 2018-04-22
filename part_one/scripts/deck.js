@@ -160,7 +160,6 @@ class Deck {
   }
 
   isPlayableCard(card, cardElem, active, taki) {
-    //need to check on taki
     if (active && taki) {
       return card.color === cardElem.color;
     }

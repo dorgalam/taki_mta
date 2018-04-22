@@ -134,10 +134,10 @@ class Bot extends Player{
     let taki = this.getSpecialTypeColor(color,"taki"); //check for taki in this color
     if (taki && colorCount > 1)
       return taki;
-    if (stop && (colorCount > 1 || this.getTypeOtherColor("stop")))
-      return stop;
     if (plus && (colorCount > 1 || this.getTypeOtherColor("plus")))
       return plus;
+    if (stop && (colorCount > 1 || this.getTypeOtherColor("stop")))
+      return stop;
     if (colorCount > 0)
       return this.selectColorCard(color); //select the best card with my color (has two of the same number)
     if (numberCount > 0)
