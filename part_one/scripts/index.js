@@ -209,14 +209,18 @@ class Game {
   takeCardFromMainDeck(player) {
     this.active = NOTACTIVE;
     this.takinCount = 1;
-    if (this.mainDeck.isLastOne()) {
+    if (this.mainDeck.isTwoLeft()) {
       this.buildMainFromPile();
+    }
+    let cardName = this.mainDeck.popCard();
+    if(!cardName){//end of deck
+      return;
     }
     if (player === PLAYER) {
       document.getElementById("closeTaki").style.display = "none";
-      this.player.addCard(this.mainDeck.popCard());
+      this.player.addCard(cardName);
     } else {
-      this.bot.addCard(this.mainDeck.popCard());
+      this.bot.addCard(cardName);
     }
   }
 
@@ -322,7 +326,7 @@ function goToWinner(winner) {
 
 function selectColor(color, index) {
   let card = "_" + color;
-  game.addCardToPile(card);
+  game.addCardToPile(card,"change_colorful");
   game.player.removeCardByIndex(index);
   game.renderAll();
   switchTurn(PLAYER, BOT);

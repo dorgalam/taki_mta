@@ -7,7 +7,7 @@ class Card {
     this.styles = styles;
     this.cardClasses = classes;
     this.cardIndex = -1;
-    this.original = origName === "" ? name : origName;
+    this.original = origName === "" ? name: origName;
   }
 
   getName() {
@@ -139,11 +139,18 @@ class Deck {
   }
 
   popCard() {
-    return this.deck.pop().getName();
+    let card = this.deck.pop();
+    if(!card)
+      return false;
+    return card.getName();
   }
 
   isLastOne() {
     return this.deck.length === 1;
+  }
+
+  isTwoLeft() {
+    return this.deck.length === 2;
   }
 
   getCard(index) {
