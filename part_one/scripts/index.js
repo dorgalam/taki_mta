@@ -391,8 +391,7 @@ function switchTurn(from, to) {
     player.setStats();
     renderStats();
     if (game.lastCard().number === "stop") {
-      if (gameOver())
-        //check if game over
+      if (gameOver())//check if game over
         return;
     }
   }
@@ -405,7 +404,7 @@ function switchTurn(from, to) {
     }
     setTimeout(() => {
       doBotTurn();
-    }, game.consecutiveBotTurn * 400);
+    }, game.consecutiveBotTurn * 300);
   }
 }
 
