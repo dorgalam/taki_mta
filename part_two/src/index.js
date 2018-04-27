@@ -8,5 +8,4 @@ class Root extends React.Component {
   }
 }
 
-/* Directly adding react element */
 ReactDOM.render(<Root />, document.getElementById("root"));
