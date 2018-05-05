@@ -1,0 +1,281 @@
+@media only screen and (max-width: 1400px) {
+  body #side-bar {
+    left: -180px;
+    transition: 200ms all;
+  }
+  body #side-bar:hover {
+    transition: 200ms all;
+    left: 0px;
+  }
+}
+
+@media only screen and (max-width: 980px) {
+  body .card {
+    width: 80px;
+    height: 123px;
+  }
+  body .color_tooltip {
+    width: 80px;
+  }
+  body #content {
+    height: calc(100% - 284px);
+    min-height: 200px;
+  }
+  body #turn-img {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media only screen and (max-width: 720px) {
+  body .card {
+    width: 50px;
+    height: 77px;
+  }
+  body .color_tooltip {
+    width: 50px;
+    height: 77px;
+  }
+  body #content {
+    height: calc(100% - 192px);
+    min-height: 100px;
+  }
+  body #turn-img {
+    width: 60px;
+    height: 60px;
+  }
+  body #pile {
+    width: 100px;
+    height: 100px;
+    margin-left: -50px;
+    margin-top: -50px;
+  }
+}
+
+#side-bar {
+  width: 200px;
+  height: 100%;
+  background-color: grey;
+  position: absolute;
+  transition: 200ms all;
+  left: 0;
+  z-index: 100;
+}
+
+#side-bar:hover {
+  left: 0;
+  transition: 200ms all;
+}
+
+body {
+  background-color: #00a000;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#turn-identifier {
+  height: 20%;
+  background-color: white;
+}
+
+#stats-section {
+  background-color: black;
+  height: 80%;
+}
+
+#actions-section {
+  background-color: aquamarine;
+  height: 20%;
+  display: flex;
+}
+
+.cards {
+  margin: auto;
+}
+
+#content {
+  position: relative;
+  height: calc(100% - 378px);
+  min-height: 300px;
+}
+
+#actions-section > div {
+  width: 50%;
+  height: 100%;
+  margin-left: -100px;
+  margin-top: -100px;
+  border: 1px solid;
+}
+
+#root {
+  min-height: 100%;
+}
+
+#bot {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
+
+#player {
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
+
+#player > .cards > .card {
+  margin-top: 30px;
+}
+
+.start-game-button {
+  position: absolute;
+  right: 50%;
+}
+
+.btn {
+  background: #3498db;
+  background-image: linear-gradient(to bottom, #3498db, #2980b9);
+  border-radius: 28px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#pile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 210px;
+  height: 200px;
+  margin-top: -100px;
+  /*set to a negative number 1/2 of your height*/
+  margin-left: -105px;
+  /*set to a negative number 1/2 of your width*/
+}
+
+#pile > .cards > .card {
+  position: absolute;
+}
+
+.card_change_colorful:hover > .color_tooltip {
+  opacity: 1;
+  transition: 200ms ease all;
+}
+
+.color_tooltip {
+  position: absolute;
+  width: 110px;
+  z-index: 10000;
+  display: flex;
+  top: 0;
+  opacity: 0;
+  transition: 200ms ease all;
+}
+
+.color_tooltip:hover {
+  opacity: 1;
+}
+
+.color_tooltip > div {
+  cursor: pointer;
+  width: 22%;
+  border: 1px solid;
+  margin-left: 5px;
+  border-radius: 5px;
+  height: 20px;
+}
+
+.color_tooltip_red {
+  background-color: #db6e53;
+  margin-left: 0 !important;
+}
+
+.color_tooltip_green {
+  background-color: #8fc453;
+}
+
+.color_tooltip_yellow {
+  background-color: #fff44c;
+}
+
+.color_tooltip_blue {
+  background-color: #6bbce2;
+}
+
+.card {
+  display: inline-block;
+  width: 100px;
+  height: 160px;
+  border-radius: 12px;
+  background: rgb(255, 238, 221);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+  transition: 200ms ease margin;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.playable:hover {
+  margin-top: 0 !important;
+  margin-bottom: 30px;
+  transition: 200ms ease margin;
+  cursor: pointer;
+}
+
+#deck {
+  position: absolute;
+  top: 35%;
+  right: 15%;
+}
+
+#deck > .cards > .card {
+  position: absolute;
+}
+
+#stats-section > #p1-stats > h2 {
+  margin-top: 0;
+}
+
+div.stats {
+  background-color: rgb(61, 66, 62);
+  text-align: left;
+  width: 100%;
+  color: rgb(221, 216, 216);
+  border-radius: 10px;
+}
+
+h2 > a {
+  color: rgb(105, 224, 115);
+}
+
+div.bot_stats {
+  opacity: 0.8;
+  background-color: rgb(61, 66, 62);
+  text-align: center;
+  width: fit-content;
+  color: rgb(221, 216, 216);
+  border-radius: 10px;
+  position:relative;
+}
+
+div.turn {
+  position: absolute;
+  top: 35%;
+  left: 15%;
+  opacity: 1;
+}
+
+#turn-img {
+  border-radius: 50px;
+  border: 10px solid transparent;
+  padding: 15px;
+  width: 150px;
+  height: 150px;
+}
+h1{
+  text-decoration: underline;
+}
