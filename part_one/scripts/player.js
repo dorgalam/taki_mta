@@ -1,50 +1,56 @@
-
-class Stats{
+class Stats {
   constructor(elementId, isplayer) {
     this.turns = 0;
     this.last = 0;
     this.elementId = elementId ? "p1-stats" : "bot-stats";
-    this.turnstime =  new Array();
+    this.turnstime = new Array();
   }
 
-  getAvgTime(){
+  getAvgTime() {
     let sum = 0;
-    if(this.turns === 0)//shouldn't happen
+    if (this.turns === 0) //shouldn't happen
       return 0;
-      this.turnstime.forEach(element=>{
-        sum+=element;
-      });
-    return (sum/this.turns).toFixed(2);
+    this.turnstime.forEach(element => {
+      sum += element;
+    });
+    return (sum / this.turns).toFixed(2);
   }
 }
 
 class Player {
-  constructor(deck,isFacedUp) {
+  constructor(deck, isFacedUp) {
     this.playableIndexes = [];
     this.deck = new Deck(deck, isFacedUp);
-    this.stats = new Stats(isFacedUp,isFacedUp);
+    this.stats = new Stats(isFacedUp, isFacedUp);
   }
 
-  getStats(){
+  getStats() {
     let avg = this.stats.getAvgTime();
-    if(this.stats.elementId === "bot-stats")
-      return {"num_turns":this.stats.turns,"last_one":this.stats.last};
+    if (this.stats.elementId === "bot-stats")
+      return {
+        "num_turns": this.stats.turns,
+        "last_one": this.stats.last
+      };
     else
-      return {"num_turns":this.stats.turns,"last_one":this.stats.last,"avg_time":avg};
+      return {
+        "num_turns": this.stats.turns,
+        "last_one": this.stats.last,
+        "avg_time": avg
+      };
   }
 
-  setTurnTime(curTime,startedTime){
+  setTurnTime(curTime, startedTime) {
     this.stats.turnstime[this.stats.turns] = curTime - startedTime;
   }
 
-  setStats(){
+  setStats() {
     this.stats.turns++;
-    if(this.deck.isLastOne())
+    if (this.deck.isLastOne())
       this.incLastOne();
   }
 
-  getPlayableIndexes(card,active,taki) {
-    this.playableIndexes = this.deck.getPlayableIndexes(card,active,taki);
+  getPlayableIndexes(card, active, taki) {
+    this.playableIndexes = this.deck.getPlayableIndexes(card, active, taki);
   }
 
   playCard(index) {
@@ -52,86 +58,86 @@ class Player {
       const card = this.deck.getCard(index);
       this.removeCardByIndex(index);
       return card;
-    } 
+    }
     return false;
   }
 
-  removeCardByIndex(index){
+  removeCardByIndex(index) {
     this.deck.deck = this.deck.removeCard(index);
     this.playableIndexes = this.playableIndexes.filter((item, i) => i !== index);
   }
 
-  addCard(card,index,orig) {
-    this.deck.addCard(card,index,orig);
+  addCard(card, index, orig) {
+    this.deck.addCard(card, index, orig);
   }
 
-  removeCardByCard(card){
+  removeCardByCard(card) {
     let index;
-    this.deck.getDeck().forEach((element,i) => {
-      if(element === card)
-         index = i;
+    this.deck.getDeck().forEach((element, i) => {
+      if (element === card)
+        index = i;
     });
-    this.deck.deck = this.deck.removeCard(index); 
+    this.deck.deck = this.deck.removeCard(index);
   }
 
   getHtml() {
     return this.deck.getDeckHtml();
   }
 
-  setCardsClickable(){
-    this.deck.getDeck().forEach((element,index) => {
-      if(this.playableIndexes.includes(index))
+  setCardsClickable() {
+    this.deck.getDeck().forEach((element, index) => {
+      if (this.playableIndexes.includes(index))
         element.setClickable(index);
     });
   }
 
-  removeCardsClickable(){
+  removeCardsClickable() {
     this.deck.getDeck().forEach((element) => {
-        element.removeClickable();
+      element.removeClickable();
     });
   }
 
-  specialCard(card){
-    if(card.number === "taki" || card.number === "stop" || card.number === "plus" || card.color == "colorful"){
+  specialCard(card) {
+    if (card.number === "taki" || card.number === "stop" || card.number === "plus" || card.color == "colorful") {
       return true;
     }
     return false;
   }
 
-  clearPlayable(){
+  clearPlayable() {
     this.playableIndexes = [];
   }
 
-  hasNoPlay(){
+  hasNoPlay() {
     return this.playableIndexes.length === 0;
   }
 
-  incLastOne(){
+  incLastOne() {
     this.stats.last++;
   }
-  
-  won(){
-    return this.deck.getDeck().length === 0; 
+
+  won() {
+    return this.deck.getDeck().length === 0;
   }
 }
 
-class Bot extends Player{
-  constructor(deck,isFacedUp) {
-    super(deck,isFacedUp);
+class Bot extends Player {
+  constructor(deck, isFacedUp) {
+    super(deck, isFacedUp);
   }
-  chooseCard(card,active = true) { //the bot well aware of the cards he has (this.cards)
+  chooseCard(card, active = true) { //the bot well aware of the cards he has (this.cards)
     let number = card.number;
     let color = card.color;
     if (active && number === "2plus")
       return this.has2plus(); // options: card name, false (take a card from the pile)
-    if (active && this.specialCard(card)){
+    if (active && this.specialCard(card)) {
       return this.handleSpecial(color, number);
     }
     let colorCount = this.getColorCount(color); // count number of cards with this color
     let numberCount = this.getNumberCount(number); // count number of cards with this number
-    let plus = this.getSpecialTypeColor(color,"plus");
-    let stop = this.getSpecialTypeColor(color,"stop");
-    let taki = this.getSpecialTypeColor(color,"taki"); //check for taki in this color
+    let plus = this.getSpecialTypeColor(color, "plus");
+    let stop = this.getSpecialTypeColor(color, "stop");
+    let taki = this.getSpecialTypeColor(color, "taki"); //check for taki in this color
     if (taki && colorCount > 1)
       return taki;
     if (plus && (colorCount > 1 || this.getTypeOtherColor("plus")))
@@ -145,89 +151,110 @@ class Bot extends Player{
     return this.hasChangeColor(); // true = best color for me , false = take a card from the pile
   }
 
-  getColorCount(color){
+  getColorCount(color) {
     let count = 0;
     this.deck.getDeck().forEach((element) => {
-      if(element.color === color){
+      if (element.color === color) {
         count++;
       }
     });
     return count;
   }
 
-  getNumberCount(number){
+  getNumberCount(number) {
     let count = 0;
     this.deck.getDeck().forEach((element) => {
-      if(element.number === number){
+      if (element.number === number) {
         count++;
       }
     });
     return count;
   }
 
-  getSpecialTypeColor(color,specialType){
+  getSpecialTypeColor(color, specialType) {
     let special = false;
-    this.deck.getDeck().forEach(function(element) {
-      if(element.color === color && element.number === specialType){
+    this.deck.getDeck().forEach(function (element) {
+      if (element.color === color && element.number === specialType) {
         special = element;
       }
     });
     return special;
   }
 
-  has2plus(){
+  has2plus() {
     let elem = false;
-    this.deck.getDeck().forEach(function(element) {
-      if(element.number === "2plus"){
+    this.deck.getDeck().forEach(function (element) {
+      if (element.number === "2plus") {
         elem = element;
       }
     });
     return elem;
   }
 
-  hasChangeColor(){
+  hasChangeColor() {
     const deck = this.deck.getDeck();
-    for(let i=0;i<deck.length;i++){
-      if(deck[i].color === "colorful")
+    for (let i = 0; i < deck.length; i++) {
+      if (deck[i].color === "colorful")
         return deck[i];
     }
     return false;
   }
 
-  selectColorCard(color){
-    let numbersArr = {"1": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0,
-     "plus": 0,"stop": 0, "taki": 0,"2plus": 0};
+  selectColorCard(color) {
+    let numbersArr = {
+      "1": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "plus": 0,
+      "stop": 0,
+      "taki": 0,
+      "2plus": 0
+    };
     const deck = this.deck.getDeck();
-    for(let i=0;i<deck.length;i++){
-      if(deck[i].color === color)
+    for (let i = 0; i < deck.length; i++) {
+      if (deck[i].color === color)
         numbersArr[deck[i].number]++;
     }
-    let max = Object.keys(numbersArr).reduce(function(a, b){ return numbersArr[a] > numbersArr[b] ? a : b });
-    if(numbersArr[max] === 0)
+    let max = Object.keys(numbersArr).reduce(function (a, b) {
+      return numbersArr[a] > numbersArr[b] ? a : b
+    });
+    if (numbersArr[max] === 0)
       return false;
-    for(let i=0;i<deck.length;i++){
-      if(deck[i].color === color && deck[i].number === max)
+    for (let i = 0; i < deck.length; i++) {
+      if (deck[i].color === color && deck[i].number === max)
         return deck[i];
-    } 
-    
+    }
+
   }
 
-  selectNumberCard(number){
-    let colorsArr = {"red": 0,"blue": 0,"green": 0,"yellow": 0};
+  selectNumberCard(number) {
+    let colorsArr = {
+      "red": 0,
+      "blue": 0,
+      "green": 0,
+      "yellow": 0
+    };
     const deck = this.deck.getDeck();
-    for(let i = 0;i < deck.length;i++){
-      if(deck[i].number === number)
-      colorsArr[deck[i].color]++;
+    for (let i = 0; i < deck.length; i++) {
+      if (deck[i].number === number)
+        colorsArr[deck[i].color]++;
     }
-    let max = Object.keys(colorsArr).reduce(function(a, b){ return colorsArr[a] > colorsArr[b] ? a : b });
-    if(colorsArr[max] === 0)
+    let max = Object.keys(colorsArr).reduce(function (a, b) {
+      return colorsArr[a] > colorsArr[b] ? a : b
+    });
+    if (colorsArr[max] === 0)
       return false;
-    for(let i = 0;i < deck.length;i++){
-      if(deck[i].number === number && deck[i].color === max)
+    for (let i = 0; i < deck.length; i++) {
+      if (deck[i].number === number && deck[i].color === max)
         return deck[i];
     }
   }
-  
+
   handleSpecial(color, type) {
     let colorCount = this.getColorCount(color); // count number of cards with this color
     if (type === "taki") { // handle taki
@@ -248,19 +275,19 @@ class Bot extends Player{
     return otherType; //can be false
   }
 
-  getTypeOtherColor(type){
+  getTypeOtherColor(type) {
     const deck = this.deck.getDeck();
-    for(let i=0;i<deck.length;i++){
-      if(deck[i].number === type)
+    for (let i = 0; i < deck.length; i++) {
+      if (deck[i].number === type)
         return deck[i];
     }
     return false;
   }
 
-  hasSameCard(color,type){
+  hasSameCard(color, type) {
     const deck = this.deck.getDeck();
-    for(let i=0;i<deck.length;i++){
-      if(deck[i].number === type && deck[i].color === color)
+    for (let i = 0; i < deck.length; i++) {
+      if (deck[i].number === type && deck[i].color === color)
         return deck[i];
     }
     return false;

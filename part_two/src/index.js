@@ -4,7 +4,7 @@ import "./styles/style.css";
 import "./styles/cards.css";
 
 const shuffleDeck = deck => {
-  const times = 5 + Math.floor(Math.random() * 100);
+  const times = 300 + Math.floor(Math.random() * 500);
   let copiedDeck = [...deck];
   for (let i = 0; i < times; ++i) {
     const cardsToRemove = Math.floor(Math.random() * copiedDeck.length / 2);
@@ -105,41 +105,85 @@ class SideBar extends React.Component {
   }
 }
 
+const PLAYER = 0;
+const BOT = 1;
+
 class MainGameWindow extends React.Component {
   constructor() {
     super();
     this.state = {
       deckCards: createCardsArray(),
       playerDeck: [],
-      botDeck: []
+      botDeck: [],
+      pileCards: [],
+      currentPlayer: PLAYER
     };
+
+    this.playCard = this.playCard.bind(this);
+    this.switchPlayer = this.switchPlayer.bind(this);
+  }
+
+  switchPlayer(toPlayer) {
+    this.setState({
+      currentPlayer: toPlayer
+    });
   }
 
   dealCardsToPlayers() {
     const cardsInDeck = [...this.state.deckCards],
       playerDeck = [],
-      botDeck = [];
+      botDeck = [],
+      pileCards = [];
     for (let i = 0; i < 8; ++i) {
       playerDeck.push(cardsInDeck.pop());
       botDeck.push(cardsInDeck.pop());
     }
+    pileCards.push(cardsInDeck.pop());
+
     this.setState({
       deckCards: cardsInDeck,
       playerDeck,
-      botDeck
+      botDeck,
+      pileCards
+    });
+  }
+
+  playCard(index, deckName) {
+    const copiedDeck = [...this.state[deckName]];
+    const cardToPlay = copiedDeck.popIndex(index);
+    const newPile = [...this.state.pileCards, cardToPlay];
+
+    this.setState({
+      [deckName]: copiedDeck,
+      pileCards: newPile
     });
   }
 
   componentDidMount() {
     this.dealCardsToPlayers();
+
+    setTimeout(() => {
+      this.switchPlayer(BOT);
+    }, 2000);
   }
 
   render() {
+    const {
+      botDeck,
+      deckCards,
+      pileCards,
+      currentPlayer,
+      playerDeck
+    } = this.state;
     return (
       <div id="wrapper">
-        <Bot cards={this.state.botDeck} />
-        <MiddleSection cards={this.state.deckCards}/>
-        <Player cards={this.state.playerDeck} />
+        <Bot cards={botDeck} />Î
+        <MiddleSection
+          mainDeckCards={deckCards}
+          pileCards={pileCards}
+          player={currentPlayer}
+        />
+        <Player playCard={this.playCard} switchPlayer={this.switchPlayer} cards={playerDeck} />
       </div>
     );
   }
@@ -179,19 +223,39 @@ const StartGameButton = ({}) => (
     Start Game
   </button>
 );
-const MiddleSection = ({cards}) => (
+const MiddleSection = ({ mainDeckCards, pileCards = [], player }) => (
   <div id="content">
-    <StartGameButton/>
-    <div id="pile" />
-    <MainDeck cards={cards} />
-    <TurnIdentifier />
+    <StartGameButton />
+    <Pile cards={pileCards} />
+    <MainDeck cards={mainDeckCards} />
+    <TurnIdentifier myTurn={player === PLAYER} />
     <EndingDisplay />
   </div>
 );
 
-const Card = ({ name, styles, classes }) => (
-  <div style={styles} className={`card ${classes}`} />
+const Pile = ({ cards }) => (
+  <div id="pile">
+    {cards.map((cardName, index, arr) => (
+      <Card
+        styles={getPileStyles()}
+        key={index}
+        name={cardName}
+        classes={index >= arr.length - 15 ? `card_${cardName}` : ""}
+      />
+    ))}
+  </div>
 );
+
+const Card = ({ name, styles, classes, handleCardClick }) => (
+  <div style={styles} className={`card ${classes}`} onClick={handleCardClick} />
+);
+const randomMargin = () => Math.floor(Math.random() * 40);
+
+const getPileStyles = () => ({
+  transform: `rotate(${-60 + randomMargin() * 3}deg)`,
+  margin: `${randomMargin()}px ${randomMargin()}px ${randomMargin()}px ${randomMargin()}px`,
+  position: "absolute"
+});
 
 const MainDeck = ({ cards }) => (
   <div>
@@ -206,11 +270,58 @@ const MainDeck = ({ cards }) => (
   </div>
 );
 
+const isSpecialCard = card => {
+  const [number, color] = card;
+  return (
+    number === "taki" ||
+    number === "stop" ||
+    number === "plus" ||
+    color === "colorful"
+  );
+};
+
 class Player extends React.Component {
+  constructor() {
+    super();
+    this.handleCardClick = this.handleCardClick.bind(this);
+  }
+
+  handleCardClick(index) {
+    let card = this.props.cards[index];
+    const [number, color] = card.split("_");
+    let name = card;
+    // if (color === "colorful") {
+    //   //handle colorful
+    //   if (number === "taki") {
+    //     card = number + "_" + game.lastCard().color;
+    //   }
+    // }
+    this.props.playCard(index, "playerDeck");
+    this.props.switchPlayer(BOT);
+    // if (isSpecialCard(card)) {
+    //   if (number === "taki") {
+    //     // game.openTaki();
+    //     console.log("hi");
+    //   }
+    //   if (color !== "colorful") {
+    //     // switchTurn(PLAYER, PLAYER)
+    //   }
+    // } else if (game.taki) {
+    //   switchTurn(PLAYER, PLAYER);
+    // } else if (number !== "") {
+    //   game.setLastCardUnClickable();
+    //   switchTurn(PLAYER, BOT);
+    //   return;
+    // }
+  }
+
   render() {
     return (
       <div id="player">
-        <PlayerDeck cards={this.props.cards} />
+        <PlayerDeck
+          handleCardClick={this.handleCardClick}
+          cards={this.props.cards}
+        />
       </div>
     );
   }
@@ -225,21 +336,20 @@ class Bot extends React.Component {
   }
 }
 
-const PlayerDeck = ({ cards }) => (
-  <div style={{ position: "absolute" }}>
+const PlayerDeck = ({ cards, handleCardClick }) => (
+  <div>
     {cards.map((cardName, index, { length }) => (
       <Card
         key={index}
         styles={getStylesForPlayerCard(index, length)}
         classes={`card_${cardName}`}
+        handleCardClick={() => handleCardClick(index)}
       />
     ))}
   </div>
 );
 
-ReactDOM.render(<MainGameWindow />, document.getElementById("root"));
-
-function getStylesForPlayerCard(index, length) {
+const getStylesForPlayerCard = (index, length) => {
   let leftPx = index * 50;
   if (length === 8) {
     leftPx = index * 30;
@@ -248,4 +358,21 @@ function getStylesForPlayerCard(index, length) {
     position: "relative",
     left: `-${leftPx}px`
   };
-}
+};
+
+ReactDOM.render(<MainGameWindow />, document.getElementById("root"));
+
+Array.prototype.popIndex = function(index) {
+  if (index < 0 || index >= this.length) {
+    throw new Error();
+  }
+  let item = this[index];
+  let write = 0;
+  for (let i = 0; i < this.length; i++) {
+    if (index !== i) {
+      this[write++] = this[i];
+    }
+  }
+  this.length--;
+  return item;
+};

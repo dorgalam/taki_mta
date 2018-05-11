@@ -7,7 +7,7 @@ const BOT = 1;
 const NOTFINISH = -1;
 const STACK = true;
 
-Array.prototype.popIndex = function(index) {
+Array.prototype.popIndex = function (index) {
   if (index < 0 || index >= this.length) {
     throw new Error();
   }
@@ -22,7 +22,7 @@ Array.prototype.popIndex = function(index) {
   return item;
 };
 
-Array.prototype.popRandomIndex = function() {
+Array.prototype.popRandomIndex = function () {
   let rand = Math.floor(Math.random() * this.length);
   return this.popIndex(rand);
 };
@@ -73,7 +73,7 @@ class Game {
     this.renderAll();
     this.player.getPlayableIndexes(this.lastCard(), this.active, this.taki);
     this.player.setCardsClickable();
-    if (this.player.hasNoPlay()&& !game.taki) this.mainDeck.setLastCardClickable();
+    if (this.player.hasNoPlay() && !game.taki) this.mainDeck.setLastCardClickable();
     this.renderAll();
   }
 
@@ -82,20 +82,26 @@ class Game {
   }
 
   botPickColor() {
-    let colorsArr = { red: 0, blue: 0, yellow: 0, green: 0, colorful: -5 };
+    let colorsArr = {
+      red: 0,
+      blue: 0,
+      yellow: 0,
+      green: 0,
+      colorful: -5
+    };
     let cards = this.bot.deck.getDeck();
     cards.forEach(element => {
       colorsArr[element.color]++;
     });
-    return Object.keys(colorsArr).reduce(function(a, b) {
+    return Object.keys(colorsArr).reduce(function (a, b) {
       return colorsArr[a] > colorsArr[b] ? a : b;
     });
   }
 
   botTurn() {
-    let lastCard = this.taki
-      ? new Card("taki_" + this.lastCard().color)
-      : this.lastCard();
+    let lastCard = this.taki ?
+      new Card("taki_" + this.lastCard().color) :
+      this.lastCard();
     let card = this.bot.chooseCard(lastCard, this.active);
     this.bot.removeCardByCard(card);
     let orig = card.name;
@@ -107,7 +113,10 @@ class Game {
       }
       card.name = card.number + "_" + card.color;
     }
-    return { card, orig };
+    return {
+      card,
+      orig
+    };
   }
 
   renderAll() {
@@ -158,14 +167,14 @@ class Game {
     let colors = ["red", "blue", "green", "yellow"];
     let arr = [];
     let card;
-    cards.forEach(function(number) {
-      colors.forEach(function(color) {
+    cards.forEach(function (number) {
+      colors.forEach(function (color) {
         card = String(number) + "_" + color;
         arr.push(card);
         arr.push(card);
       });
     });
-    colors.forEach(function(color) {
+    colors.forEach(function (color) {
       arr.push("change_colorful");
     });
     /// arr.push('taki_colorful');
@@ -213,7 +222,7 @@ class Game {
       this.buildMainFromPile();
     }
     let cardName = this.mainDeck.popCard();
-    if(!cardName){//end of deck
+    if (!cardName) { //end of deck
       return;
     }
     if (player === PLAYER) {
@@ -326,7 +335,7 @@ function goToWinner(winner) {
 
 function selectColor(color, index) {
   let card = "_" + color;
-  game.addCardToPile(card,"change_colorful");
+  game.addCardToPile(card, "change_colorful");
   game.player.removeCardByIndex(index);
   game.renderAll();
   switchTurn(PLAYER, BOT);
@@ -334,15 +343,15 @@ function selectColor(color, index) {
 
 function doBotTurn() {
   card = game.botTurn(); //get card from bot deck -- choosen by a smart algo
-  if (card["card"]) {//legit card
+  if (card["card"]) { //legit card
     game.addCardToPile(card["card"].name, card["orig"]);
-  } else {// didnt find suitable card ,if was taki turn - no need to take a card , else take cards (as needed maybe 2plus)
+  } else { // didnt find suitable card ,if was taki turn - no need to take a card , else take cards (as needed maybe 2plus)
     if (!game.taki) {
       const count = game.takinNumber();
       for (let i = 0; i < count; i++) {
         game.takeCardFromMainDeck(BOT);
       }
-    } else {//finish my taki turn
+    } else { //finish my taki turn
       game.taki = false;
       if (
         game.specialCard(game.lastCard()) &&
@@ -355,10 +364,10 @@ function doBotTurn() {
     switchTurn(BOT, PLAYER);
     return;
   }
-  if (game.specialCard(card["card"])) {// do again bot turn(plus,stop,taki)
-    if (card["card"].number === "taki") 
-      game.taki = true;// taki flag on
-    else 
+  if (game.specialCard(card["card"])) { // do again bot turn(plus,stop,taki)
+    if (card["card"].number === "taki")
+      game.taki = true; // taki flag on
+    else
       game.taki = false;
     switchTurn(BOT, BOT);
     return;
@@ -386,12 +395,12 @@ function switchTurn(from, to) {
       if (gameOver())
         //check if game over
         return;
-  } else if (!game.taki &&(game.lastCard().number === "plus" || game.lastCard().number === "stop")) {
+  } else if (!game.taki && (game.lastCard().number === "plus" || game.lastCard().number === "stop")) {
     let player = from === BOT ? game.bot : game.player;
     player.setStats();
     renderStats();
     if (game.lastCard().number === "stop") {
-      if (gameOver())//check if game over
+      if (gameOver()) //check if game over
         return;
     }
   }
