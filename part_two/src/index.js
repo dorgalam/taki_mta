@@ -177,7 +177,8 @@ class MainGameWindow extends React.Component {
     return (
       <div id="wrapper">
         <Bot cards={botDeck}
-        playCard={currentPlayer == PLAYER ? this.playCard : ""}
+        myTurn={currentPlayer === BOT}
+        playCard={currentPlayer === PLAYER ? this.playCard : ""}
         switchPlayer={this.switchPlayer} 
         lastPileCard={pileCards[pileCards.length - 1]}
         isActive={cardIsActive}/>?
@@ -187,11 +188,12 @@ class MainGameWindow extends React.Component {
           player={currentPlayer} ///who's turn
         />
         <Player
-          playCard={currentPlayer == PLAYER ? this.playCard : ""}
+          playCard={currentPlayer === PLAYER ? this.playCard : ""}
           switchPlayer={this.switchPlayer}
           cards={playerDeck}
           isActive={cardIsActive}
           lastPileCard={pileCards[pileCards.length - 1]}
+         
         />
       </div>
     );
@@ -315,7 +317,6 @@ class Player extends React.Component {
     // }
     this.props.playCard(index, "playerDeck");
     this.props.switchPlayer(BOT);
-    chooseCard(lastPileCard);
     // if (isSpecialCard(card)) {
     //   if (number === "taki") {
     //     // game.openTaki();
@@ -361,11 +362,6 @@ class Player extends React.Component {
   }
 
   render() {
-    const {
-      isActive,
-      isTaki,
-      lastPileCard
-    } = this.state;
     return (
       <div id="player">
         <PlayerDeck
@@ -375,11 +371,17 @@ class Player extends React.Component {
           lastCard={this.props.lastPileCard}
           active={this.props.isActive}
           taki={this.props.isTaki}
+          isFacedUp={true}
         />
       </div>
     );
   }
 }
+
+const getPlayerClasses = (isFacedUp, card) =>{
+  return(
+`card ${isFacedUp ? `card_${card}` : "card_back"} `)
+};
 
 const getStylesForPlayerCard = (index, length) => {
   let leftPx = index * 50;
@@ -392,13 +394,13 @@ const getStylesForPlayerCard = (index, length) => {
   };
 };
 
-const PlayerDeck = ({ cards, handleCardClick, lastCard, active, taki, isPlayableCard }) => (
+const PlayerDeck = ({ cards, handleCardClick, lastCard, active, taki, isPlayableCard ,isFacedUp}) => (
   <div>
     {cards.map((cardName, index, { length }) => (
       <Card
         key={index}
         styles={getStylesForPlayerCard(index, length)}
-        classes={`card_${cardName}`}
+        classes={getPlayerClasses(isFacedUp,cardName)}
         handleCardClick={() => isPlayableCard(index) ? handleCardClick(index) : null}
       />
     ))}
@@ -408,14 +410,39 @@ const PlayerDeck = ({ cards, handleCardClick, lastCard, active, taki, isPlayable
 class Bot extends React.Component {
   constructor(deck, isFacedUp) {
     super(deck, isFacedUp);
+    this.getAttributeFromName = this.getAttributeFromName.bind(this);
   }
 
-  chooseCard(card, active = true) { //the bot well aware of the cards he has (this.cards)
+  getAttributeFromName(name) {
+    name = name.split("_");
+    let card = [];
+    card.number = name[0];
+    card.color = name[1];
+    return card;
+  }
+
+  getCardIndex(card){
+    if(card === false)
+      return -1;
+    this.props.cards.forEach((element,index) => {
+      if (element.color === card.color && element.number === card.number) {
+        return index;
+      }
+    });
+  }
+
+  chooseCardIndex(active = true){
+      let card = this.chooseCard(active);
+      return this.getCardIndex(card);
+  }
+
+  chooseCard(active = true) { //the bot well aware of the cards he has (this.cards)
+    let card = this.getAttributeFromName(this.props.lastPileCard);
     let number = card.number;
     let color = card.color;
     if (active && number === "2plus")
       return this.has2plus(); // options: card name, false (take a card from the pile)
-    if (active && this.specialCard(card)) {
+    if (active && isSpecialCard(card)) {
       return this.handleSpecial(color, number);
     }
     let colorCount = this.getColorCount(color); // count number of cards with this color
@@ -438,7 +465,7 @@ class Bot extends React.Component {
 
   getColorCount(color) {
     let count = 0;
-    this.deck.getDeck().forEach((element) => {
+    this.props.cards.forEach((element) => {
       if (element.color === color) {
         count++;
       }
@@ -448,7 +475,7 @@ class Bot extends React.Component {
 
   getNumberCount(number) {
     let count = 0;
-    this.deck.getDeck().forEach((element) => {
+    this.props.cards.forEach((element) => {
       if (element.number === number) {
         count++;
       }
@@ -458,7 +485,7 @@ class Bot extends React.Component {
 
   getSpecialTypeColor(color, specialType) {
     let special = false;
-    this.deck.getDeck().forEach(function (element) {
+    this.props.cards.forEach(function (element) {
       if (element.color === color && element.number === specialType) {
         special = element;
       }
@@ -468,7 +495,7 @@ class Bot extends React.Component {
 
   has2plus() {
     let elem = false;
-    this.deck.getDeck().forEach(function (element) {
+    this.props.cards.forEach(function (element) {
       if (element.number === "2plus") {
         elem = element;
       }
@@ -477,7 +504,7 @@ class Bot extends React.Component {
   }
 
   hasChangeColor() {
-    const deck = this.deck.getDeck();
+    const deck = this.props.cards;
     for (let i = 0; i < deck.length; i++) {
       if (deck[i].color === "colorful")
         return deck[i];
@@ -500,7 +527,7 @@ class Bot extends React.Component {
       "taki": 0,
       "2plus": 0
     };
-    const deck = this.deck.getDeck();
+    const deck = this.props.cards;
     for (let i = 0; i < deck.length; i++) {
       if (deck[i].color === color)
         numbersArr[deck[i].number]++;
@@ -524,7 +551,7 @@ class Bot extends React.Component {
       "green": 0,
       "yellow": 0
     };
-    const deck = this.deck.getDeck();
+    const deck = this.props.cards;
     for (let i = 0; i < deck.length; i++) {
       if (deck[i].number === number)
         colorsArr[deck[i].color]++;
@@ -561,7 +588,7 @@ class Bot extends React.Component {
   }
 
   getTypeOtherColor(type) {
-    const deck = this.deck.getDeck();
+    const deck = this.props.cards;
     for (let i = 0; i < deck.length; i++) {
       if (deck[i].number === type)
         return deck[i];
@@ -570,7 +597,7 @@ class Bot extends React.Component {
   }
 
   hasSameCard(color, type) {
-    const deck = this.deck.getDeck();
+    const deck = this.props.cards;
     for (let i = 0; i < deck.length; i++) {
       if (deck[i].number === type && deck[i].color === color)
         return deck[i];
@@ -578,10 +605,22 @@ class Bot extends React.Component {
     return false;
   }
 
+  componentDidUpdate(){
+    if(this.props.myTurn){
+      card = this.chooseCard(this.props.lastPileCard);
+      console.log(card);
+    }
+  }
+
   render() {
     return (
       <div id="bot">
-        <PlayerDeck cards={this.props.cards} />
+        <PlayerDeck cards={this.props.cards}
+         lastCard={this.props.lastPileCard}
+         active={this.props.isActive}
+         taki={this.props.isTaki}
+         isFacedUp={false}
+         />
       </div>
     );
   }
