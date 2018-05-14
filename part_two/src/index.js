@@ -112,7 +112,7 @@ class MainGameWindow extends React.Component {
   constructor() {
     super();
     this.state = {
-      deckCards: createCardsArray(),
+      deckCards: createCardsArray().map(item => new Card(item)),
       playerDeck: [],
       botDeck: [],
       pileCards: [],
@@ -127,7 +127,7 @@ class MainGameWindow extends React.Component {
   switchPlayer(toPlayer) {
     this.setState({
       currentPlayer: toPlayer
-    });
+    }); 
   }
 
   dealCardsToPlayers() {
@@ -246,18 +246,18 @@ const MiddleSection = ({ mainDeckCards, pileCards = [], player }) => (
 
 const Pile = ({ cards }) => (
   <div id="pile">
-    {cards.map((cardName, index, arr) => (
-      <Card
+    {cards.map((card, index, arr) => (
+      <CardComp
         styles={getPileStyles()}
         key={index}
-        name={cardName}
-        classes={index >= arr.length - 15 ? `card_${cardName}` : ""}
+        name={card.name}
+        classes={index >= arr.length - 15 ? `card_${card.name}` : ""}
       />
     ))}
   </div>
 );
 
-const Card = ({ name, styles, classes, handleCardClick }) => (
+const CardComp = ({ name, styles, classes, handleCardClick }) => (
   <div style={styles} className={`card ${classes}`} onClick={handleCardClick} />
 );
 const randomMargin = () => Math.floor(Math.random() * 40);
@@ -270,11 +270,11 @@ const getPileStyles = () => ({
 
 const MainDeck = ({ cards }) => (
   <div>
-    {cards.map((cardName, index, arr) => (
-      <Card
+    {cards.map((card, index, arr) => (
+      <CardComp
         styles={{ left: `${index / 3}px`, position: "absolute" }}
         key={index}
-        name={cardName}
+        name={card.name}
         classes={index >= arr.length - 2 ? "card_back" : ""}
       />
     ))}
@@ -282,12 +282,11 @@ const MainDeck = ({ cards }) => (
 );
 
 const isSpecialCard = card => {
-  const [number, color] = card;
   return (
-    number === "taki" ||
-    number === "stop" ||
-    number === "plus" ||
-    color === "colorful"
+    card.number === "taki" ||
+    card.number === "stop" ||
+    card.number === "plus" ||
+    card.color === "colorful"
   );
 };
 
@@ -299,7 +298,6 @@ class Player extends React.Component {
     }
     this.handleCardClick = this.handleCardClick.bind(this);
     this.isPlayableCard = this.isPlayableCard.bind(this);
-    this.getAttributeFromName = this.getAttributeFromName.bind(this);
   }
 
   handleCardClick(index) {
@@ -307,8 +305,7 @@ class Player extends React.Component {
       return;
     }
     let card = this.props.cards[index];
-    const [number, color] = card.split("_");
-    let name = card;
+    let name = card.name;
     // if (color === "colorful") {
     //   //handle colorful
     //   if (number === "taki") {
@@ -337,28 +334,19 @@ class Player extends React.Component {
   isPlayableCard(index) {
     const { isTaki } = this.state
     const { lastPileCard, cards, cardIsActive } = this.props;
-    const [lastCardNumber, lastCardColor] = lastPileCard.split("_");
-    const [currentCardNumber, currentCardColor] = cards[index].split("_");
+    const currentCard = cards[index]
 
     if (cardIsActive && isTaki) {
-      return lastCardColor === cardElem.color;
+      return lastPileCard.color === cardElem.color;
     }
-    if (cardIsActive && lastCardNumber === "2plus") {
+    if (cardIsActive && lastPileCard.number === "2plus") {
       return cardElem.number === "2plus";
     }
     return (
-      lastCardColor === currentCardColor ||
-      lastCardNumber ===currentCardNumber ||
-      currentCardColor === "colorful"
+      lastPileCard.color === currentCard.color ||
+      lastPileCard.number ===currentCard.number ||
+      currentCard.color === "colorful"
     );
-  }
-
-  getAttributeFromName(name) {
-    name = name.split("_");
-    let card = [];
-    card.number = name[0];
-    card.color = name[1];
-    return card;
   }
 
   render() {
@@ -396,31 +384,27 @@ const getStylesForPlayerCard = (index, length) => {
 
 const PlayerDeck = ({ cards, handleCardClick, lastCard, active, taki, isPlayableCard ,isFacedUp}) => (
   <div>
-    {cards.map((cardName, index, { length }) => (
-      <Card
+    {cards.map((card, index, { length }) => (
+      <CardComp
         key={index}
         styles={getStylesForPlayerCard(index, length)}
-        classes={getPlayerClasses(isFacedUp,cardName)}
+        classes={getPlayerClasses(isFacedUp,card.name)}
         handleCardClick={() => isPlayableCard(index) ? handleCardClick(index) : null}
       />
     ))}
   </div>
 );
 
+class Card {
+  constructor(card) {
+    this.name = card;
+    const [number, color] = card.split('_')
+    this.number = number;
+    this.card = card;
+  }
+}
+
 class Bot extends React.Component {
-  constructor(deck, isFacedUp) {
-    super(deck, isFacedUp);
-    this.getAttributeFromName = this.getAttributeFromName.bind(this);
-  }
-
-  getAttributeFromName(name) {
-    name = name.split("_");
-    let card = [];
-    card.number = name[0];
-    card.color = name[1];
-    return card;
-  }
-
   getCardIndex(card){
     if(card === false)
       return -1;
@@ -437,12 +421,12 @@ class Bot extends React.Component {
   }
 
   chooseCard(active = true) { //the bot well aware of the cards he has (this.cards)
-    let card = this.getAttributeFromName(this.props.lastPileCard);
-    let number = card.number;
-    let color = card.color;
+    const {lastPileCard} = this.props;
+    let number = lastPileCard.number;
+    let color = lastPileCard.color;
     if (active && number === "2plus")
       return this.has2plus(); // options: card name, false (take a card from the pile)
-    if (active && isSpecialCard(card)) {
+    if (active && isSpecialCard(lastPileCard)) {
       return this.handleSpecial(color, number);
     }
     let colorCount = this.getColorCount(color); // count number of cards with this color
@@ -607,7 +591,7 @@ class Bot extends React.Component {
 
   componentDidUpdate(){
     if(this.props.myTurn){
-      card = this.chooseCard(this.props.lastPileCard);
+      let card = this.chooseCardIndex(this.props.lastPileCard);
       console.log(card);
     }
   }
