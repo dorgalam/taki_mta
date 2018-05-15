@@ -1,19 +1,19 @@
 .card_back {
   background-image: url("./assets/card_back.png");
 }
-.card_blue {
+.card__blue {
   background-image: url("./assets/change_blue.png");
 }
 
-.card_yellow {
+.card__yellow {
   background-image: url("./assets/change_yellow.png");
 }
 
-.card_green {
+.card__green {
   background-image: url("./assets/change_green.png");
 }
 
-.card_red {
+.card__red {
   background-image: url("./assets/change_red.png");
 }
 

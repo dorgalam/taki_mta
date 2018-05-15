@@ -126,6 +126,10 @@ class MainGameWindow extends React.Component {
     this.closeTaki = this.closeTaki.bind(this);
     this.takeCardFromMainDeck = this.takeCardFromMainDeck.bind(this);
     this.switchPlayer = this.switchPlayer.bind(this);
+    this.selectColor = this.selectColor.bind(this);
+    this.getBotProps = this.getBotProps.bind(this);
+    this.getMiddleProps = this.getMiddleProps.bind(this);
+    this.getPlayerProps = this.getPlayerProps.bind(this);
   }
 
   switchPlayer(toPlayer) {
@@ -161,6 +165,9 @@ class MainGameWindow extends React.Component {
       this.takinNumber = this.takinNumber === 1 ? 0 : this.takinNumber;
       this.takinNumber += 2;
     }
+    if(cardToPlay.color === "colorful"){
+      this.switchPlayer(-1);
+    }
 
     this.setState({
       [deckName]: copiedDeck,
@@ -187,8 +194,13 @@ class MainGameWindow extends React.Component {
   }
 
   closeTaki(){
+    let lastcard = this.state.pileCards[this.state.pileCards.length-1];
     this.setTaki(false);
-    this.switchPlayer(BOT);
+    if(isSpecialCard(lastcard) && lastcard.number!=="taki")
+      this.switchPlayer(PLAYER);
+    else{
+      this.switchPlayer(BOT);
+    }
   }
 
   setTaki(bool){
@@ -198,12 +210,50 @@ class MainGameWindow extends React.Component {
   }
 
   selectColor(color){
-    pileCards[pileCards.length - 1] = new Card("_"+color);
+    this.state.pileCards[this.state.pileCards.length - 1] = new Card("_"+color);
     this.switchPlayer(BOT);
   }
 
   componentDidMount() {
     this.dealCardsToPlayers();
+  }
+
+  getBotProps(botDeck,pileCards,currentPlayer,cardIsActive,isTaki) {
+    return {
+      cards:botDeck,
+      myTurn:currentPlayer === BOT,
+      playCard:currentPlayer === BOT ? this.playCard : "",
+      switchPlayer:this.switchPlayer, 
+      lastPileCard:pileCards[pileCards.length - 1],
+      isActive:cardIsActive,
+      isTaki:isTaki,
+      setTaki:this.setTaki,
+      takeCard:this.takeCardFromMainDeck
+    }
+  }
+
+  getMiddleProps(deckCards,pileCards,currentPlayer,isTaki){
+    return {
+      mainDeckCards:deckCards,
+      pileCards:pileCards,
+      player:currentPlayer, ///who's turn
+      takeCard:currentPlayer === PLAYER ? this.takeCardFromMainDeck: null,
+      isTaki:isTaki,
+      closeTaki:this.closeTaki,
+      selectColor:this.selectColor
+    }
+  }
+
+  getPlayerProps(playerDeck,pileCards,currentPlayer,cardIsActive,isTaki){
+    return {
+      playCard:currentPlayer === PLAYER ? this.playCard : null,
+      switchPlayer:this.switchPlayer,
+      cards:playerDeck,
+      isActive:cardIsActive,
+      lastPileCard:pileCards[pileCards.length - 1],
+      isTaki:isTaki,
+      setTaki:this.setTaki
+    }
   }
 
   render() {
@@ -218,33 +268,9 @@ class MainGameWindow extends React.Component {
     } = this.state;
     return (
       <div id="wrapper">
-        <Bot cards={botDeck}
-        myTurn={currentPlayer === BOT}
-        playCard={currentPlayer === BOT ? this.playCard : ""}
-        switchPlayer={this.switchPlayer} 
-        lastPileCard={pileCards[pileCards.length - 1]}
-        isActive={cardIsActive}
-        isTaki={isTaki}
-        setTaki={this.setTaki}
-        takeCard={this.takeCardFromMainDeck}
-        />
-        <MiddleSection
-          mainDeckCards={deckCards}
-          pileCards={pileCards}
-          player={currentPlayer} ///who's turn
-          takeCard={currentPlayer === PLAYER ? this.takeCardFromMainDeck: null}
-          isTaki={isTaki}
-          closeTaki={this.closeTaki}
-        />
-        <Player
-          playCard={currentPlayer === PLAYER ? this.playCard : null}
-          switchPlayer={this.switchPlayer}
-          cards={playerDeck}
-          isActive={cardIsActive}
-          lastPileCard={pileCards[pileCards.length - 1]}
-          isTaki={isTaki}
-          setTaki={this.setTaki}
-        />
+        <Bot {...this.getBotProps(botDeck,pileCards,currentPlayer,cardIsActive,isTaki)}/>
+        <MiddleSection {...this.getMiddleProps(deckCards,pileCards,currentPlayer,isTaki)}/>
+        <Player {...this.getPlayerProps(playerDeck,pileCards,currentPlayer,cardIsActive,isTaki)}/>
       </div>
     );
   }
@@ -262,6 +288,16 @@ const TurnIdentifier = ({ myTurn }) =>
       <div id="closeT" className="turn">
       <button className="btn" onClick={closeTaki} id="closeTaki">Close taki</button>
       </div>
+  ) : null;
+
+  const ColorPick = ({choose,selectColor}) =>
+    choose ? (
+      <div className="color_tooltip"><a>Choose Color:</a>        
+        <div onClick={selectColor('red')} className="color_tooltip_red"></div>
+        <div onClick={selectColor('yellow')} className="color_tooltip_yellow"></div>
+        <div onClick={selectColor('blue')} className="color_tooltip_blue"></div>
+        <div onClick={selectColor('green')} className="color_tooltip_green"></div>
+    </div>
   ) : null;
 
 const EndingDisplay = ({ }) => (
@@ -291,16 +327,19 @@ const StartGameButton = ({ }) => (
     Start Game
   </button>
 );
-const MiddleSection = ({ mainDeckCards, pileCards = [], player ,takeCard,isTaki ,closeTaki}) => (
+const MiddleSection = ({ mainDeckCards, pileCards = [], player ,takeCard,isTaki ,closeTaki,selectColor}) => (
   <div id="content">
     <StartGameButton />
     <Pile cards={pileCards} />
     <MainDeck cards={mainDeckCards} giveCardToPlayer={takeCard} />
     <TurnIdentifier myTurn={player === PLAYER} />
     <TakiIdentifier openTaki ={player === PLAYER && isTaki} closeTaki={closeTaki} />
+    <ColorPick choose={player===-1} selectColor={color => () => selectColor(color)}/>
     <EndingDisplay />
   </div>
 );
+
+
 
 const Pile = ({ cards }) => (
   <div id="pile">
@@ -327,7 +366,7 @@ const getPileStyles = () => ({
 });
 
 const MainDeck = ({ cards ,giveCardToPlayer}) => (
-  <div>
+  <div id="deck">
     {cards.map((card, index, arr) => (
       <CardComp
         styles={{ left: `${index / 3}px`, position: "absolute" }}
@@ -371,7 +410,6 @@ class Player extends React.Component {
        }
        else{
         //this.props.setLastCardUnClickable();
-        pickColor();
        }
      }
     this.props.playCard(index, "playerDeck");
@@ -444,7 +482,7 @@ const PlayerDeck = ({ cards, handleCardClick, lastCard, active, taki, isPlayable
       <CardComp
         key={index}
         styles={getStylesForPlayerCard(index, length)}
-        classes={getPlayerClasses(isFacedUp,card.name)}
+        classes={getPlayerClasses(isFacedUp,card.name) + String(isFacedUp&&isPlayableCard(index)?"playable":"")}
         handleCardClick={() => isPlayableCard(index) ? handleCardClick(index) : null}
       />
     ))}
@@ -452,12 +490,12 @@ const PlayerDeck = ({ cards, handleCardClick, lastCard, active, taki, isPlayable
 );
 
 class Card {
-  constructor(card) {
+  constructor(card,orig ="") {
     this.name = card;
     const [number, color] = card.split('_')
     this.number = number;
     this.color = color;
-    this.card = card;
+    this.card = orig;
   }
 }
 
@@ -475,10 +513,13 @@ class Bot extends React.Component {
     return res;
   }
 
-  chooseCard(active = true) { //the bot well aware of the cards he has (this.cards)
+  chooseCard(active,isTaki) { //the bot well aware of the cards he has (this.cards)
     const {lastPileCard} = this.props;
     let number = lastPileCard.number;
     let color = lastPileCard.color;
+    if(isTaki){
+      return this.selectColorCard(color);
+    }
     if (active && number === "2plus")
       return this.has2plus(); // options: card name, false (take a card from the pile)
     if (active && isSpecialCard(lastPileCard)) {
@@ -650,7 +691,7 @@ class Bot extends React.Component {
       blue: 0,
       yellow: 0,
       green: 0,
-      colorful: -5
+      colorful: -20
     };
     this.props.cards.forEach(element => {
       colorsArr[element.color]++;
@@ -662,14 +703,14 @@ class Bot extends React.Component {
 
   componentDidUpdate(){
     if(this.props.myTurn){
-      let card = this.chooseCard(this.props.isActive);
+      let card = this.chooseCard(this.props.isActive,this.props.isTaki);
       let index = this.getCardIndex(card);
       if (card.color === "colorful") {//handle colorful
         if (card.number === "taki") {
-         this.props.cards[index] = new Card(card.number + "_" + this.props.lastPileCard.color);
+         this.props.cards[index] = new Card(card.number + "_" + this.props.lastPileCard.color,card.name);
         }
         else{
-          this.props.cards[index] = new Card("_" + this.botPickColor());
+          card = this.props.cards[index] = new Card("_" + this.botPickColor(),card.name);
         }
       }
       console.log(card);
@@ -691,8 +732,9 @@ class Bot extends React.Component {
     else{
       this.props.playCard(index,"botDeck");
       if (isSpecialCard(card)) { // do again bot turn(plus,stop,taki)
-        if (card.number === "taki")
+        if (card.number === "taki"){
           this.props.setTaki(true); // taki flag on
+        }
         this.props.switchPlayer(BOT);
         return;
       } else if (this.props.isTaki) { // regular card but on taki - need to do bot turns until no card in this color

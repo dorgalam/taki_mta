@@ -167,24 +167,17 @@ body {
   position: absolute;
 }
 
-.card_change_colorful:hover > .color_tooltip {
-  opacity: 1;
-  transition: 200ms ease all;
-}
-
 .color_tooltip {
   position: absolute;
-  width: 110px;
+  width: 150px;
+  top: 50%;
+  left: 60%;
   z-index: 10000;
   display: flex;
-  top: 0;
-  opacity: 0;
+  opacity: 1;
   transition: 200ms ease all;
 }
 
-.color_tooltip:hover {
-  opacity: 1;
-}
 
 .color_tooltip > div {
   cursor: pointer;
@@ -198,6 +191,7 @@ body {
 .color_tooltip_red {
   background-color: #db6e53;
   margin-left: 0 !important;
+  margin-top: 0 ;
 }
 
 .color_tooltip_green {
