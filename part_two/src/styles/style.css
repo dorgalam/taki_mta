@@ -79,6 +79,11 @@ body {
   background-color: white;
 }
 
+#closeT{
+  height: 20%;
+  left:70% !important;
+}
+
 #stats-section {
   background-color: black;
   height: 80%;

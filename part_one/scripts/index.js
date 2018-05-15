@@ -109,7 +109,7 @@ class Game {
       if (card.number === "taki") card.color = lastCard.color;
       else {
         card.number = "";
-        card.color = this.botPickColor(card);
+        card.color = this.botPickColor();
       }
       card.name = card.number + "_" + card.color;
     }
