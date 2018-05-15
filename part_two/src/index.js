@@ -117,10 +117,14 @@ class MainGameWindow extends React.Component {
       botDeck: [],
       pileCards: [],
       currentPlayer: PLAYER,
-      cardIsActive: false
+      cardIsActive: false,
+      isTaki: false,
     };
-
+    this.takinNumber = 1;
     this.playCard = this.playCard.bind(this);
+    this.setTaki = this.setTaki.bind(this);
+    this.closeTaki = this.closeTaki.bind(this);
+    this.takeCardFromMainDeck = this.takeCardFromMainDeck.bind(this);
     this.switchPlayer = this.switchPlayer.bind(this);
   }
 
@@ -153,12 +157,46 @@ class MainGameWindow extends React.Component {
     const copiedDeck = [...this.state[deckName]];
     const cardToPlay = copiedDeck.popIndex(index);
     const newPile = [...this.state.pileCards, cardToPlay];
+    if(cardToPlay.number === "2plus"){
+      this.takinNumber = this.takinNumber === 1 ? 0 : this.takinNumber;
+      this.takinNumber += 2;
+    }
 
     this.setState({
       [deckName]: copiedDeck,
-      pileCards: newPile
+      pileCards: newPile,
+      cardIsActive: true
     });
   }
+
+  takeCardFromMainDeck(deckName,player) {
+    let cards =[];
+    let copiedDeck = [...this.state.deckCards];
+    for(let i=0;i<this.takinNumber;i++){
+      cards.push(copiedDeck.pop());
+    }
+    this.takinNumber = 1; 
+    const newPile = [...this.state[deckName],...cards];
+
+    this.setState({
+      deckCards: copiedDeck,
+      [deckName]: newPile,
+      cardIsActive: false
+    });
+    this.switchPlayer(player)
+  }
+
+  closeTaki(){
+    this.setTaki(false);
+    this.switchPlayer(BOT);
+  }
+
+  setTaki(bool){
+    this.setState({
+      isTaki: bool
+    });
+  }
+
 
   componentDidMount() {
     this.dealCardsToPlayers();
@@ -171,29 +209,38 @@ class MainGameWindow extends React.Component {
       pileCards,
       currentPlayer,
       playerDeck,
-      cardIsActive
+      cardIsActive,
+      isTaki
     } = this.state;
 
     return (
       <div id="wrapper">
         <Bot cards={botDeck}
         myTurn={currentPlayer === BOT}
-        playCard={currentPlayer === PLAYER ? this.playCard : ""}
+        playCard={currentPlayer === BOT ? this.playCard : ""}
         switchPlayer={this.switchPlayer} 
         lastPileCard={pileCards[pileCards.length - 1]}
-        isActive={cardIsActive}/>?
+        isActive={cardIsActive}
+        isTaki={isTaki}
+        setTaki={this.setTaki}
+        takeCard={this.takeCardFromMainDeck}
+        />
         <MiddleSection
           mainDeckCards={deckCards}
           pileCards={pileCards}
           player={currentPlayer} ///who's turn
+          takeCard={currentPlayer === PLAYER ? this.takeCardFromMainDeck: null}
+          isTaki={isTaki}
+          closeTaki={this.closeTaki}
         />
         <Player
-          playCard={currentPlayer === PLAYER ? this.playCard : ""}
+          playCard={currentPlayer === PLAYER ? this.playCard : null}
           switchPlayer={this.switchPlayer}
           cards={playerDeck}
           isActive={cardIsActive}
           lastPileCard={pileCards[pileCards.length - 1]}
-         
+          isTaki={isTaki}
+          setTaki={this.setTaki}
         />
       </div>
     );
@@ -205,6 +252,11 @@ const TurnIdentifier = ({ myTurn }) =>
     <div id="turn" className="turn">
       <img id="turn-img" src="../src/styles/assets/yourturn.png" alt="turn" />
     </div>
+  ) : null;
+
+  const TakiIdentifier = ({ openTaki,closeTaki}) =>
+    openTaki ? (
+      <button className="btn" onClick={closeTaki} id="closeTaki">Close taki</button>
   ) : null;
 
 const EndingDisplay = ({ }) => (
@@ -234,12 +286,13 @@ const StartGameButton = ({ }) => (
     Start Game
   </button>
 );
-const MiddleSection = ({ mainDeckCards, pileCards = [], player }) => (
+const MiddleSection = ({ mainDeckCards, pileCards = [], player ,takeCard,isTaki ,closeTaki}) => (
   <div id="content">
     <StartGameButton />
     <Pile cards={pileCards} />
-    <MainDeck cards={mainDeckCards} />
+    <MainDeck cards={mainDeckCards} giveCardToPlayer={takeCard} />
     <TurnIdentifier myTurn={player === PLAYER} />
+    <TakiIdentifier openTaki ={player === PLAYER && isTaki} closeTaki={closeTaki} />
     <EndingDisplay />
   </div>
 );
@@ -268,7 +321,7 @@ const getPileStyles = () => ({
   position: "absolute"
 });
 
-const MainDeck = ({ cards }) => (
+const MainDeck = ({ cards ,giveCardToPlayer}) => (
   <div>
     {cards.map((card, index, arr) => (
       <CardComp
@@ -276,6 +329,7 @@ const MainDeck = ({ cards }) => (
         key={index}
         name={card.name}
         classes={index >= arr.length - 2 ? "card_back" : ""}
+        handleCardClick={() => index === cards.length-1 ? giveCardToPlayer("playerDeck",BOT) : null}
       />
     ))}
   </div>
@@ -293,9 +347,7 @@ const isSpecialCard = card => {
 class Player extends React.Component {
   constructor() {
     super();
-    this.state = {
-      isTaki: false
-    }
+   
     this.handleCardClick = this.handleCardClick.bind(this);
     this.isPlayableCard = this.isPlayableCard.bind(this);
   }
@@ -306,34 +358,29 @@ class Player extends React.Component {
     }
     let card = this.props.cards[index];
     let name = card.name;
-    // if (color === "colorful") {
-    //   //handle colorful
-    //   if (number === "taki") {
-    //     card = number + "_" + game.lastCard().color;
-    //   }
-    // }
+    const {number,color} = card;
+     if (color === "colorful") {//handle colorful
+       if (number === "taki") {
+         this.props.setTaki(true);
+          this.props.cards[index] = new Card(number + "_" + this.props.lastPileCard.color);
+       }
+     }
     this.props.playCard(index, "playerDeck");
-    this.props.switchPlayer(BOT);
-    // if (isSpecialCard(card)) {
-    //   if (number === "taki") {
-    //     // game.openTaki();
-    //     console.log("hi");
-    //   }
-    //   if (color !== "colorful") {
-    //     // switchTurn(PLAYER, PLAYER)
-    //   }
-    // } else if (game.taki) {
-    //   switchTurn(PLAYER, PLAYER);
-    // } else if (number !== "") {
-    //   game.setLastCardUnClickable();
-    //   switchTurn(PLAYER, BOT);
-    //   return;
-    // }
+    if (isSpecialCard(card)) {
+        if (number === "taki") {
+          this.props.setTaki(true);
+        }
+     } else if (this.props.isTaki) {
+      this.props.switchPlayer(PLAYER);
+     } else if (number !== "") {
+       //this.props.setLastCardUnClickable();
+       this.props.switchPlayer(BOT);
+       return;
+     }
   }
 
   isPlayableCard(index) {
-    const { isTaki } = this.state
-    const { lastPileCard, cards, cardIsActive } = this.props;
+    const { lastPileCard, cards, cardIsActive ,isTaki} = this.props;
     const currentCard = cards[index]
 
     if (cardIsActive && isTaki) {
@@ -400,24 +447,23 @@ class Card {
     this.name = card;
     const [number, color] = card.split('_')
     this.number = number;
+    this.color = color;
     this.card = card;
   }
 }
 
 class Bot extends React.Component {
+  
   getCardIndex(card){
+    let res = -1;
     if(card === false)
       return -1;
     this.props.cards.forEach((element,index) => {
       if (element.color === card.color && element.number === card.number) {
-        return index;
+        res = index;
       }
     });
-  }
-
-  chooseCardIndex(active = true){
-      let card = this.chooseCard(active);
-      return this.getCardIndex(card);
+    return res;
   }
 
   chooseCard(active = true) { //the bot well aware of the cards he has (this.cards)
@@ -591,10 +637,47 @@ class Bot extends React.Component {
 
   componentDidUpdate(){
     if(this.props.myTurn){
-      let card = this.chooseCardIndex(this.props.lastPileCard);
+      let card = this.chooseCard();
+      if (card.color === "colorful") {//handle colorful
+        if (card.number === "taki") {
+         this.props.cards[index] = new Card(card.number + "_" + this.props.lastPileCard.color);
+        }
+        else{
+          this.props.cards[index] = new Card(card.number + "_" + "red");
+        }
+      }
+      let index = this.getCardIndex(card);
       console.log(card);
+      if(index === -1){
+        if (!this.props.isTaki) {
+            this.props.takeCard("botDeck",PLAYER);
+            return;
+        }
+        else { //finish my taki turn
+          this.props.setTaki(false);
+          if (isSpecialCard(this.props.lastPileCard) && this.props.lastPileCard.number !== "taki") {
+            this.props.switchPlayer(BOT); // check if last card was "stop" or "plus" need to get another turn
+            return;
+          }
+      }
+      this.props.switchPlayer(PLAYER);
+      return;
+    }
+    else{
+      this.props.playCard(index,"botDeck");
+      if (isSpecialCard(card)) { // do again bot turn(plus,stop,taki)
+        if (card.number === "taki")
+          this.props.setTaki(true); // taki flag on
+        this.props.switchPlayer(BOT);
+        return;
+      } else if (this.props.isTaki) { // regular card but on taki - need to do bot turns until no card in this color
+        this.props.switchPlayer(BOT);
+        return;
+      }
+      this.props.switchPlayer(PLAYER);
     }
   }
+}
 
   render() {
     return (
