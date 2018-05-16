@@ -225,6 +225,10 @@ body {
   cursor: pointer;
 }
 
+.notplayable:hover {
+  cursor:not-allowed;
+}
+
 #deck {
   position: absolute;
   top: 35%;
