@@ -183,7 +183,9 @@ class MainGameWindow extends React.Component {
       newDeck.push(new Card(element.card, element.card));
     });
     newDeck = shuffleDeck(newDeck);
+    
     this.setState({
+      deckCards: copiedDeck,
       pileCards:lastPileCard
     });
     return newDeck;
@@ -534,6 +536,7 @@ class Card {
     this.number = number;
     this.color = color;
     this.card = orig === "" ? JSON.stringify(card) : JSON.stringify(orig);
+    this.card = JSON.parse(this.card);
   }
 }
 
@@ -742,10 +745,10 @@ class Bot extends React.Component {
   handleColorful(card){
     let res;
     if (card.number === "taki") {
-      res = new Card(card.number + "_" + this.props.lastPileCard.color,card.name);
+      res = new Card(card.number + "_" + this.props.lastPileCard.color,card.card);
     }
     else{
-      res = new Card("_" + this.botPickColor(),card.name);
+      res = new Card("_" + this.botPickColor(),card.card);
     }
     return res;
   }
