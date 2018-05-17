@@ -132,6 +132,7 @@ class MainGameWindow extends React.Component {
     this.getBotProps = this.getBotProps.bind(this);
     this.getMiddleProps = this.getMiddleProps.bind(this);
     this.getPlayerProps = this.getPlayerProps.bind(this);
+    this.buildNewMainDeck = this.buildNewMainDeck.bind(this);
   }
 
   switchPlayer(toPlayer) {
@@ -172,6 +173,21 @@ class MainGameWindow extends React.Component {
       pileCards
     });
   }
+ 
+  buildNewMainDeck(){
+    const copiedDeck = [...this.state.pileCards];
+    const lastPileCard = [];
+    lastPileCard.push(copiedDeck.pop());
+    let newDeck = this.state.deckCards;
+    copiedDeck.forEach((element, index) => {
+      newDeck.push(new Card(element.card, element.card));
+    });
+    newDeck = shuffleDeck(newDeck);
+    this.setState({
+      pileCards:lastPileCard
+    });
+    return newDeck;
+  }
 
   playCard(index, deckName) {
     const copiedDeck = [...this.state[deckName]];
@@ -197,9 +213,12 @@ class MainGameWindow extends React.Component {
     let copiedDeck = [...this.state.deckCards];
     for(let i=0;i<this.takinNumber;i++){
       cards.push(copiedDeck.pop());
+      if(copiedDeck.length === 1)
+        copiedDeck = this.buildNewMainDeck();
     }
     this.takinNumber = 1; 
     const newPile = [...this.state[deckName],...cards];
+    
 
     this.setState({
       deckCards: copiedDeck,
@@ -270,7 +289,8 @@ class MainGameWindow extends React.Component {
       lastPileCard:pileCards[pileCards.length - 1],
       isTaki:isTaki,
       setTaki:this.setTaki,
-      hasMove:this.hasMove
+      hasMove:this.hasMove,
+      buildDeck:this.buildNewMainDeck
     }
   }
 
@@ -483,10 +503,10 @@ const getPlayerClasses = (isFacedUp, card) =>{
 };
 
 const getStylesForPlayerCard = (index, length) => {
-  let leftPx = index * 50;
-  if (length === 8) {
+  let leftPx = index * (length/2-15) ;
+  /*if (length === 8) {
     leftPx = index * 30;
-  }
+  }*/
   return {
     position: "relative",
     left: `-${leftPx}px`
@@ -513,7 +533,7 @@ class Card {
     const [number, color] = card.split('_')
     this.number = number;
     this.color = color;
-    this.card = orig;
+    this.card = orig === "" ? JSON.stringify(card) : JSON.stringify(orig);
   }
 }
 
