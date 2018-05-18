@@ -1,5 +1,8 @@
 import React from 'react';
 import { PlayerDeck } from './player/index.js';
+import { enums, utils } from './cross';
+const { isSpecialCard } = utils;
+const { PLAYER, BOT } = enums;
 
 class Player extends React.Component {
   constructor() {

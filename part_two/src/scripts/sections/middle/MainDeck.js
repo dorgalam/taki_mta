@@ -1,5 +1,7 @@
 import React from 'react';
-import { CardComp } from '../cross';
+import { CardComp, enums } from '../cross';
+
+const { PLAYER, BOT } = enums;
 
 const MainDeck = ({ cards, giveCardToPlayer, allowTake }) => (
   <div id="deck">

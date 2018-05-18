@@ -16,7 +16,12 @@ class MainGameWindow extends React.Component {
       currentPlayer: PLAYER,
       cardIsActive: false,
       isTaki: false,
-      hasMove: false
+      hasMove: false,
+      stats: {
+        PLAYER: 0,
+        BOT: 0,
+        lastCard: 0
+      }
     };
     this.takinNumber = 1;
     this.hasMove = this.hasMove.bind(this);
@@ -33,9 +38,12 @@ class MainGameWindow extends React.Component {
   }
 
   switchPlayer(toPlayer) {
+    const { stats } = this.state;
+    stats[this.state.currentPlayer === PLAYER ? 'PLAYER' : 'BOT'] += 1;
     this.setState({
       currentPlayer: toPlayer,
-      hasMove: false
+      hasMove: false,
+      stats
     });
   }
 
@@ -43,6 +51,22 @@ class MainGameWindow extends React.Component {
     this.setState({
       hasMove: bool
     });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { playerDeck, botDeck } = this.state;
+    const prevPlayerDeck = prevState.playerDeck;
+    const prevBotDeck = prevState.botDeck;
+    if (
+      (playerDeck.length === 1 && prevPlayerDeck.length !== 1) ||
+      (botDeck.length === 1 && prevBotDeck.length !== 1)
+    ) {
+      const { stats } = this.state;
+      stats.lastCard++;
+      this.setState({
+        stats
+      });
+    }
   }
 
   dealCardsToPlayers() {
@@ -180,7 +204,8 @@ class MainGameWindow extends React.Component {
       currentPlayer,
       cardIsActive,
       isTaki,
-      hasMove
+      hasMove,
+      stats
     } = this.state;
     return {
       mainDeckCards: deckCards,
@@ -188,6 +213,7 @@ class MainGameWindow extends React.Component {
       player: currentPlayer, ///who's turn
       takeCard: currentPlayer === PLAYER ? this.takeCardFromMainDeck : null,
       isTaki: isTaki,
+      stats: stats,
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
       allowTake: hasMove === false && currentPlayer === PLAYER //need to add has move

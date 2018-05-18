@@ -21,7 +21,8 @@ const MiddleSection = ({
   isTaki,
   closeTaki,
   selectColor,
-  allowTake
+  allowTake,
+  stats
 }) => (
   <div id="content">
     <StartGameButton />
@@ -31,6 +32,7 @@ const MiddleSection = ({
       giveCardToPlayer={takeCard}
       allowTake={allowTake}
     />
+    {JSON.stringify(stats, 0, 1)}
     <TurnIdentifier myTurn={player === PLAYER} />
     <TakiIdentifier
       openTaki={player === PLAYER && isTaki}
