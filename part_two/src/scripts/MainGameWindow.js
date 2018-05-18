@@ -16,7 +16,7 @@ class MainGameWindow extends React.Component {
       currentPlayer: PLAYER,
       cardIsActive: false,
       isTaki: false,
-      hasMove: false,
+      playerHasMove: false,
       stats: {
         PLAYER: 0,
         BOT: 0,
@@ -37,20 +37,24 @@ class MainGameWindow extends React.Component {
     this.buildNewMainDeck = this.buildNewMainDeck.bind(this);
   }
 
+
   switchPlayer(toPlayer) {
     const { stats } = this.state;
-    stats[this.state.currentPlayer === PLAYER ? 'PLAYER' : 'BOT'] += 1;
+    stats[this.state.currentPlayer === BOT ? 'BOT' : 'PLAYER'] += 1;
     this.setState({
       currentPlayer: toPlayer,
-      hasMove: false,
+      playerHasMove: false,
       stats
     });
   }
 
-  hasMove(bool) {
+  hasMove() {
+    if (this.state.playerHasMove === true)
+      return true;
     this.setState({
-      hasMove: bool
+      playerHasMove: true
     });
+    return true;
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -181,8 +185,7 @@ class MainGameWindow extends React.Component {
       pileCards,
       currentPlayer,
       cardIsActive,
-      isTaki,
-      hasMove
+      isTaki
     } = this.state;
     return {
       cards: botDeck,
@@ -204,7 +207,7 @@ class MainGameWindow extends React.Component {
       currentPlayer,
       cardIsActive,
       isTaki,
-      hasMove,
+      playerHasMove,
       stats
     } = this.state;
     return {
@@ -216,7 +219,7 @@ class MainGameWindow extends React.Component {
       stats: stats,
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
-      allowTake: hasMove === false && currentPlayer === PLAYER //need to add has move
+      allowTake: playerHasMove === false && currentPlayer === PLAYER //need to add has move
     };
   }
 
@@ -226,8 +229,7 @@ class MainGameWindow extends React.Component {
       currentPlayer,
       playerDeck,
       cardIsActive,
-      isTaki,
-      hasMove
+      isTaki
     } = this.state;
     return {
       playCard: currentPlayer === PLAYER ? this.playCard : null,
