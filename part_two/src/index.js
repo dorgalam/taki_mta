@@ -119,7 +119,7 @@ class MainGameWindow extends React.Component {
       currentPlayer: PLAYER,
       cardIsActive: false,
       isTaki: false,
-      playerHasMove:false
+      hasMove:false
     };
     this.takinNumber = 1;
     this.hasMove = this.hasMove.bind(this);
@@ -139,17 +139,14 @@ class MainGameWindow extends React.Component {
 
     this.setState({
       currentPlayer: toPlayer,
-      playerHasMove: false
+      hasMove: false
     }); 
   }
 
-  hasMove(){
-    if(this.state.playerHasMove === true)
-      return true;
+  hasMove(bool){
     this.setState({
-      playerHasMove: true
+      hasMove: bool
     }); 
-    return true;
   }
 
   dealCardsToPlayers() {
@@ -272,7 +269,7 @@ class MainGameWindow extends React.Component {
     }
   }
 
-  getMiddleProps(deckCards,pileCards,currentPlayer,isTaki,playerHasMove){
+  getMiddleProps(deckCards,pileCards,currentPlayer,isTaki,hasMove){
     return {
       mainDeckCards:deckCards,
       pileCards:pileCards,
@@ -281,7 +278,7 @@ class MainGameWindow extends React.Component {
       isTaki:isTaki,
       closeTaki:this.closeTaki,
       selectColor:this.selectColor,
-      allowTake:playerHasMove === false && currentPlayer === PLAYER //need to add has move
+      allowTake:hasMove === false && currentPlayer === PLAYER //need to add has move
     }
   }
 
@@ -308,12 +305,12 @@ class MainGameWindow extends React.Component {
       playerDeck,
       cardIsActive,
       isTaki,
-      playerHasMove
+      hasMove
     } = this.state;
     return (
       <div id="wrapper">
         <Bot {...this.getBotProps(botDeck,pileCards,currentPlayer,cardIsActive,isTaki)}/>
-        <MiddleSection {...this.getMiddleProps(deckCards,pileCards,currentPlayer,isTaki,playerHasMove)}/>
+        <MiddleSection {...this.getMiddleProps(deckCards,pileCards,currentPlayer,isTaki,hasMove)}/>
         <Player {...this.getPlayerProps(playerDeck,pileCards,currentPlayer,cardIsActive,isTaki)}/>
       </div>
     );
@@ -463,26 +460,25 @@ class Player extends React.Component {
      } else if (this.props.isTaki) {
       this.props.switchPlayer(PLAYER);
      } else if (number !== "") {
+       //this.props.setLastCardUnClickable();
        this.props.switchPlayer(BOT);
        return;
      }
-     this.props.switchPlayer(PLAYER);
   }
 
   isPlayableCard(index) {
     const { lastPileCard, cards, isActive ,isTaki} = this.props;
     const currentCard = cards[index];
-    let bool = false;
     if (isActive && isTaki) {
-      return lastPileCard.color === currentCard.color ? this.props.hasMove() : false;
+      return lastPileCard.color === currentCard.color;
     }
     if (isActive && lastPileCard.number === "2plus") {
-      return currentCard.number === "2plus" ? this.props.hasMove() : false;
+      return currentCard.number === "2plus";
     }
     return (
       lastPileCard.color === currentCard.color ||
       lastPileCard.number ===currentCard.number ||
-      currentCard.color === "colorful" ? this.props.hasMove() : false
+      currentCard.color === "colorful"
     );
   }
 
