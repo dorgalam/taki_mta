@@ -18,8 +18,7 @@ class MainGameWindow extends React.Component {
       isTaki: false,
       playerHasMove: false,
       stats: {
-        PLAYER: 0,
-        BOT: 0,
+        turns: 0,
         lastCard: 0
       }
     };
@@ -37,20 +36,15 @@ class MainGameWindow extends React.Component {
     this.buildNewMainDeck = this.buildNewMainDeck.bind(this);
   }
 
-
   switchPlayer(toPlayer) {
-    const { stats } = this.state;
-    stats[this.state.currentPlayer === BOT ? 'BOT' : 'PLAYER'] += 1;
     this.setState({
       currentPlayer: toPlayer,
-      playerHasMove: false,
-      stats
+      playerHasMove: false
     });
   }
 
   hasMove() {
-    if (this.state.playerHasMove === true)
-      return true;
+    if (this.state.playerHasMove === true) return true;
     this.setState({
       playerHasMove: true
     });
@@ -116,6 +110,15 @@ class MainGameWindow extends React.Component {
   }
 
   playCard(index, deckName) {
+    if (this.state.currentPlayer === PLAYER) {
+      const { stats } = this.state;
+      this.setState({
+        stats: {
+          turns: stats.turns + 1,
+          lastCard: stats.lastCard
+        }
+      });
+    }
     const copiedDeck = [...this.state[deckName]];
     const cardToPlay = copiedDeck.popIndex(index);
     const newPile = [...this.state.pileCards, cardToPlay];

@@ -79,9 +79,9 @@ body {
   background-color: white;
 }
 
-#closeT{
+#closeT {
   height: 20%;
-  left:70% !important;
+  left: 70% !important;
 }
 
 #stats-section {
@@ -105,7 +105,7 @@ body {
   min-height: 300px;
 }
 
-#actions-section > div {
+#actions-section>div {
   width: 50%;
   height: 100%;
   margin-left: -100px;
@@ -130,7 +130,7 @@ body {
   text-align: center;
 }
 
-#player > .cards > .card {
+#player>.cards>.card {
   margin-top: 30px;
 }
 
@@ -163,7 +163,7 @@ body {
   /*set to a negative number 1/2 of your width*/
 }
 
-#pile > .cards > .card {
+#pile>.cards>.card {
   position: absolute;
 }
 
@@ -178,8 +178,7 @@ body {
   transition: 200ms ease all;
 }
 
-
-.color_tooltip > div {
+.color_tooltip>div {
   cursor: pointer;
   width: 22%;
   border: 1px solid;
@@ -191,7 +190,7 @@ body {
 .color_tooltip_red {
   background-color: #db6e53;
   margin-left: 0 !important;
-  margin-top: 0 ;
+  margin-top: 0;
 }
 
 .color_tooltip_green {
@@ -216,6 +215,7 @@ body {
   transition: 200ms ease margin;
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  cursor: not-allowed;
 }
 
 .playable:hover {
@@ -226,7 +226,7 @@ body {
 }
 
 .notplayable:hover {
-  cursor:not-allowed;
+  cursor: not-allowed;
 }
 
 #deck {
@@ -235,11 +235,11 @@ body {
   right: 15%;
 }
 
-#deck > .cards > .card {
+#deck>.cards>.card {
   position: absolute;
 }
 
-#stats-section > #p1-stats > h2 {
+#stats-section>#p1-stats>h2 {
   margin-top: 0;
 }
 
@@ -251,7 +251,7 @@ div.stats {
   border-radius: 10px;
 }
 
-h2 > a {
+h2>a {
   color: rgb(105, 224, 115);
 }
 
@@ -262,7 +262,7 @@ div.bot_stats {
   width: fit-content;
   color: rgb(221, 216, 216);
   border-radius: 10px;
-  position:relative;
+  position: relative;
 }
 
 div.turn {
@@ -279,6 +279,7 @@ div.turn {
   width: 150px;
   height: 150px;
 }
-h1{
+
+h1 {
   text-decoration: underline;
 }
