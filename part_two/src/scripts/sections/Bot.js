@@ -65,7 +65,7 @@ class Bot extends React.Component {
 
   getSpecialTypeColor(color, specialType) {
     let special = false;
-    this.props.cards.forEach(function(element) {
+    this.props.cards.forEach(function (element) {
       if (element.color === color && element.number === specialType) {
         special = element;
       }
@@ -75,7 +75,7 @@ class Bot extends React.Component {
 
   has2plus() {
     let elem = false;
-    this.props.cards.forEach(function(element) {
+    this.props.cards.forEach(function (element) {
       if (element.number === '2plus') {
         elem = element;
       }
@@ -110,7 +110,7 @@ class Bot extends React.Component {
     for (let i = 0; i < deck.length; i++) {
       if (deck[i].color === color) numbersArr[deck[i].number]++;
     }
-    let max = Object.keys(numbersArr).reduce(function(a, b) {
+    let max = Object.keys(numbersArr).reduce(function (a, b) {
       return numbersArr[a] > numbersArr[b] ? a : b;
     });
     if (numbersArr[max] === 0) return false;
@@ -130,7 +130,7 @@ class Bot extends React.Component {
     for (let i = 0; i < deck.length; i++) {
       if (deck[i].number === number) colorsArr[deck[i].color]++;
     }
-    let max = Object.keys(colorsArr).reduce(function(a, b) {
+    let max = Object.keys(colorsArr).reduce(function (a, b) {
       return colorsArr[a] > colorsArr[b] ? a : b;
     });
     if (colorsArr[max] === 0) return false;
@@ -185,7 +185,7 @@ class Bot extends React.Component {
     this.props.cards.forEach(element => {
       colorsArr[element.color]++;
     });
-    return Object.keys(colorsArr).reduce(function(a, b) {
+    return Object.keys(colorsArr).reduce(function (a, b) {
       return colorsArr[a] > colorsArr[b] ? a : b;
     });
   }

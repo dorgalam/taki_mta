@@ -24,28 +24,28 @@ const MiddleSection = ({
   allowTake,
   stats
 }) => (
-  <div id="content">
-    <StartGameButton />
-    <Pile cards={pileCards} />
-    <MainDeck
-      cards={mainDeckCards}
-      giveCardToPlayer={takeCard}
-      allowTake={allowTake}
-    />
-    {JSON.stringify(stats, 0, 1)}
-    <TurnIdentifier myTurn={player === PLAYER} />
-    <TakiIdentifier
-      openTaki={player === PLAYER && isTaki}
-      closeTaki={closeTaki}
-    />
-    <Statistics {...stats} />
-    <ColorPick
-      choose={player === -1}
-      selectColor={color => () => selectColor(color)}
-    />
-    <EndingDisplay />
-  </div>
-);
+    <div id="content">
+      <StartGameButton />
+      <Pile cards={pileCards} />
+      <MainDeck
+        cards={mainDeckCards}
+        giveCardToPlayer={takeCard}
+        allowTake={allowTake}
+      />
+      {JSON.stringify(stats, 0, 1)}
+      <TurnIdentifier myTurn={player === PLAYER} />
+      <TakiIdentifier
+        openTaki={player === PLAYER && isTaki}
+        closeTaki={closeTaki}
+      />
+      <Statistics {...stats} />
+      <ColorPick
+        choose={player === -1}
+        selectColor={color => () => selectColor(color)}
+      />
+      <EndingDisplay />
+    </div>
+  );
 
 const ColorPick = ({ choose, selectColor }) =>
   choose ? (
@@ -58,29 +58,61 @@ const ColorPick = ({ choose, selectColor }) =>
     </div>
   ) : null;
 
-const StartGameButton = ({}) => (
+const StartGameButton = ({ }) => (
   <button type="button" id="startGame" className="btn start-game-button">
     Start Game
   </button>
 );
 
-const Statistics = ({ turns, lastCard }) => (
-  <div id="stats-section">
-    <div id="p1-stats" className="stats">
-      <h1>Your Stats:</h1>
-      <Timer />
-      <h2>
-        Average turn time:
-        <div id="avg_time">{turns}</div>
-      </h2>
-      <h2>
-        Last card declerations:
-        <div id="last_one">{lastCard}</div>
-      </h2>
-    </div>
-  </div>
-);
+class Statistics extends React.Component {
+  constructor() {
+    super();
+    this.turnsTime = new Array();;
+    this.setTurnTime = this.setTurnTime.bind(this);
+    this.getAvgTime = this.getAvgTime.bind(this);
+  }
 
+  setTurnTime(curTime, startedTime) {
+    this.turnstime[this.props.turns] = curTime - startedTime;
+  }
+
+  getAvgTime() {
+    let sum = 0;
+    if (this.props.turns === 0) //shouldn't happen
+      return 0;
+    this.turnstime.forEach(element => {
+      sum += element;
+    });
+    return (sum / this.props.turns).toFixed(2);
+  }
+
+  render() {
+    return (
+      <div id="stats-section">
+        <div id="p1-stats" className="stats">
+          <h1>Your Stats:</h1>
+          <h2>
+            Clock
+            <a id="timer">{`${this.state.hours}:${this.state.minutes}:${this.state.seconds}`}</a>
+          </h2>
+          <h2>
+            Number of turns:
+        <div id="turns">{this.props.turns}</div>
+          </h2>
+          <h2>
+            Average turn time:
+        <div id="avg_time">{this.getAvgTime()}</div>
+          </h2>
+          <h2>
+            Last card declerations:
+        <div id="last_one">{this.props.lastCard}</div>
+          </h2>
+        </div>
+      </div>
+    );
+  }
+}
+/*
 class Timer extends React.Component {
   constructor() {
     super();
@@ -108,6 +140,10 @@ class Timer extends React.Component {
   }
   getSeconds() {
     return Math.floor(this.state.elapsed / 1000) % 60;
+  }
+
+  getTime() {
+    return this.state.elapsed;
   }
 
   render() {

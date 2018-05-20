@@ -17,6 +17,13 @@ class MainGameWindow extends React.Component {
       cardIsActive: false,
       isTaki: false,
       playerHasMove: false,
+      consecutiveBotTurn: 0,
+      lstTime: 0,
+      timerVar: 0,
+      totalSeconds: 0,
+      turnSwitched: 0,
+      playerTurnEnds: 0,
+
       stats: {
         turns: 0,
         lastCard: 0
@@ -24,6 +31,7 @@ class MainGameWindow extends React.Component {
       history: []
     };
     this.takinNumber = 1;
+    this.countTimer = this.countTimer.bind(this);
     this.hasMove = this.hasMove.bind(this);
     this.playCard = this.playCard.bind(this);
     this.setTaki = this.setTaki.bind(this);
@@ -39,6 +47,32 @@ class MainGameWindow extends React.Component {
   }
 
   switchPlayer(toPlayer) {
+    let { currentPlayer, cardIsActive, pileCards, isTaki, consecutiveBotTurn, lstTime, totalSeconds } = this.state;
+    const lastPileCard = pileCards[pileCards.length - 1];
+    currentPlayer = currentPlayer === -1 ? PLAYER : currentPlayer;
+    if (currentPlayer !== toPlayer) {
+      this.state.turnSwitched = true;
+      if (toPlayer === PLAYER) {
+        lstTime = totalSeconds;//save the time his turn starts
+      } else {
+        this.state.playerTurnEnds = true;
+        // auto  -- setTurnTime(totalSeconds, lstTime); // player turn ends calculate his turn time
+      }
+      //auto --- set stats
+      if (!(cardIsActive && lastPileCard.number === "2plus")) {
+        if (gameOver()) //check if game over
+          return;
+      }
+    }
+    else if (!isTaki && (lastPileCard.number === "plus" || lastPileCard.number === "stop")) {
+      //auto  --  set stats
+      this.state.turnSwitched = true;
+      if (lastPileCard.number === "stop") {
+        if (gameOver()) //check if game over
+          return;
+      }
+    }
+
     this.setState({
       currentPlayer: toPlayer,
       playerHasMove: false
@@ -201,6 +235,21 @@ class MainGameWindow extends React.Component {
 
   componentDidMount() {
     this.dealCardsToPlayers();
+    this.state.timerVar = setInterval(this.countTimer, 1000);
+  }
+
+  countTimer() {
+    ++this.state.totalSeconds;
+  }
+
+  getHours() {
+    return Math.floor(this.state.totalSeconds / (60 * 60 * 1000));
+  }
+  getMinutes() {
+    return Math.floor(this.state.totalSeconds / (60 * 1000)) % 60;
+  }
+  getSeconds() {
+    return Math.floor(this.state.totalSeconds / 1000) % 60;
   }
 
   getBotProps() {

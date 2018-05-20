@@ -215,7 +215,7 @@ body {
   transition: 200ms ease margin;
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  cursor: not-allowed;
+  
 }
 
 .playable:hover {
