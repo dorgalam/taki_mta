@@ -4,6 +4,7 @@ import Pile from './Pile.js';
 import TakiIdentifier from './TakiIdentifier.js';
 import TurnIdentifier from './TurnIdentifier.js';
 import Statistics from './Statistics.js';
+import RewindUI from './RewindUI.js';
 
 export {
   EndingDisplay,
@@ -11,5 +12,6 @@ export {
   Pile,
   TakiIdentifier,
   TurnIdentifier,
-  Statistics
+  Statistics,
+  RewindUI
 };

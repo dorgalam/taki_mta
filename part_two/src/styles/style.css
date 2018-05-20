@@ -151,6 +151,11 @@ body {
   cursor: pointer;
 }
 
+.btn:disabled {
+  cursor: not-allowed;
+  background: rgba(52, 152, 219, 0.7);
+}
+
 #pile {
   position: absolute;
   top: 50%;
@@ -215,7 +220,6 @@ body {
   transition: 200ms ease margin;
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  
 }
 
 .playable:hover {
@@ -278,6 +282,14 @@ div.turn {
   padding: 15px;
   width: 150px;
   height: 150px;
+}
+
+.rewinding {
+  pointer-events: none;
+}
+
+.clickable {
+  pointer-events: all !important;
 }
 
 h1 {

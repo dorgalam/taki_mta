@@ -45,6 +45,7 @@ class MainGameWindow extends React.Component {
     this.getPlayerProps = this.getPlayerProps.bind(this);
     this.buildNewMainDeck = this.buildNewMainDeck.bind(this);
     this.updateHistory = this.updateHistory.bind(this);
+    this.setRewindIndex = this.setRewindIndex.bind(this);
     this.statsComp = {};
     this.rewind = this.rewind.bind(this);
   }
@@ -139,15 +140,8 @@ class MainGameWindow extends React.Component {
 
   rewind() {
     const { history } = this.state;
-    let i = 0;
+    this.rewindIndex = 0;
     this.setState({ inRewind: true });
-    let runningOfState = setInterval(() => {
-      this.setState(history[i]);
-      this.statsComp.overrideState(history[i++].childStats);
-      if (i === history.length) {
-        clearInterval(runningOfState);
-      }
-    }, 1000);
   }
 
   dealCardsToPlayers() {
@@ -283,6 +277,12 @@ class MainGameWindow extends React.Component {
     };
   }
 
+  setRewindIndex(index) {
+    const { history } = this.state;
+    this.setState(history[index]);
+    this.statsComp.overrideState(history[index].childStats);
+  }
+
   getMiddleProps() {
     const {
       deckCards,
@@ -303,7 +303,13 @@ class MainGameWindow extends React.Component {
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
       statsRef: ref => (this.statsComp = ref),
-      allowTake: playerHasMove === false && currentPlayer === PLAYER //need to add has move
+      allowTake: playerHasMove === false && currentPlayer === PLAYER, //need to add has move,
+      rewindProps: {
+        inRewind: this.state.inRewind,
+        setRewindIndex: this.setRewindIndex,
+        numberOfTurns: this.state.history.length,
+        rewind: this.rewind
+      }
     };
   }
 
@@ -330,8 +336,7 @@ class MainGameWindow extends React.Component {
 
   render() {
     return (
-      <div id="wrapper">
-        <button onClick={this.rewind}>RERUN ALL</button>
+      <div id="wrapper" className={this.state.inRewind ? 'rewinding' : ''}>
         <Bot {...this.getBotProps()} />
         <MiddleSection {...this.getMiddleProps()} />
         <Player {...this.getPlayerProps()} />

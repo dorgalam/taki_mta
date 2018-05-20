@@ -6,7 +6,8 @@ import {
   Pile,
   TakiIdentifier,
   TurnIdentifier,
-  Statistics
+  Statistics,
+  RewindUI
 } from './middle';
 
 import { utils, Card, enums } from './cross';
@@ -24,11 +25,13 @@ const MiddleSection = ({
   selectColor,
   allowTake,
   stats,
-  statsRef
+  statsRef,
+  rewindProps
 }) => (
   <div id="content">
     <StartGameButton />
     <Pile cards={pileCards} />
+    <RewindUI {...rewindProps} />
     <MainDeck
       cards={mainDeckCards}
       giveCardToPlayer={takeCard}
