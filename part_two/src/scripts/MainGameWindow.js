@@ -5,31 +5,32 @@ import { utils, Card, enums } from './sections/cross';
 const { createCardsArray, isSpecialCard } = utils;
 const { PLAYER, BOT } = enums;
 
+const initalState = {
+  deckCards: createCardsArray().map(item => new Card(item)),
+  playerDeck: [],
+  botDeck: [],
+  pileCards: [],
+  currentPlayer: PLAYER,
+  cardIsActive: false,
+  isTaki: false,
+  playerHasMove: false,
+  consecutiveBotTurn: 0,
+  timerVar: 0,
+  lstTime: 0,
+  totalSeconds: 0,
+  turnSwitched: 0,
+  playerTurnEnds: 0,
+  stats: {
+    turns: 0,
+    lastCard: 0
+  },
+  history: []
+};
+
 class MainGameWindow extends React.Component {
   constructor() {
     super();
-    this.state = {
-      deckCards: createCardsArray().map(item => new Card(item)),
-      playerDeck: [],
-      botDeck: [],
-      pileCards: [],
-      currentPlayer: PLAYER,
-      cardIsActive: false,
-      isTaki: false,
-      playerHasMove: false,
-      consecutiveBotTurn: 0,
-      lstTime: 0,
-      timerVar: 0,
-      totalSeconds: 0,
-      turnSwitched: 0,
-      playerTurnEnds: 0,
-
-      stats: {
-        turns: 0,
-        lastCard: 0
-      },
-      history: []
-    };
+    this.state = initalState;
     this.takinNumber = 1;
     this.countTimer = this.countTimer.bind(this);
     this.hasMove = this.hasMove.bind(this);
@@ -43,34 +44,56 @@ class MainGameWindow extends React.Component {
     this.getMiddleProps = this.getMiddleProps.bind(this);
     this.getPlayerProps = this.getPlayerProps.bind(this);
     this.buildNewMainDeck = this.buildNewMainDeck.bind(this);
+    this.updateHistory = this.updateHistory.bind(this);
+    this.statsComp = {};
     this.rewind = this.rewind.bind(this);
   }
 
   switchPlayer(toPlayer) {
-    let { currentPlayer, cardIsActive, pileCards, isTaki, consecutiveBotTurn, lstTime, totalSeconds } = this.state;
+    let {
+      currentPlayer,
+      cardIsActive,
+      pileCards,
+      isTaki,
+      consecutiveBotTurn,
+      lstTime,
+      totalSeconds
+    } = this.state;
     const lastPileCard = pileCards[pileCards.length - 1];
     currentPlayer = currentPlayer === -1 ? PLAYER : currentPlayer;
+    this.updateHistory();
     if (currentPlayer !== toPlayer) {
-      this.state.turnSwitched = true;
+      // this.state.turnSwitched = true;
       if (toPlayer === PLAYER) {
-        lstTime = totalSeconds;//save the time his turn starts
+        this.setState({ lstTime: totalSeconds });
       } else {
-        this.state.playerTurnEnds = true;
-        // auto  -- setTurnTime(totalSeconds, lstTime); // player turn ends calculate his turn time
+        const { stats } = this.state;
+        this.setState({
+          stats: {
+            turns: stats.turns + 1,
+            lastCard: stats.lastCard
+          },
+          playerTurnEnds: true
+        });
+        this.statsComp.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
       }
       //auto --- set stats
-      if (!(cardIsActive && lastPileCard.number === "2plus")) {
-        if (gameOver()) //check if game over
-          return;
-      }
-    }
-    else if (!isTaki && (lastPileCard.number === "plus" || lastPileCard.number === "stop")) {
+      // if (!(cardIsActive && lastPileCard.number === '2plus')) {
+      //   if (gameOver())
+      //     //check if game over
+      //     return;
+      // }
+    } else if (
+      !isTaki &&
+      (lastPileCard.number === 'plus' || lastPileCard.number === 'stop')
+    ) {
       //auto  --  set stats
-      this.state.turnSwitched = true;
-      if (lastPileCard.number === "stop") {
-        if (gameOver()) //check if game over
-          return;
-      }
+      // this.state.turnSwitched = true;
+      // if (lastPileCard.number === 'stop') {
+      //   if (gameOver())
+      //     //check if game over
+      //     return;
+      // }
     }
 
     this.setState({
@@ -101,11 +124,14 @@ class MainGameWindow extends React.Component {
         stats
       });
     }
-    if (
-      playerDeck.length !== prevPlayerDeck.length ||
-      botDeck.length !== prevBotDeck.length
-    ) {
-      const stateSnapshot = Object.assign({}, this.state);
+  }
+
+  updateHistory() {
+    const { inRewind } = this.state;
+    if (!inRewind && this.statsComp) {
+      const stateSnapshot = Object.assign({}, this.state, {
+        childStats: this.statsComp.getState()
+      });
       delete stateSnapshot.history;
       this.setState({ history: [...this.state.history, stateSnapshot] });
     }
@@ -114,8 +140,10 @@ class MainGameWindow extends React.Component {
   rewind() {
     const { history } = this.state;
     let i = 0;
+    this.setState({ inRewind: true });
     let runningOfState = setInterval(() => {
-      this.setState(history[i++]);
+      this.setState(history[i]);
+      this.statsComp.overrideState(history[i++].childStats);
       if (i === history.length) {
         clearInterval(runningOfState);
       }
@@ -165,15 +193,6 @@ class MainGameWindow extends React.Component {
   }
 
   playCard(index, deckName) {
-    if (this.state.currentPlayer === PLAYER) {
-      const { stats } = this.state;
-      this.setState({
-        stats: {
-          turns: stats.turns + 1,
-          lastCard: stats.lastCard
-        }
-      });
-    }
     const copiedDeck = [...this.state[deckName]];
     const cardToPlay = copiedDeck.popIndex(index);
     const newPile = [...this.state.pileCards, cardToPlay];
@@ -235,21 +254,12 @@ class MainGameWindow extends React.Component {
 
   componentDidMount() {
     this.dealCardsToPlayers();
-    this.state.timerVar = setInterval(this.countTimer, 1000);
+    this.timerVar = setInterval(this.countTimer, 1000);
   }
 
   countTimer() {
-    ++this.state.totalSeconds;
-  }
-
-  getHours() {
-    return Math.floor(this.state.totalSeconds / (60 * 60 * 1000));
-  }
-  getMinutes() {
-    return Math.floor(this.state.totalSeconds / (60 * 1000)) % 60;
-  }
-  getSeconds() {
-    return Math.floor(this.state.totalSeconds / 1000) % 60;
+    let newTime = this.state.totalSeconds + 1;
+    this.setState({ totalSeconds: newTime });
   }
 
   getBotProps() {
@@ -292,6 +302,7 @@ class MainGameWindow extends React.Component {
       stats: stats,
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
+      statsRef: ref => (this.statsComp = ref),
       allowTake: playerHasMove === false && currentPlayer === PLAYER //need to add has move
     };
   }
