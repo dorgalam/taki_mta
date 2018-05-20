@@ -46,7 +46,7 @@ class MainGameWindow extends React.Component {
     this.buildNewMainDeck = this.buildNewMainDeck.bind(this);
     this.updateHistory = this.updateHistory.bind(this);
     this.setRewindIndex = this.setRewindIndex.bind(this);
-    this.statsComp = {};
+    this.statsComp = React.createRef();
     this.rewind = this.rewind.bind(this);
   }
 
@@ -76,7 +76,7 @@ class MainGameWindow extends React.Component {
           },
           playerTurnEnds: true
         });
-        this.statsComp.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
+        this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
       }
       //auto --- set stats
       // if (!(cardIsActive && lastPileCard.number === '2plus')) {
@@ -131,7 +131,7 @@ class MainGameWindow extends React.Component {
     const { inRewind } = this.state;
     if (!inRewind && this.statsComp) {
       const stateSnapshot = Object.assign({}, this.state, {
-        childStats: this.statsComp.getState()
+        childStats: this.statsComp.current.getState()
       });
       delete stateSnapshot.history;
       this.setState({ history: [...this.state.history, stateSnapshot] });
@@ -139,7 +139,6 @@ class MainGameWindow extends React.Component {
   }
 
   rewind() {
-    const { history } = this.state;
     this.rewindIndex = 0;
     this.setState({ inRewind: true });
   }
@@ -280,7 +279,7 @@ class MainGameWindow extends React.Component {
   setRewindIndex(index) {
     const { history } = this.state;
     this.setState(history[index]);
-    this.statsComp.overrideState(history[index].childStats);
+    this.statsComp.current.overrideState(history[index].childStats);
   }
 
   getMiddleProps() {
@@ -302,7 +301,7 @@ class MainGameWindow extends React.Component {
       stats: stats,
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
-      statsRef: ref => (this.statsComp = ref),
+      statsRef: this.statsComp,
       allowTake: playerHasMove === false && currentPlayer === PLAYER, //need to add has move,
       rewindProps: {
         inRewind: this.state.inRewind,
