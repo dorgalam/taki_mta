@@ -20,7 +20,8 @@ class MainGameWindow extends React.Component {
       stats: {
         turns: 0,
         lastCard: 0
-      }
+      },
+      history: []
     };
     this.takinNumber = 1;
     this.hasMove = this.hasMove.bind(this);
@@ -34,6 +35,7 @@ class MainGameWindow extends React.Component {
     this.getMiddleProps = this.getMiddleProps.bind(this);
     this.getPlayerProps = this.getPlayerProps.bind(this);
     this.buildNewMainDeck = this.buildNewMainDeck.bind(this);
+    this.rewind = this.rewind.bind(this);
   }
 
   switchPlayer(toPlayer) {
@@ -65,6 +67,25 @@ class MainGameWindow extends React.Component {
         stats
       });
     }
+    if (
+      playerDeck.length !== prevPlayerDeck.length ||
+      botDeck.length !== prevBotDeck.length
+    ) {
+      const stateSnapshot = Object.assign({}, this.state);
+      delete stateSnapshot.history;
+      this.setState({ history: [...this.state.history, stateSnapshot] });
+    }
+  }
+
+  rewind() {
+    const { history } = this.state;
+    let i = 0;
+    let runningOfState = setInterval(() => {
+      this.setState(history[i++]);
+      if (i === history.length) {
+        clearInterval(runningOfState);
+      }
+    }, 1000);
   }
 
   dealCardsToPlayers() {
@@ -250,6 +271,7 @@ class MainGameWindow extends React.Component {
   render() {
     return (
       <div id="wrapper">
+        <button onClick={this.rewind}>RERUN ALL</button>
         <Bot {...this.getBotProps()} />
         <MiddleSection {...this.getMiddleProps()} />
         <Player {...this.getPlayerProps()} />
