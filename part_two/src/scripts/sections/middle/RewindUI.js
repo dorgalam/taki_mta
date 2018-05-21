@@ -42,14 +42,14 @@ class RewindUI extends React.Component {
         </button>
       </div>
     ) : (
-      <button
-        className="btn"
-        disabled={this.props.numberOfTurns < 1}
-        onClick={this.props.rewind}
-      >
-        Rerun
+        <button
+          className="btn"
+          disabled={this.props.winner}
+          onClick={this.props.rewind}
+        >
+          Rerun
       </button>
-    );
+      );
   }
 }
 

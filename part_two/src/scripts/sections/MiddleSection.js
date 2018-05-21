@@ -25,13 +25,15 @@ const MiddleSection = ({
   selectColor,
   allowTake,
   stats,
+  botStats,
   statsRef,
+  winner,
   rewindProps
 }) => (
     <div id="content">
       <StartGameButton />
       <Pile cards={pileCards} />
-      <RewindUI {...rewindProps} />
+      <RewindUI {...rewindProps} winner={winner === -1} />
       <MainDeck
         cards={mainDeckCards}
         giveCardToPlayer={takeCard}
@@ -47,7 +49,7 @@ const MiddleSection = ({
         choose={player === -1}
         selectColor={color => () => selectColor(color)}
       />
-      <EndingDisplay />
+      <EndingDisplay stats={botStats} winner={winner} />
     </div>
   );
 

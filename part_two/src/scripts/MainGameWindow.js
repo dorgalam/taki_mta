@@ -28,7 +28,8 @@ const initalState = {
     turns: 0,
     lastCard: 0
   },
-  history: []
+  history: [],
+  winner: -1
 };
 
 class MainGameWindow extends React.Component {
@@ -91,11 +92,11 @@ class MainGameWindow extends React.Component {
     const lastPileCard = pileCards[pileCards.length - 1];
     let from = currentPlayer === -1 ? PLAYER : currentPlayer;
     if (from !== toPlayer && toPlayer !== -1) {
+      this.setStats(currentPlayer);
       // this.state.turnSwitched = true;
       if (toPlayer === PLAYER) {
         this.setState({ lstTime: totalSeconds });
       } else {
-        this.setStats(PLAYER);
         this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
       }
       //auto --- set stats
@@ -104,11 +105,11 @@ class MainGameWindow extends React.Component {
       //     //check if game over
       //     return;
       // }
-    } else if (currentPlayer === PLAYER && !isTaki &&
+    } else if (!isTaki &&
       (lastPileCard.number === 'plus' || lastPileCard.number === 'stop')
     ) {
-      this.setStats(PLAYER);
-      this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
+      //this.setStats(currentPlayer);
+      //this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
       // if (lastPileCard.number === 'stop') {
       //   if (gameOver())
       //     //check if game over
@@ -134,14 +135,18 @@ class MainGameWindow extends React.Component {
     const { playerDeck, botDeck } = this.state;
     const prevPlayerDeck = prevState.playerDeck;
     const prevBotDeck = prevState.botDeck;
-    if (
-      (playerDeck.length === 1 && prevPlayerDeck.length !== 1) ||
-      (botDeck.length === 1 && prevBotDeck.length !== 1)
-    ) {
+    if (playerDeck.length === 1 && prevPlayerDeck.length !== 1) {
       const { stats } = this.state;
       stats.lastCard++;
       this.setState({
-        stats
+        stats,
+      });
+    }
+    else if (botDeck.length === 1 && prevBotDeck.length !== 1) {
+      const { botStats } = this.state;
+      botStats.lastCard++;
+      this.setState({
+        botStats
       });
     }
   }
@@ -205,29 +210,35 @@ class MainGameWindow extends React.Component {
   }
 
   playCard(index, deckName) {
-    const { stats, isTaki, currentPlayer } = this.state;
+    const { stats, isTaki, currentPlayer, lstTime, totalSeconds } = this.state;
     const copiedDeck = [...this.state[deckName]];
     const cardToPlay = copiedDeck.popIndex(index);
     const newPile = [...this.state.pileCards, cardToPlay];
-    if (cardToPlay.number === '2plus') {
+    if (cardToPlay.number === '2plus' && !isTaki) {
       this.takinNumber = this.takinNumber === 1 ? 0 : this.takinNumber;
       this.takinNumber += 2;
     }
     if (cardToPlay.color === 'colorful') {
       this.switchPlayer(-1);
     }
-    if (currentPlayer === PLAYER && !isTaki && (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')) {
-      this.setStats(PLAYER);
+    if (!isTaki && (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')) {
+      this.setStats(currentPlayer);
+      this.statsComp.current.setTurnTime(totalSeconds - lstTime);
     }
     this.setState({
       [deckName]: copiedDeck,
       pileCards: newPile,
       cardIsActive: true
     });
-
-    if (cardToPlay.color !== 'colorful') {
-      this.updateHistory();
+    if (copiedDeck.length === 0) {
+      let win = currentPlayer;
+      this.setState({
+        winner: win
+      });
     }
+    //if (cardToPlay.color !== 'colorful') {
+    this.updateHistory();
+    //}
   }
 
   takeCardFromMainDeck(deckName, player) {
@@ -253,6 +264,10 @@ class MainGameWindow extends React.Component {
   closeTaki() {
     let lastcard = this.state.pileCards[this.state.pileCards.length - 1];
     this.setTaki(false);
+    if (lastcard.number === 'plus' || lastcard.number === 'stop') {
+      this.setStats(PLAYER);
+      //this.statsComp.current.setTurnTime(totalSeconds - lstTime);
+    }
     if (isSpecialCard(lastcard) && lastcard.number !== 'taki')
       this.switchPlayer(PLAYER);
     else {
@@ -274,7 +289,8 @@ class MainGameWindow extends React.Component {
     this.setState({
       pileCards: copiedDeck
     });
-    this.updateHistory();
+    this.setStats(PLAYER);
+    //this.updateHistory();
     this.switchPlayer(BOT);
   }
 
@@ -325,7 +341,9 @@ class MainGameWindow extends React.Component {
       cardIsActive,
       isTaki,
       playerHasMove,
-      stats
+      stats,
+      botStats,
+      winner
     } = this.state;
     return {
       mainDeckCards: deckCards,
@@ -343,7 +361,9 @@ class MainGameWindow extends React.Component {
         setRewindIndex: this.setRewindIndex,
         numberOfTurns: this.state.history.length,
         rewind: this.rewind
-      }
+      },
+      botStats: botStats,
+      winner: winner
     };
   }
 
