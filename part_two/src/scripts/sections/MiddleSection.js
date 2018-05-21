@@ -49,10 +49,10 @@ const MiddleSection = ({
         choose={player === -1}
         selectColor={color => () => selectColor(color)}
       />
-      <EndingDisplay stats={botStats} winner={winner} />
+      <EndingDisplay stats={botStats} rewindProps={rewindProps} winner={winner} />
     </div>
   );
-
+//<RewindUI {...rewindProps} winner={winner === -1} />
 const ColorPick = ({ choose, selectColor }) =>
   choose ? (
     <div className="color_tooltip">

@@ -233,7 +233,8 @@ class MainGameWindow extends React.Component {
     if (copiedDeck.length === 0) {
       let win = currentPlayer;
       this.setState({
-        winner: win
+        winner: win,
+        currentPlayer: -1
       });
     }
     //if (cardToPlay.color !== 'colorful') {
