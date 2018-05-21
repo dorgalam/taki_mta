@@ -22,6 +22,10 @@ const initalState = {
   playerTurnEnds: 0,
   stats: {
     turns: 0,
+    lastCard: 0,
+  },
+  botStats: {
+    turns: 0,
     lastCard: 0
   },
   history: []
@@ -47,7 +51,31 @@ class MainGameWindow extends React.Component {
     this.updateHistory = this.updateHistory.bind(this);
     this.setRewindIndex = this.setRewindIndex.bind(this);
     this.statsComp = React.createRef();
+    this.setStats = this.setStats.bind(this);
     this.rewind = this.rewind.bind(this);
+  }
+
+  setStats(player) {
+    if (player === PLAYER) {
+      const { stats } = this.state;
+      this.setState({
+        stats: {
+          turns: stats.turns + 1,
+          lastCard: stats.lastCard
+        },
+        playerTurnEnds: true
+      });
+    }
+    else if (player === BOT) {
+      const { botStats } = this.state;
+      this.setState({
+        botStats: {
+          turns: botStats.turns + 1,
+          lastCard: botStats.lastCard
+        },
+        playerTurnEnds: true
+      });
+    }
   }
 
   switchPlayer(toPlayer) {
@@ -61,21 +89,13 @@ class MainGameWindow extends React.Component {
       totalSeconds
     } = this.state;
     const lastPileCard = pileCards[pileCards.length - 1];
-    currentPlayer = currentPlayer === -1 ? PLAYER : currentPlayer;
-    this.updateHistory();
-    if (currentPlayer !== toPlayer) {
+    let from = currentPlayer === -1 ? PLAYER : currentPlayer;
+    if (from !== toPlayer && toPlayer !== -1) {
       // this.state.turnSwitched = true;
       if (toPlayer === PLAYER) {
         this.setState({ lstTime: totalSeconds });
       } else {
-        const { stats } = this.state;
-        this.setState({
-          stats: {
-            turns: stats.turns + 1,
-            lastCard: stats.lastCard
-          },
-          playerTurnEnds: true
-        });
+        this.setStats(PLAYER);
         this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
       }
       //auto --- set stats
@@ -84,12 +104,11 @@ class MainGameWindow extends React.Component {
       //     //check if game over
       //     return;
       // }
-    } else if (
-      !isTaki &&
+    } else if (currentPlayer === PLAYER && !isTaki &&
       (lastPileCard.number === 'plus' || lastPileCard.number === 'stop')
     ) {
-      //auto  --  set stats
-      // this.state.turnSwitched = true;
+      this.setStats(PLAYER);
+      this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
       // if (lastPileCard.number === 'stop') {
       //   if (gameOver())
       //     //check if game over
@@ -186,6 +205,7 @@ class MainGameWindow extends React.Component {
   }
 
   playCard(index, deckName) {
+    const { stats, isTaki, currentPlayer } = this.state;
     const copiedDeck = [...this.state[deckName]];
     const cardToPlay = copiedDeck.popIndex(index);
     const newPile = [...this.state.pileCards, cardToPlay];
@@ -196,12 +216,18 @@ class MainGameWindow extends React.Component {
     if (cardToPlay.color === 'colorful') {
       this.switchPlayer(-1);
     }
-
+    if (currentPlayer === PLAYER && !isTaki && (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')) {
+      this.setStats(PLAYER);
+    }
     this.setState({
       [deckName]: copiedDeck,
       pileCards: newPile,
       cardIsActive: true
     });
+
+    if (cardToPlay.color !== 'colorful') {
+      this.updateHistory();
+    }
   }
 
   takeCardFromMainDeck(deckName, player) {
@@ -211,6 +237,7 @@ class MainGameWindow extends React.Component {
       cards.push(copiedDeck.pop());
       if (copiedDeck.length === 1) copiedDeck = this.buildNewMainDeck();
     }
+
     this.takinNumber = 1;
     const newPile = [...this.state[deckName], ...cards];
 
@@ -219,6 +246,7 @@ class MainGameWindow extends React.Component {
       [deckName]: newPile,
       cardIsActive: false
     });
+    this.updateHistory();
     this.switchPlayer(player);
   }
 
@@ -239,9 +267,14 @@ class MainGameWindow extends React.Component {
   }
 
   selectColor(color) {
-    this.state.pileCards[this.state.pileCards.length - 1] = new Card(
-      '_' + color
-    );
+    let copiedDeck = [...this.state.pileCards];
+    let card = copiedDeck.pop();
+    card = new Card('_' + color, "change_colorful");
+    copiedDeck.push(card);
+    this.setState({
+      pileCards: copiedDeck
+    });
+    this.updateHistory();
     this.switchPlayer(BOT);
   }
 
@@ -261,7 +294,8 @@ class MainGameWindow extends React.Component {
       pileCards,
       currentPlayer,
       cardIsActive,
-      isTaki
+      isTaki,
+      inRewind
     } = this.state;
     return {
       cards: botDeck,
@@ -272,7 +306,8 @@ class MainGameWindow extends React.Component {
       isActive: cardIsActive,
       isTaki: isTaki,
       setTaki: this.setTaki,
-      takeCard: this.takeCardFromMainDeck
+      takeCard: this.takeCardFromMainDeck,
+      inRewind: inRewind,
     };
   }
 

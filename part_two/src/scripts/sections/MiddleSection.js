@@ -28,28 +28,28 @@ const MiddleSection = ({
   statsRef,
   rewindProps
 }) => (
-  <div id="content">
-    <StartGameButton />
-    <Pile cards={pileCards} />
-    <RewindUI {...rewindProps} />
-    <MainDeck
-      cards={mainDeckCards}
-      giveCardToPlayer={takeCard}
-      allowTake={allowTake}
-    />
-    <TurnIdentifier myTurn={player === PLAYER} />
-    <TakiIdentifier
-      openTaki={player === PLAYER && isTaki}
-      closeTaki={closeTaki}
-    />
-    <Statistics ref={statsRef} {...stats} />
-    <ColorPick
-      choose={player === -1}
-      selectColor={color => () => selectColor(color)}
-    />
-    <EndingDisplay />
-  </div>
-);
+    <div id="content">
+      <StartGameButton />
+      <Pile cards={pileCards} />
+      <RewindUI {...rewindProps} />
+      <MainDeck
+        cards={mainDeckCards}
+        giveCardToPlayer={takeCard}
+        allowTake={allowTake}
+      />
+      <TurnIdentifier myTurn={player === PLAYER} />
+      <TakiIdentifier
+        openTaki={player === PLAYER && isTaki}
+        closeTaki={closeTaki}
+      />
+      <Statistics ref={statsRef} {...stats} />
+      <ColorPick
+        choose={player === -1}
+        selectColor={color => () => selectColor(color)}
+      />
+      <EndingDisplay />
+    </div>
+  );
 
 const ColorPick = ({ choose, selectColor }) =>
   choose ? (
@@ -62,7 +62,7 @@ const ColorPick = ({ choose, selectColor }) =>
     </div>
   ) : null;
 
-const StartGameButton = ({}) => (
+const StartGameButton = ({ }) => (
   <button type="button" id="startGame" className="btn start-game-button">
     Start Game
   </button>

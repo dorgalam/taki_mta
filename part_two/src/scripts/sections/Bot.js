@@ -223,7 +223,7 @@ class Bot extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.props.myTurn) {
+    if (this.props.myTurn && !this.props.inRewind) {
       let card = this.chooseCard(this.props.isActive, this.props.isTaki);
       let index = this.getCardIndex(card);
       if (index === -1) {
