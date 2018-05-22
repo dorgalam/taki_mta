@@ -16,9 +16,9 @@ class RewindUI extends React.Component {
 
   render() {
     return this.props.inRewind ? (
-      <div id="rewind">
-        <h3>Turn nunber: {this.state.rewindIndex + 1}</h3>
-        <button
+      <div id="rewind1">
+        <h3>replay move number: {this.state.rewindIndex + 1 || "rewind ended"}</h3>
+        <button id="prev"
           disabled={this.state.rewindIndex === 0}
           className="clickable btn"
           onClick={() => {
@@ -29,7 +29,7 @@ class RewindUI extends React.Component {
         >
           PREV
         </button>
-        <button
+        <button id="next"
           disabled={this.state.rewindIndex === this.props.numberOfTurns - 1}
           className="clickable btn"
           onClick={() => {
@@ -40,14 +40,14 @@ class RewindUI extends React.Component {
         >
           NEXT
         </button>
-      </div>
+      </div >
     ) : (
         <button id="rewind"
           className="btn"
           disabled={this.props.winner}
           onClick={this.props.rewind}
         >
-          Rerun
+          Replay
       </button>
       );
   }

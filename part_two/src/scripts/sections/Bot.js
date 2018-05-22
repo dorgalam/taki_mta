@@ -7,6 +7,7 @@ const { isSpecialCard } = utils;
 const { PLAYER, BOT } = enums;
 
 class Bot extends React.Component {
+
   getCardIndex(card) {
     let res = -1;
     if (card === false) return -1;
@@ -222,33 +223,39 @@ class Bot extends React.Component {
     return;
   }
 
+  doBotTurn() {
+    let card = this.chooseCard(this.props.isActive, this.props.isTaki);
+    let index = this.getCardIndex(card);
+    if (index === -1) {
+      this.handleHaveNoCard(card, index);
+      return;
+    } else {
+      if (card.color === 'colorful') {
+        //handle colorful
+        card = this.props.cards[index] = this.handleColorful(card);
+      }
+      this.props.playCard(index, 'botDeck');
+      if (isSpecialCard(card)) {
+        // do again bot turn(plus,stop,taki)
+        if (card.number === 'taki') {
+          this.props.setTaki(true); // taki flag on
+        }
+        this.props.switchPlayer(BOT);
+        return;
+      } else if (this.props.isTaki) {
+        // regular card but on taki - need to do bot turns until no card in this color
+        this.props.switchPlayer(BOT);
+        return;
+      }
+      this.props.switchPlayer(PLAYER);
+    }
+  }
+
   componentDidUpdate() {
     if (this.props.myTurn && !this.props.inRewind) {
-      let card = this.chooseCard(this.props.isActive, this.props.isTaki);
-      let index = this.getCardIndex(card);
-      if (index === -1) {
-        this.handleHaveNoCard(card, index);
-        return;
-      } else {
-        if (card.color === 'colorful') {
-          //handle colorful
-          card = this.props.cards[index] = this.handleColorful(card);
-        }
-        this.props.playCard(index, 'botDeck');
-        if (isSpecialCard(card)) {
-          // do again bot turn(plus,stop,taki)
-          if (card.number === 'taki') {
-            this.props.setTaki(true); // taki flag on
-          }
-          this.props.switchPlayer(BOT);
-          return;
-        } else if (this.props.isTaki) {
-          // regular card but on taki - need to do bot turns until no card in this color
-          this.props.switchPlayer(BOT);
-          return;
-        }
-        this.props.switchPlayer(PLAYER);
-      }
+      //setTimeout(() => {
+      this.doBotTurn();
+      //}, 300);
     }
   }
 

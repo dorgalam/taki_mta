@@ -59,7 +59,7 @@ class Player extends React.Component {
   }
 
   render() {
-    return (
+    return !this.props.gameOver ? (
       <div id="player">
         <PlayerDeck
           handleCardClick={this.handleCardClick}
@@ -71,7 +71,9 @@ class Player extends React.Component {
           isFacedUp={true}
         />
       </div>
-    );
+    )
+      : null
+      ;
   }
 }
 

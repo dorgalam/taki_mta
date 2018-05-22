@@ -1,15 +1,16 @@
 import React from 'react';
 import RewindUI from './RewindUI.js';
+import { Player } from '../index.js';
 
 
 const EndingDisplay = ({ stats, winner, rewindProps }) => (
   winner > -1 ?
     <div id="ending" className='popup' >
       <RewindUI {...rewindProps} winner={winner === -1} />
-      <div id="celebrate" >
+      <div id={winner === 0 ? 'celebrate' : 'hidden'}>
         <img src="../src/styles/assets/barney-celebrate.gif" alt="gif" />
       </div>
-      <div id="loser" >
+      <div id={winner === 1 ? 'loser' : 'hidden'}>
         <img src="../src/styles/assets/loser.gif" alt="gif" />
       </div>
       <div id="bot-stats" className="bot_stats">

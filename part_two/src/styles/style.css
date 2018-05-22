@@ -15,7 +15,8 @@
     height: 123px;
   }
   body .color_tooltip {
-    width: 80px;
+    width: 120px;
+    height: 120px;
   }
   body #content {
     height: calc(100% - 284px);
@@ -27,15 +28,44 @@
   }
 }
 
+@media only screen and (max-width: 850px) {
+  body #turn-img {
+    width: 80px;
+    height: 80px;
+  }
+
+  h1{
+    font-size: 16px;
+  }
+
+  h2{
+    font-size: 14px;
+  }
+
+  body #rewind ,body #next ,body #prev{
+    font-size: 14px !important;
+    padding: 7px 14px 7px 14px !important;
+  }
+}
+
+@media only screen and (max-height: 444px) {
+  body #turn-img {
+    width: 80px;
+    height: 80px;
+  }
+
+  body #rewind ,body #next ,body #prev{
+    font-size: 14px !important;
+    padding: 7px 14px 7px 14px !important;
+  }
+}
+
 @media only screen and (max-width: 720px) {
   body .card {
     width: 50px;
     height: 77px;
   }
-  body .color_tooltip {
-    width: 50px;
-    height: 77px;
-  }
+ 
   body #content {
     height: calc(100% - 192px);
     min-height: 100px;
@@ -50,6 +80,7 @@
     margin-left: -50px;
     margin-top: -50px;
   }
+ 
 }
 
 #side-bar {
@@ -74,14 +105,14 @@ body {
   height: 100%;
 }
 
-#turn-identifier {
-  height: 20%;
-  background-color: white;
-}
+
+
 
 #closeT {
+  position:absolute;
   height: 20%;
-  left: 70% !important;
+  top:60%;
+  left: 60% !important;
 }
 
 #stats-section {
@@ -175,6 +206,7 @@ body {
 .color_tooltip {
   position: absolute;
   width: 150px;
+  height: 150px;
   top: 50%;
   left: 60%;
   z-index: 10000;
@@ -266,13 +298,15 @@ div.bot_stats {
   width: fit-content;
   color: rgb(221, 216, 216);
   border-radius: 10px;
-  position: relative;
+  position: absolute;
+  left:50%;
+  top:50%;
 }
 
 div.turn {
   position: absolute;
-  top: 35%;
-  left: 15%;
+  top: 20%;
+  left: 20%;
   opacity: 1;
 }
 
@@ -280,8 +314,8 @@ div.turn {
   border-radius: 50px;
   border: 10px solid transparent;
   padding: 15px;
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
 }
 
 .rewinding {
@@ -300,16 +334,34 @@ h1 {
   position: fixed;
   width: 100%;
   height: 100%;
+  left:0;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   margin: auto;
-  background-color: rgba(64, 214, 214, 0.5);
+  background-color: #00a000;
 }
 
 #rewind{
-  position:fixed;
+  position: absolute;
   right:10%;
-  top:25%;
+  top:10%;
+}
+
+#rewind1{
+  position: absolute;
+  right:0;
+  top:0;
+}
+
+#hidden{
+  display: none;
+}
+
+#celebrate{
+  position: absolute;
+  left:30%;
+}
+
+#loser{
+  position: absolute;
+  left:30%;
 }

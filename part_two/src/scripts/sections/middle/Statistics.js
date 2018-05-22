@@ -57,31 +57,42 @@ class Statistics extends React.Component {
     this.setState(newState);
   }
 
+  componentDidUpdate() {
+    if (this.props.gameOver) {
+      clearInterval(this.timerInterval);
+    }
+  }
+
   render() {
+    const { gameOver } = this.props;
     return (
-      <div id="stats-section">
-        <div id="p1-stats" className="stats">
-          <h1>Your Stats:</h1>
-          <h2>
-            Clock
+      <div id={gameOver ? 'side-bar' : ''}>
+        < div id="stats-section" >
+          <div id="p1-stats" className="stats">
+            <h1>Your Stats:</h1>
+            <h2>
+              Clock
             <a id="timer">{`${this.getHours()}:${this.getMinutes()}:${this.getSeconds()}`}</a>
-          </h2>
-          <h2>
-            Number of turns:
+            </h2>
+            <h2>
+              Number of turns:
             <div id="turns">{this.props.turns}</div>
-          </h2>
-          <h2>
-            Average turn time:
+            </h2>
+            <h2>
+              Average turn time:
             <div id="avg_time">{this.getAverage()}</div>
-          </h2>
-          <h2>
-            Last card declerations:
+            </h2>
+            <h2>
+              Last card declerations:
             <div id="last_one">{this.props.lastCard}</div>
-          </h2>
-        </div>
+            </h2>
+          </div>
+        </div >
       </div>
+
+
     );
   }
-}
+};
 
 export default Statistics;

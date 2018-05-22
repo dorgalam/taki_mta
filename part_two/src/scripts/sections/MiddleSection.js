@@ -31,7 +31,7 @@ const MiddleSection = ({
   rewindProps
 }) => (
     <div id="content">
-      <StartGameButton />
+
       <Pile cards={pileCards} />
       <RewindUI {...rewindProps} winner={winner === -1} />
       <MainDeck
@@ -44,15 +44,15 @@ const MiddleSection = ({
         openTaki={player === PLAYER && isTaki}
         closeTaki={closeTaki}
       />
-      <Statistics ref={statsRef} {...stats} />
       <ColorPick
         choose={player === -1}
         selectColor={color => () => selectColor(color)}
       />
       <EndingDisplay stats={botStats} rewindProps={rewindProps} winner={winner} />
+      <Statistics ref={statsRef} gameOver={winner !== -1} {...stats} />
     </div>
   );
-//<RewindUI {...rewindProps} winner={winner === -1} />
+
 const ColorPick = ({ choose, selectColor }) =>
   choose ? (
     <div className="color_tooltip">
