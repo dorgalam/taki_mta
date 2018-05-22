@@ -267,11 +267,6 @@ body {
   cursor: pointer;
 }
 
-.isplayable{
-  transition: 2220ms ease margin;
-
-}
-
 .notplayable:hover {
   cursor: not-allowed;
 }
