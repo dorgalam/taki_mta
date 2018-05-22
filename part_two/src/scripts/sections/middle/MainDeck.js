@@ -12,10 +12,10 @@ const MainDeck = ({ cards, giveCardToPlayer, allowTake }) => (
         name={card.name}
         classes={
           allowTake && index === cards.length - 1
-            ? 'card_back playable'
+            ? 'card_back isplayable'
             : index === cards.length - 1
               ? 'card_back notplayable'
-              : ''
+              : 'card_back'
         }
         handleCardClick={() =>
           allowTake && index === cards.length - 1

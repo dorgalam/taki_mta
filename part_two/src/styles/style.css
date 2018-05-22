@@ -261,6 +261,17 @@ body {
   cursor: pointer;
 }
 
+.isplayable:hover {
+  margin-top: 30px;
+  transition: 200ms ease margin;
+  cursor: pointer;
+}
+
+.isplayable{
+  transition: 2220ms ease margin;
+
+}
+
 .notplayable:hover {
   cursor: not-allowed;
 }
@@ -274,6 +285,7 @@ body {
 #deck>.cards>.card {
   position: absolute;
 }
+
 
 #stats-section>#p1-stats>h2 {
   margin-top: 0;
