@@ -19,7 +19,7 @@ class Statistics extends React.Component {
       this.setState({
         elapsed: new Date() - this.state.timeStarted
       });
-    }, 100);
+    }, 1000);
   }
 
   getHours() {

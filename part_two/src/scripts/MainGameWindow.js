@@ -100,6 +100,7 @@ class MainGameWindow extends React.Component {
         this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
       }
     }
+
     this.setState({
       currentPlayer: toPlayer,
       playerHasMove: false
@@ -134,7 +135,7 @@ class MainGameWindow extends React.Component {
     }
     if (this.state.winner === -1) {
       let winner = this.gameOver();
-      if (winner >= 0) {
+      if (winner >= 0 && !this.state.inRewind) {
         this.setState({
           winner: winner,
           currentPlayer: -2
@@ -214,9 +215,10 @@ class MainGameWindow extends React.Component {
     if (cardToPlay.color === 'colorful') {
       this.switchPlayer(-1);
     }
-    if (!isTaki && (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')) {
+    if (currentPlayer === PLAYER && !isTaki && (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')) {
       this.setStats(currentPlayer);
       this.statsComp.current.setTurnTime(totalSeconds - lstTime);
+      this.setState({ lstTime: totalSeconds });
     }
     this.setState({
       [deckName]: copiedDeck,
