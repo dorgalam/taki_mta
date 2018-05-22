@@ -66,7 +66,7 @@ class Statistics extends React.Component {
   render() {
     const { gameOver } = this.props;
     return (
-      <div id={gameOver ? 'side-bar' : ''}>
+      <div id={gameOver ? 'side' : ''}>
         < div id="stats-section" >
           <div id="p1-stats" className="stats">
             <h1>Your Stats:</h1>

@@ -278,6 +278,14 @@ class MainGameWindow extends React.Component {
       this.setStats(PLAYER);
       this.statsComp.current.setTurnTime(this.state.totalSeconds - this.state.lstTime);
     }
+    let takeCount = this.state.takinNumber;
+    if (lastcard.number === '2plus') {
+      takeCount = takeCount === 1 ? 0 : takeCount;
+      takeCount += 2;
+      this.setState({
+        takinNumber: takeCount
+      })
+    }
     if (isSpecialCard(lastcard) && lastcard.number !== 'taki')
       this.switchPlayer(PLAYER);
     else {
