@@ -2,7 +2,7 @@ import React from 'react';
 import { Bot, MiddleSection, Player } from './sections';
 import { utils, Card, enums } from './sections/cross';
 
-const { createCardsArray, isSpecialCard } = utils;
+const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
 
 const initalState = {
@@ -30,13 +30,51 @@ const initalState = {
   },
   history: [],
   winner: -1,
-  takinNumber: 1
+  takinNumber: 1,
+  restart: false
 };
+
+const StartGameButton = ({ }) => (
+  <button type="button" id="startGame" className="btn start-game-button" onClick={() => this.startGame()}>
+    Start Game
+  </button>
+);
+/*
+class MainGameWindow extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      start: false
+    }
+    this.startGame = this.startGame.bind(this);
+  }
+
+  startGame() {
+    this.setState({
+      start: true,
+    })
+  }
+
+  render() {
+    return this.state.start ?
+      (
+        <div>
+          <Game />
+          <button type="button" id="startGame" className="btn start-game-button" onClick={() => this.startGame()}>
+            restart Game
+    </button>
+        </div>)
+      : <button type="button" id="startGame" className="btn start-game-button" onClick={() => this.startGame()}>
+        Start Game
+    </button>;
+  }
+}*/
 
 class MainGameWindow extends React.Component {
   constructor() {
     super();
     this.state = initalState;
+    this.baseState = this.state;
     this.countTimer = this.countTimer.bind(this);
     this.hasMove = this.hasMove.bind(this);
     this.playCard = this.playCard.bind(this);
@@ -55,6 +93,24 @@ class MainGameWindow extends React.Component {
     this.setStats = this.setStats.bind(this);
     this.rewind = this.rewind.bind(this);
     this.gameOver = this.gameOver.bind(this);
+    this.quit = this.quit.bind(this);
+    this.restart = this.restart.bind(this);
+    this.setNew = this.setNew.bind(this);
+  }
+
+  restart() {
+    this.setState(this.baseState);
+    this.setState({
+      restart: true,
+      inRewind: false
+    });
+  }
+
+  quit() {
+    this.setState({
+      winner: BOT,
+      currentPlayer: -2
+    });
   }
 
   setStats(player) {
@@ -115,7 +171,21 @@ class MainGameWindow extends React.Component {
     return true;
   }
 
+  setNew() {
+    this.state.deckCards = shuffleDeck(this.state.deckCards);
+    this.dealCardsToPlayers();
+    clearInterval(this.timerVar);
+    this.timerVar = setInterval(this.countTimer, 1000);
+    this.setState({
+      restart: false
+    });
+  }
+
   componentDidUpdate(prevProps, prevState) {
+    if (this.state.restart) {
+      this.setNew();
+      return;
+    }
     const { playerDeck, botDeck } = this.state;
     const prevPlayerDeck = prevState.playerDeck;
     const prevBotDeck = prevState.botDeck;
@@ -314,6 +384,7 @@ class MainGameWindow extends React.Component {
   componentDidMount() {
     this.dealCardsToPlayers();
     this.timerVar = setInterval(this.countTimer, 1000);
+    this.updateHistory();
   }
 
   countTimer() {
@@ -362,7 +433,8 @@ class MainGameWindow extends React.Component {
       playerHasMove,
       stats,
       botStats,
-      winner
+      winner,
+      restart
     } = this.state;
     return {
       mainDeckCards: deckCards,
@@ -382,7 +454,8 @@ class MainGameWindow extends React.Component {
         rewind: this.rewind
       },
       botStats: botStats,
-      winner: winner
+      winner: winner,
+      restart: restart
     };
   }
 
@@ -413,9 +486,13 @@ class MainGameWindow extends React.Component {
     return (
       <div id="wrapper" className={this.state.inRewind ? 'rewinding' : ''}>
         <Bot {...this.getBotProps()} />
+        <button id="quit" className="btn" onClick={() => this.quit()}>Quit </button>
+        <button type="button" id="restart" className="clickable btn"
+          onClick={() => this.restart()} disabled={!this.state.inRewind} >
+          Restart</button>
         <MiddleSection {...this.getMiddleProps()} />
         <Player {...this.getPlayerProps()} />
-      </div>
+      </div >
     );
   }
 }

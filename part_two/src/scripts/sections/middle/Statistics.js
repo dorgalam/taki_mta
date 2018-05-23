@@ -19,7 +19,7 @@ class Statistics extends React.Component {
       this.setState({
         elapsed: new Date() - this.state.timeStarted
       });
-    }, 1000);
+    }, 100);
   }
 
   getHours() {
@@ -60,6 +60,19 @@ class Statistics extends React.Component {
   componentDidUpdate() {
     if (this.props.gameOver) {
       clearInterval(this.timerInterval);
+    }
+    if (this.props.restart) {
+      clearInterval(this.timerInterval);
+      this.setState((preState) => ({
+        turnsTime: [],
+        timeStarted: new Date(),
+        average: 0
+      }));
+      this.timerInterval = setInterval(() => {
+        this.setState({
+          elapsed: new Date() - this.state.timeStarted
+        });
+      }, 100);
     }
   }
 

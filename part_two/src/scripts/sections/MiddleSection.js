@@ -28,10 +28,10 @@ const MiddleSection = ({
   botStats,
   statsRef,
   winner,
-  rewindProps
+  rewindProps,
+  restart
 }) => (
     <div id="content">
-
       <Pile cards={pileCards} />
       <RewindUI {...rewindProps} winner={winner === -1} />
       <MainDeck
@@ -49,25 +49,20 @@ const MiddleSection = ({
         selectColor={color => () => selectColor(color)}
       />
       <EndingDisplay stats={botStats} rewindProps={rewindProps} winner={winner} />
-      <Statistics ref={statsRef} gameOver={winner !== -1} {...stats} />
+      <Statistics ref={statsRef} gameOver={winner !== -1} restart={restart} {...stats} />
     </div>
   );
 
 const ColorPick = ({ choose, selectColor }) =>
   choose ? (
     <div className="color_tooltip">
-      <a>Choose Color:</a>
       <div onClick={selectColor('blue')} className="color_tooltip_blue" />
       <div onClick={selectColor('green')} className="color_tooltip_green" />
       <div onClick={selectColor('red')} className="color_tooltip_red" />
       <div onClick={selectColor('yellow')} className="color_tooltip_yellow" />
-    </div>
+    </div >
   ) : null;
 
-const StartGameButton = ({ }) => (
-  <button type="button" id="startGame" className="btn start-game-button">
-    Start Game
-  </button>
-);
+
 
 export default MiddleSection;
