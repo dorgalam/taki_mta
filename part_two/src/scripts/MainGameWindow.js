@@ -5,7 +5,7 @@ import { utils, Card, enums } from './sections/cross';
 const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
 
-const initalState = {
+const getInitialState = () => ({
   deckCards: createCardsArray().map(item => new Card(item)),
   playerDeck: [],
   botDeck: [],
@@ -22,7 +22,7 @@ const initalState = {
   playerTurnEnds: 0,
   stats: {
     turns: 0,
-    lastCard: 0,
+    lastCard: 0
   },
   botStats: {
     turns: 0,
@@ -32,10 +32,15 @@ const initalState = {
   winner: -1,
   takinNumber: 1,
   restart: false
-};
+});
 
-const StartGameButton = ({ }) => (
-  <button type="button" id="startGame" className="btn start-game-button" onClick={() => this.startGame()}>
+const StartGameButton = ({}) => (
+  <button
+    type="button"
+    id="startGame"
+    className="btn start-game-button"
+    onClick={() => this.startGame()}
+  >
     Start Game
   </button>
 );
@@ -43,7 +48,7 @@ const StartGameButton = ({ }) => (
 class MainGameWindow extends React.Component {
   constructor() {
     super();
-    this.state = initalState;
+    this.state = getInitialState();
     this.baseState = this.state;
     this.countTimer = this.countTimer.bind(this);
     this.hasMove = this.hasMove.bind(this);
@@ -93,8 +98,7 @@ class MainGameWindow extends React.Component {
         },
         playerTurnEnds: true
       });
-    }
-    else if (player === BOT) {
+    } else if (player === BOT) {
       const { botStats } = this.state;
       this.setState({
         botStats: {
@@ -104,6 +108,10 @@ class MainGameWindow extends React.Component {
         playerTurnEnds: true
       });
     }
+  }
+
+  componentDidMount() {
+    this.setState(getInitialState());
   }
 
   switchPlayer(toPlayer) {
@@ -151,6 +159,10 @@ class MainGameWindow extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    clearInterval(this.timerVar);
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (this.state.restart) {
       this.setNew();
@@ -163,10 +175,9 @@ class MainGameWindow extends React.Component {
       const { stats } = this.state;
       stats.lastCard++;
       this.setState({
-        stats,
+        stats
       });
-    }
-    else if (botDeck.length === 1 && prevBotDeck.length !== 1) {
+    } else if (botDeck.length === 1 && prevBotDeck.length !== 1) {
       const { botStats } = this.state;
       botStats.lastCard++;
       this.setState({
@@ -244,7 +255,14 @@ class MainGameWindow extends React.Component {
   }
 
   playCard(index, deckName) {
-    const { stats, isTaki, currentPlayer, lstTime, totalSeconds, takinNumber } = this.state;
+    const {
+      stats,
+      isTaki,
+      currentPlayer,
+      lstTime,
+      totalSeconds,
+      takinNumber
+    } = this.state;
     const copiedDeck = [...this.state[deckName]];
     const cardToPlay = copiedDeck.popIndex(index);
     const newPile = [...this.state.pileCards, cardToPlay];
@@ -256,7 +274,11 @@ class MainGameWindow extends React.Component {
     if (cardToPlay.color === 'colorful') {
       this.switchPlayer(-1);
     }
-    if (currentPlayer === PLAYER && !isTaki && (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')) {
+    if (
+      currentPlayer === PLAYER &&
+      !isTaki &&
+      (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')
+    ) {
       this.setStats(currentPlayer);
       this.statsComp.current.setTurnTime(totalSeconds - lstTime);
       this.setState({ lstTime: totalSeconds });
@@ -277,16 +299,20 @@ class MainGameWindow extends React.Component {
     if (playerDeck.length === 0) {
       if (!this.state.cardIsActive) {
         winner = PLAYER;
-      }
-      else if (lastPileCard.number !== "plus" && lastPileCard.number !== "2plus") {
+      } else if (
+        lastPileCard.number !== 'plus' &&
+        lastPileCard.number !== '2plus'
+      ) {
         winner = PLAYER;
       }
     }
     if (botDeck.length === 0) {
       if (!this.state.cardIsActive) {
         winner = BOT;
-      }
-      else if (lastPileCard.number !== "plus" && lastPileCard.number !== "2plus") {
+      } else if (
+        lastPileCard.number !== 'plus' &&
+        lastPileCard.number !== '2plus'
+      ) {
         winner = BOT;
       }
     }
@@ -317,7 +343,9 @@ class MainGameWindow extends React.Component {
     this.setTaki(false);
     if (lastcard.number === 'plus' || lastcard.number === 'stop') {
       this.setStats(PLAYER);
-      this.statsComp.current.setTurnTime(this.state.totalSeconds - this.state.lstTime);
+      this.statsComp.current.setTurnTime(
+        this.state.totalSeconds - this.state.lstTime
+      );
     }
     let takeCount = this.state.takinNumber;
     if (lastcard.number === '2plus') {
@@ -325,7 +353,7 @@ class MainGameWindow extends React.Component {
       takeCount += 2;
       this.setState({
         takinNumber: takeCount
-      })
+      });
     }
     if (isSpecialCard(lastcard) && lastcard.number !== 'taki')
       this.switchPlayer(PLAYER);
@@ -343,7 +371,7 @@ class MainGameWindow extends React.Component {
   selectColor(color) {
     let copiedDeck = [...this.state.pileCards];
     let card = copiedDeck.pop();
-    card = new Card('_' + color, "change_colorful");
+    card = new Card('_' + color, 'change_colorful');
     copiedDeck.push(card);
     this.setState({
       pileCards: copiedDeck
@@ -382,7 +410,7 @@ class MainGameWindow extends React.Component {
       isTaki: isTaki,
       setTaki: this.setTaki,
       takeCard: this.takeCardFromMainDeck,
-      inRewind: inRewind,
+      inRewind: inRewind
     };
   }
 
@@ -457,13 +485,21 @@ class MainGameWindow extends React.Component {
     return (
       <div id="wrapper" className={this.state.inRewind ? 'rewinding' : ''}>
         <Bot {...this.getBotProps()} />
-        <button id="quit" className="btn" onClick={() => this.quit()}>Quit </button>
-        <button type="button" id="restart" className="clickable btn"
-          onClick={() => this.restart()} disabled={!this.state.inRewind} >
-          Restart</button>
+        <button id="quit" className="btn" onClick={() => this.quit()}>
+          Quit{' '}
+        </button>
+        <button
+          type="button"
+          id="restart"
+          className="clickable btn"
+          onClick={this.props.restart}
+          disabled={!this.state.inRewind}
+        >
+          Restart
+        </button>
         <MiddleSection {...this.getMiddleProps()} />
         <Player {...this.getPlayerProps()} />
-      </div >
+      </div>
     );
   }
 }

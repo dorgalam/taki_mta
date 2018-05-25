@@ -1,8 +1,8 @@
-import React from "react";
-import "./styles/style.css";
-import "./styles/cards.css";
+import React from 'react';
+import './styles/style.css';
+import './styles/cards.css';
 
-import ReactDOM from "react-dom";
+import ReactDOM from 'react-dom';
 import MainGameWindow from './scripts/MainGameWindow.js';
 
 Array.prototype.popIndex = function(index) {
@@ -20,4 +20,20 @@ Array.prototype.popIndex = function(index) {
   return item;
 };
 
-ReactDOM.render(<MainGameWindow />, document.getElementById("root"));
+class Root extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      start: true
+    };
+    this.restart = this.restart.bind(this);
+  }
+  restart() {
+    this.setState({ start: false }, () => this.setState({ start: true }));
+  }
+  render() {
+    return this.state.start ? <MainGameWindow restart={this.restart} /> : null;
+  }
+}
+
+ReactDOM.render(<Root />, document.getElementById('root'));

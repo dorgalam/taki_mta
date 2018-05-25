@@ -63,7 +63,7 @@ class Statistics extends React.Component {
     }
     if (this.props.restart) {
       clearInterval(this.timerInterval);
-      this.setState((preState) => ({
+      this.setState(preState => ({
         turnsTime: [],
         timeStarted: new Date(),
         average: 0
@@ -76,36 +76,38 @@ class Statistics extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    clearInterval(this.timerInterval);
+  }
+
   render() {
     const { gameOver } = this.props;
     return (
       <div id={gameOver ? 'side' : ''}>
-        < div id="stats-section" >
+        <div id="stats-section">
           <div id="p1-stats" className="stats">
             <h1>Your Stats:</h1>
             <h2>
               Clock
-            <a id="timer">{`${this.getHours()}:${this.getMinutes()}:${this.getSeconds()}`}</a>
+              <a id="timer">{`${this.getHours()}:${this.getMinutes()}:${this.getSeconds()}`}</a>
             </h2>
             <h2>
               Number of turns:
-            <div id="turns">{this.props.turns}</div>
+              <div id="turns">{this.props.turns}</div>
             </h2>
             <h2>
               Average turn time:
-            <div id="avg_time">{this.getAverage()}</div>
+              <div id="avg_time">{this.getAverage()}</div>
             </h2>
             <h2>
               Last card declerations:
-            <div id="last_one">{this.props.lastCard}</div>
+              <div id="last_one">{this.props.lastCard}</div>
             </h2>
           </div>
-        </div >
+        </div>
       </div>
-
-
     );
   }
-};
+}
 
 export default Statistics;
