@@ -26,6 +26,20 @@
     width: 100px;
     height: 100px;
   }
+  #msg{
+    font-size: 12px !important;
+    color:whitesmoke;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  }
+  #quit,#restart{
+    font-size: 12px !important;
+    padding: 7px 14px 7px 14px !important;
+  }
+
+  body #rewind ,body #next ,body #prev {
+    font-size: 14px !important;
+    padding: 7px 14px 7px 14px !important;
+  }
 }
 
 @media only screen and (max-width: 850px) {
@@ -48,7 +62,7 @@
   }
 
   body #rewind ,body #next ,body #prev {
-    font-size: 14px !important;
+    font-size: 12px !important;
     padding: 7px 14px 7px 14px !important;
   }
 }
@@ -60,13 +74,18 @@
   }
 
   #quit,#restart{
-    font-size: 10px !important;
+    font-size: 8px !important;
     padding: 7px 14px 7px 14px !important;
   }
 
   body #rewind ,body #next ,body #prev{
-    font-size: 14px !important;
+    font-size: 10px !important;
     padding: 7px 14px 7px 14px !important;
+  }
+  #msg{
+    font-size: 10px !important;
+    color:whitesmoke;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   }
 }
 
@@ -304,6 +323,7 @@ body {
   transition: 200ms ease margin;
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  cursor: not-allowed;
 }
 
 .playable:hover {
@@ -342,6 +362,7 @@ div.stats {
   background-color: rgb(61, 66, 62);
   text-align: left;
   width: 100%;
+  font-size: 14px;
   color: rgb(221, 216, 216);
   border-radius: 10px;
 }
@@ -462,4 +483,16 @@ h1 {
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+
+#msg{
+  font-size: 18px;
+  color:whitesmoke;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+a{
+  font-size: 18px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  
 }

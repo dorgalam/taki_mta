@@ -61,19 +61,6 @@ class Statistics extends React.Component {
     if (this.props.gameOver) {
       clearInterval(this.timerInterval);
     }
-    if (this.props.restart) {
-      clearInterval(this.timerInterval);
-      this.setState(preState => ({
-        turnsTime: [],
-        timeStarted: new Date(),
-        average: 0
-      }));
-      this.timerInterval = setInterval(() => {
-        this.setState({
-          elapsed: new Date() - this.state.timeStarted
-        });
-      }, 100);
-    }
   }
 
   componentWillUnmount() {
@@ -89,7 +76,7 @@ class Statistics extends React.Component {
             <h1>Your Stats:</h1>
             <h2>
               Clock
-              <a id="timer">{`${this.getHours()}:${this.getMinutes()}:${this.getSeconds()}`}</a>
+              <a id="timer">{` ${this.getHours()}:${this.getMinutes()}:${this.getSeconds()}`}</a>
             </h2>
             <h2>
               Number of turns:

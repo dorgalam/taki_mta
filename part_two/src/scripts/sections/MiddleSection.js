@@ -29,7 +29,7 @@ const MiddleSection = ({
   statsRef,
   winner,
   rewindProps,
-  restart
+  msg
 }) => (
     <div id="content">
       <Pile cards={pileCards} />
@@ -40,6 +40,7 @@ const MiddleSection = ({
         allowTake={allowTake}
       />
       <TurnIdentifier myTurn={player === PLAYER} />
+      <a id="msg">{msg}</a>
       <TakiIdentifier
         openTaki={player === PLAYER && isTaki}
         closeTaki={closeTaki}
@@ -49,7 +50,7 @@ const MiddleSection = ({
         selectColor={color => () => selectColor(color)}
       />
       <EndingDisplay stats={botStats} rewindProps={rewindProps} winner={winner} />
-      <Statistics ref={statsRef} gameOver={winner !== -1} restart={restart} {...stats} />
+      <Statistics ref={statsRef} gameOver={winner !== -1} {...stats} />
     </div>
   );
 

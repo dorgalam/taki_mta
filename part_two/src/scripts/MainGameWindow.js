@@ -31,10 +31,10 @@ const getInitialState = () => ({
   history: [],
   winner: -1,
   takinNumber: 1,
-  restart: false
+  msg: ""
 });
 
-const StartGameButton = ({}) => (
+const StartGameButton = ({ }) => (
   <button
     type="button"
     id="startGame"
@@ -69,16 +69,6 @@ class MainGameWindow extends React.Component {
     this.rewind = this.rewind.bind(this);
     this.gameOver = this.gameOver.bind(this);
     this.quit = this.quit.bind(this);
-    this.restart = this.restart.bind(this);
-    this.setNew = this.setNew.bind(this);
-  }
-
-  restart() {
-    this.setState(this.baseState);
-    this.setState({
-      restart: true,
-      inRewind: false
-    });
   }
 
   quit() {
@@ -129,7 +119,7 @@ class MainGameWindow extends React.Component {
     if (from !== toPlayer && toPlayer !== -1) {
       this.setStats(currentPlayer);
       if (toPlayer === PLAYER) {
-        this.setState({ lstTime: totalSeconds });
+        this.setState({ lstTime: totalSeconds, msg: "" });
       } else {
         this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
       }
@@ -149,25 +139,11 @@ class MainGameWindow extends React.Component {
     return true;
   }
 
-  setNew() {
-    this.state.deckCards = shuffleDeck(this.state.deckCards);
-    this.dealCardsToPlayers();
-    clearInterval(this.timerVar);
-    this.timerVar = setInterval(this.countTimer, 1000);
-    this.setState({
-      restart: false
-    });
-  }
-
   componentWillUnmount() {
     clearInterval(this.timerVar);
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.restart) {
-      this.setNew();
-      return;
-    }
     const { playerDeck, botDeck } = this.state;
     const prevPlayerDeck = prevState.playerDeck;
     const prevBotDeck = prevState.botDeck;
@@ -272,6 +248,7 @@ class MainGameWindow extends React.Component {
       takeCount += 2;
     }
     if (cardToPlay.color === 'colorful') {
+      this.setState({ msg: "pick a color" });
       this.switchPlayer(-1);
     }
     if (
@@ -279,6 +256,7 @@ class MainGameWindow extends React.Component {
       !isTaki &&
       (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')
     ) {
+      this.setState({ msg: cardToPlay.number + '- you have another turn' });
       this.setStats(currentPlayer);
       this.statsComp.current.setTurnTime(totalSeconds - lstTime);
       this.setState({ lstTime: totalSeconds });
@@ -287,7 +265,7 @@ class MainGameWindow extends React.Component {
       [deckName]: copiedDeck,
       pileCards: newPile,
       cardIsActive: true,
-      takinNumber: takeCount
+      takinNumber: takeCount,
     });
     this.updateHistory();
   }
@@ -342,6 +320,7 @@ class MainGameWindow extends React.Component {
     let lastcard = this.state.pileCards[this.state.pileCards.length - 1];
     this.setTaki(false);
     if (lastcard.number === 'plus' || lastcard.number === 'stop') {
+      this.setState({ msg: lastcard.number + '- you have another turn' });
       this.setStats(PLAYER);
       this.statsComp.current.setTurnTime(
         this.state.totalSeconds - this.state.lstTime
@@ -358,11 +337,15 @@ class MainGameWindow extends React.Component {
     if (isSpecialCard(lastcard) && lastcard.number !== 'taki')
       this.switchPlayer(PLAYER);
     else {
+      this.setState({ msg: "" });
       this.switchPlayer(BOT);
     }
   }
 
   setTaki(bool) {
+    if (bool === true && this.state.currentPlayer === PLAYER) {
+      this.setState({ msg: 'taki you can put all the cards off this color' });
+    }
     this.setState({
       isTaki: bool
     });
@@ -374,7 +357,8 @@ class MainGameWindow extends React.Component {
     card = new Card('_' + color, 'change_colorful');
     copiedDeck.push(card);
     this.setState({
-      pileCards: copiedDeck
+      pileCards: copiedDeck,
+      msg: ""
     });
     this.setStats(PLAYER);
     this.switchPlayer(BOT);
@@ -433,7 +417,7 @@ class MainGameWindow extends React.Component {
       stats,
       botStats,
       winner,
-      restart
+      msg
     } = this.state;
     return {
       mainDeckCards: deckCards,
@@ -445,7 +429,7 @@ class MainGameWindow extends React.Component {
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
       statsRef: this.statsComp,
-      allowTake: playerHasMove === false && currentPlayer === PLAYER, //need to add has move,
+      allowTake: playerHasMove === false && currentPlayer === PLAYER,
       rewindProps: {
         inRewind: this.state.inRewind,
         setRewindIndex: this.setRewindIndex,
@@ -454,7 +438,7 @@ class MainGameWindow extends React.Component {
       },
       botStats: botStats,
       winner: winner,
-      restart: restart
+      msg: msg
     };
   }
 
