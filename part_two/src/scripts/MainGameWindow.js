@@ -39,36 +39,6 @@ const StartGameButton = ({ }) => (
     Start Game
   </button>
 );
-/*
-class MainGameWindow extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      start: false
-    }
-    this.startGame = this.startGame.bind(this);
-  }
-
-  startGame() {
-    this.setState({
-      start: true,
-    })
-  }
-
-  render() {
-    return this.state.start ?
-      (
-        <div>
-          <Game />
-          <button type="button" id="startGame" className="btn start-game-button" onClick={() => this.startGame()}>
-            restart Game
-    </button>
-        </div>)
-      : <button type="button" id="startGame" className="btn start-game-button" onClick={() => this.startGame()}>
-        Start Game
-    </button>;
-  }
-}*/
 
 class MainGameWindow extends React.Component {
   constructor() {
@@ -228,6 +198,7 @@ class MainGameWindow extends React.Component {
   rewind() {
     this.rewindIndex = 0;
     this.setState({ inRewind: true });
+    console.log(this.state.inRewind);
   }
 
   dealCardsToPlayers() {
