@@ -44,6 +44,10 @@
 }
 
 @media only screen and (max-width: 850px) {
+  body .card {
+    width: 60px;
+    height: 100px;
+  }
   body #turn-img {
     width: 80px;
     height: 80px;
@@ -55,6 +59,10 @@
 
   h2{
     font-size: 14px;
+  }
+
+  #closeTaki{
+    font-size: 8px;
   }
   
   #quit,#restart{
@@ -96,8 +104,8 @@
 
 @media only screen and (max-width: 720px) {
   body .card {
-    width: 50px;
-    height: 77px;
+    width: 45px;
+    height: 70px;
   }
 
   #loser,#celebrate{
