@@ -429,7 +429,7 @@ class MainGameWindow extends React.Component {
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
       statsRef: this.statsComp,
-      allowTake: playerHasMove === false && currentPlayer === PLAYER,
+      allowTake: playerHasMove === false && currentPlayer === PLAYER && !isTaki,
       rewindProps: {
         inRewind: this.state.inRewind,
         setRewindIndex: this.setRewindIndex,
@@ -478,6 +478,7 @@ class MainGameWindow extends React.Component {
           className="clickable btn"
           onClick={this.props.restart}
           disabled={!this.state.inRewind}
+          hidden={!this.state.inRewind}
         >
           Restart
         </button>
