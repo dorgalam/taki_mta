@@ -26,21 +26,19 @@
     width: 100px;
     height: 100px;
   }
-  #msg{
+  #msg {
     font-size: 12px !important;
-    color:whitesmoke;
+    color: whitesmoke;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   }
-  #quit,#restart{
+  #quit, #restart {
     font-size: 12px !important;
     padding: 7px 14px 7px 14px !important;
   }
-
-  body #rewind ,body #next ,body #prev {
+  body #rewind, body #next, body #prev {
     font-size: 12px !important;
     padding: 7px 14px 7px 14px !important;
   }
-
 }
 
 @media only screen and (max-width: 850px) {
@@ -52,25 +50,20 @@
     width: 80px;
     height: 80px;
   }
-
-  h1{
+  h1 {
     font-size: 16px;
   }
-
-  h2{
+  h2 {
     font-size: 14px;
   }
-
-  #closeTaki{
+  #closeTaki {
     font-size: 8px;
   }
-  
-  #quit,#restart{
+  #quit, #restart {
     font-size: 10px !important;
     padding: 7px 14px 7px 14px !important;
   }
-
-  body #rewind ,body #next ,body #prev {
+  body #rewind, body #next, body #prev {
     font-size: 10px !important;
     padding: 7px 14px 7px 14px !important;
   }
@@ -81,23 +74,20 @@
     width: 80px;
     height: 80px;
   }
-
-  #quit,#restart{
+  #quit, #restart {
     font-size: 8px !important;
     padding: 7px 14px 7px 14px !important;
   }
-
-  body #rewind ,body #next ,body #prev{
+  body #rewind, body #next, body #prev {
     font-size: 8px !important;
     padding: 7px 14px 7px 14px !important;
   }
-  #msg{
+  #msg {
     font-size: 10px !important;
-    color:whitesmoke;
+    color: whitesmoke;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   }
-
-  div.bot_stats{
+  div.bot_stats {
     width: 70px;
   }
 }
@@ -107,11 +97,9 @@
     width: 45px;
     height: 70px;
   }
-
-  #loser,#celebrate{
-    width:100px;
+  #loser, #celebrate {
+    width: 100px;
   }
- 
   body #content {
     height: calc(100% - 192px);
     min-height: 100px;
@@ -126,11 +114,9 @@
     margin-left: -50px;
     margin-top: -50px;
   }
-
-  div.bot_stats{
+  div.bot_stats {
     width: 90px;
   }
- 
 }
 
 #side-bar {
@@ -155,13 +141,10 @@ body {
   height: 100%;
 }
 
-
-
-
 #closeT {
-  position:absolute;
+  position: absolute;
   height: 20%;
-  top:60%;
+  top: 60%;
   left: 60% !important;
 }
 
@@ -259,78 +242,77 @@ body {
   position: absolute;
   width: 150px;
   height: 150px;
-  top:33%;
+  top: 33%;
   left: 42%;
   display: flex;
   opacity: 0.9;
   transition: 200ms ease all;
 }
 
-
 .color_tooltip_red {
   display: inline-block;
-  width:50%;
-  height:50%;
-  position:absolute;
-  right:0;
-  border-radius:0 8px 0 0;
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  right: 0;
+  border-radius: 0 8px 0 0;
   background-color: #db6e53;
 }
 
 .color_tooltip_green {
   display: inline-block;
-  width:50%;
-  height:50%;
-  position:absolute;
-  left:0;
-  top:50%;
-  border-radius:0 0 0 8px;
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  border-radius: 0 0 0 8px;
   background-color: #8fc453;
 }
 
 .color_tooltip_yellow {
   display: inline-block;
-  width:50%;
-  height:50%;
-  position:absolute;
-  left:50%;
-  top:50%;
-  border-radius:0 0 8px 0;
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 0 0 8px 0;
   background-color: #fff44c;
 }
 
 .color_tooltip_blue {
-   display: inline-block;
-    width:50%;
-    height:50%;
-    background-color: #6bbce2;
-    position:absolute;
-    top:0;
-    left:0;
-    border-radius:8px 0 0 0;
+  display: inline-block;
+  width: 50%;
+  height: 50%;
+  background-color: #6bbce2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 8px 0 0 0;
 }
 
 .color_tooltip_red:hover {
-  content:"Choose";
-  color:white;
+  content: "Choose";
+  color: white;
   background-color: #e64d48;
 }
 
 .color_tooltip_green:hover {
-  content:"Choose";
-  color:white;
+  content: "Choose";
+  color: white;
   background-color: #42db49;
 }
 
-.color_tooltip_yellow:hover{
-  content:"Choose";
-  color:white;
+.color_tooltip_yellow:hover {
+  content: "Choose";
+  color: white;
   background-color: #f9fd18;
 }
 
 .color_tooltip_blue:hover {
-  content:"Choose";
-  color:white;
+  content: "Choose";
+  color: white;
   background-color: #2484dd;
 }
 
@@ -374,7 +356,6 @@ body {
   position: absolute;
 }
 
-
 #stats-section>#p1-stats>h2 {
   margin-top: 0;
 }
@@ -400,8 +381,8 @@ div.bot_stats {
   color: rgb(221, 216, 216);
   border-radius: 10px;
   position: absolute;
-  right:0;
-  top:50%;
+  right: 0;
+  top: 50%;
 }
 
 div.turn {
@@ -413,6 +394,8 @@ div.turn {
 
 #turn-img {
   border-radius: 50px;
+  background-size: cover;
+  background-repeat: no-repeat;
   border: 10px solid transparent;
   padding: 15px;
   width: 120px;
@@ -435,39 +418,39 @@ h1 {
   position: fixed;
   width: 100%;
   height: 100%;
-  left:0;
+  left: 0;
   top: 0;
   margin: auto;
   background-color: #00a000;
 }
 
-#rewind{
+#rewind {
   position: absolute;
-  right:10%;
-  top:10%;
+  right: 10%;
+  top: 10%;
 }
 
-#rewind1{
+#rewind1 {
   position: absolute;
-  right:0;
-  top:-10px;
+  right: 0;
+  top: -10px;
 }
 
-#hidden{
+#hidden {
   display: none;
 }
 
-#celebrate{
+#celebrate {
   position: absolute;
-  left:30%;
+  left: 30%;
 }
 
-#loser{
+#loser {
   position: absolute;
-  left:30%;
+  left: 30%;
 }
 
-#side{
+#side {
   opacity: 0.8;
   background-color: rgb(61, 66, 62);
   text-align: center;
@@ -506,14 +489,29 @@ h1 {
   justify-content: center;
 }
 
-#msg{
+#msg {
   font-size: 18px;
-  color:whitesmoke;
+  color: whitesmoke;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-a{
+a {
   font-size: 18px;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  
+}
+
+#barney {
+  content: url('./assets/barney.gif');
+}
+
+#loser {
+  content: url('./assets/loser2.gif');
+}
+
+.human-image {
+  background-image: url('./assets/human.png');
+}
+
+.bot-image {
+  background-image: url('./assets/bot.png');
 }
