@@ -31,7 +31,7 @@ const getInitialState = () => ({
   history: [],
   winner: -1,
   takinNumber: 1,
-  msg: ""
+  msg: "",
 });
 
 const StartGameButton = ({ }) => (

@@ -68,7 +68,7 @@ class Statistics extends React.Component {
   }
 
   render() {
-    const { gameOver } = this.props;
+    const { gameOver, inRewind, botStats, curPlayer } = this.props;
     return (
       <div id={gameOver ? 'side' : ''}>
         <div id="stats-section">
@@ -90,6 +90,17 @@ class Statistics extends React.Component {
               Last card declerations:
               <div id="last_one">{this.props.lastCard}</div>
             </h2>
+            <div hidden={!(inRewind && curPlayer === 1)} >
+              <h1>Bot Stats:</h1>
+              <h2>
+                Number of turns:
+              <div >{this.props.botStats.turns}</div>
+              </h2>
+              <h2>
+                Last card declerations:
+              <div >{this.props.botStats.lastCard}</div>
+              </h2>
+            </div>
           </div>
         </div>
       </div>

@@ -8,10 +8,10 @@ const EndingDisplay = ({ stats, winner, rewindProps }) => (
     <div id="ending" className='popup' >
       <RewindUI {...rewindProps} winner={winner === -1} />
       <div id={winner === 0 ? 'celebrate' : 'hidden'}>
-        <img src="../src/styles/assets/barney-celebrate.gif" alt="gif" />
+        <img src="../src/styles/assets/barney.gif" alt="gif" height="150" width="150" />
       </div>
       <div id={winner === 1 ? 'loser' : 'hidden'}>
-        <img src="../src/styles/assets/loser.gif" alt="gif" />
+        <img src="../src/styles/assets/loser2.gif" alt="gif" height="150" width="150" />
       </div>
       <div id="bot-stats" className="bot_stats">
         <h1>Bot Stats:</h1>
