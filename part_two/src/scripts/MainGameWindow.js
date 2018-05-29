@@ -51,7 +51,7 @@ class MainGameWindow extends React.Component {
     this.state = getInitialState();
     this.baseState = this.state;
     this.countTimer = this.countTimer.bind(this);
-    this.hasMove = this.hasMove.bind(this);
+    this.setHasMove = this.setHasMove.bind(this);
     this.playCard = this.playCard.bind(this);
     this.setTaki = this.setTaki.bind(this);
     this.closeTaki = this.closeTaki.bind(this);
@@ -128,12 +128,12 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  hasMove() {
-    if (this.state.playerHasMove === true) return true;
+  setHasMove(bool) {
+    if (this.state.playerHasMove === bool)
+      return;
     this.setState({
-      playerHasMove: true
+      playerHasMove: bool
     });
-    return true;
   }
 
   componentWillUnmount() {
@@ -457,7 +457,7 @@ class MainGameWindow extends React.Component {
       lastPileCard: pileCards[pileCards.length - 1],
       isTaki: isTaki,
       setTaki: this.setTaki,
-      hasMove: this.hasMove,
+      hasMove: this.setHasMove,
       buildDeck: this.buildNewMainDeck,
       gameOver: winner !== -1
     };

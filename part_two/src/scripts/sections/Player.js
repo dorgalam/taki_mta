@@ -46,16 +46,31 @@ class Player extends React.Component {
     const currentCard = cards[index];
     let bool = false;
     if (isActive && isTaki) {
-      return lastPileCard.color === currentCard.color ? this.props.hasMove() : false;
+      return lastPileCard.color === currentCard.color;
     }
     if (isActive && lastPileCard.number === "2plus") {
-      return currentCard.number === "2plus" ? this.props.hasMove() : false;
+      return currentCard.number === "2plus";
     }
     return (
       lastPileCard.color === currentCard.color ||
-        lastPileCard.number === currentCard.number ||
-        currentCard.color === "colorful" ? this.props.hasMove() : false
+      lastPileCard.number === currentCard.number ||
+      currentCard.color === "colorful"
     );
+  }
+
+  componentDidUpdate() {
+    let hasMove = false;
+    this.props.cards.forEach((element, index) => {
+      if (this.isPlayableCard(index)) {
+        hasMove = true;
+      }
+    });
+    if (hasMove) {
+      this.props.hasMove(true);
+    }
+    else {
+      this.props.hasMove(false);
+    }
   }
 
   render() {
