@@ -100,9 +100,6 @@ class MainGameWindow extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.setState(getInitialState());
-  }
 
   switchPlayer(toPlayer) {
     let {
@@ -365,6 +362,7 @@ class MainGameWindow extends React.Component {
   }
 
   componentDidMount() {
+    this.setState(getInitialState());
     this.dealCardsToPlayers();
     this.timerVar = setInterval(this.countTimer, 1000);
     this.updateHistory();
