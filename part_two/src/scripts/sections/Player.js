@@ -65,12 +65,7 @@ class Player extends React.Component {
         hasMove = true;
       }
     });
-    if (hasMove) {
-      this.props.hasMove(true);
-    }
-    else {
-      this.props.hasMove(false);
-    }
+    this.props.hasMove(hasMove);
   }
 
   render() {

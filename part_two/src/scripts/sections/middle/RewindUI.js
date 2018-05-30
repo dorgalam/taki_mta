@@ -46,6 +46,7 @@ class RewindUI extends React.Component {
           className="btn"
           disabled={this.props.winner}
           onClick={this.props.rewind}
+          hidden={this.props.winner}
         >
           Replay
       </button>
