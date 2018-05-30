@@ -19,7 +19,6 @@ const getInitialState = () => ({
   lstTime: 0,
   totalSeconds: 0,
   turnSwitched: 0,
-  playerTurnEnds: 0,
   stats: {
     turns: 0,
     lastCard: 0
@@ -86,7 +85,6 @@ class MainGameWindow extends React.Component {
           turns: stats.turns + 1,
           lastCard: stats.lastCard
         },
-        playerTurnEnds: true
       });
     } else if (player === BOT) {
       const { botStats } = this.state;
@@ -95,7 +93,6 @@ class MainGameWindow extends React.Component {
           turns: botStats.turns + 1,
           lastCard: botStats.lastCard
         },
-        playerTurnEnds: true
       });
     }
   }
@@ -257,6 +254,9 @@ class MainGameWindow extends React.Component {
       this.setStats(currentPlayer);
       this.statsComp.current.setTurnTime(totalSeconds - lstTime);
       this.setState({ lstTime: totalSeconds });
+    }
+    else if (!isTaki && (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')) {
+      this.setStats(currentPlayer);
     }
     this.setState({
       [deckName]: copiedDeck,

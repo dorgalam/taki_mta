@@ -11,8 +11,8 @@
 
 @media only screen and (max-width: 980px) {
   body .card {
-    width: 80px;
-    height: 123px;
+    width: 70px;
+    height: 110px;
   }
   body .color_tooltip {
     width: 120px;
@@ -318,8 +318,8 @@ body {
 
 .card {
   display: inline-block;
-  width: 100px;
-  height: 160px;
+  width: 80px;
+  height: 125px;
   border-radius: 12px;
   background: rgb(255, 238, 221);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
