@@ -17,12 +17,9 @@ const getPlayerClasses = (isFacedUp, card) =>
 
 const getStylesForPlayerCard = (index, length) => {
   const leftPx = index * (length / 2 - 15);
-  /* if (length === 8) {
-    leftPx = index * 30;
-  } */
   return {
     position: 'relative',
-    left: `-${leftPx}px`
+    left: `${leftPx}px`
   };
 };
 
