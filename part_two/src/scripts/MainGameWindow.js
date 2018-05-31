@@ -225,14 +225,7 @@ class MainGameWindow extends React.Component {
   }
 
   playCard(index, deckName) {
-    const {
-      stats,
-      isTaki,
-      currentPlayer,
-      lstTime,
-      totalSeconds,
-      takinNumber
-    } = this.state;
+    const { stats, isTaki, currentPlayer, lstTime, totalSeconds, takinNumber } = this.state;
     const copiedDeck = [...this.state[deckName]];
     const cardToPlay = copiedDeck.popIndex(index);
     const newPile = [...this.state.pileCards, cardToPlay];
@@ -248,10 +241,7 @@ class MainGameWindow extends React.Component {
       this.setState({ msg: "pick a color" });
       this.switchPlayer(-1);
     }
-    if (
-      currentPlayer === PLAYER &&
-      !isTaki &&
-      (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')
+    if (currentPlayer === PLAYER && !isTaki && (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')
     ) {
       this.setState({ msg: cardToPlay.number + '- you have another turn' });
       this.setStats(currentPlayer);
