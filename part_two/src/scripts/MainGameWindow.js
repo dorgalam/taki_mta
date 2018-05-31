@@ -118,6 +118,9 @@ class MainGameWindow extends React.Component {
         this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
         this.setState({ msg: "" });
       }
+      if (toPlayer === BOT) {
+        this.setState({ msg: "" });
+      }
     }
 
     this.setState({
