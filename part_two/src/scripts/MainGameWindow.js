@@ -112,10 +112,11 @@ class MainGameWindow extends React.Component {
     let from = currentPlayer === -1 ? PLAYER : currentPlayer;
     if (from !== toPlayer && toPlayer !== -1) {
       this.setStats(currentPlayer);
-      if (toPlayer === BOT) {
-        this.setState({ lstTime: totalSeconds, msg: "" });
+      if (toPlayer === PLAYER) {
+        this.setState({ lstTime: totalSeconds });
       } else {
         this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
+        this.setState({ msg: "" });
       }
     }
 
