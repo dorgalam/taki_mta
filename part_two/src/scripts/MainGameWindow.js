@@ -112,7 +112,7 @@ class MainGameWindow extends React.Component {
     let from = currentPlayer === -1 ? PLAYER : currentPlayer;
     if (from !== toPlayer && toPlayer !== -1) {
       this.setStats(currentPlayer);
-      if (toPlayer === PLAYER) {
+      if (toPlayer === BOT) {
         this.setState({ lstTime: totalSeconds, msg: "" });
       } else {
         this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
@@ -240,6 +240,9 @@ class MainGameWindow extends React.Component {
     if (cardToPlay.number === '2plus' && !isTaki) {
       takeCount = takeCount === 1 ? 0 : takeCount;
       takeCount += 2;
+      if (currentPlayer === BOT) {
+        this.setState({ msg: "your opponent used 2plus, play with 2plus or take card" });
+      }
     }
     if (cardToPlay.color === 'colorful') {
       this.setState({ msg: "pick a color" });
