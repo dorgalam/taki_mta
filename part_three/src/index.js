@@ -3,7 +3,13 @@ import './styles/style.css';
 import './styles/cards.css';
 
 import ReactDOM from 'react-dom';
-import { setName, getUsers, getGames, createGame } from './scripts/api.js';
+import {
+  setName,
+  getUsers,
+  getGames,
+  createGame,
+  joinGame
+} from './scripts/api.js';
 import MainGameWindow from './scripts/MainGameWindow.js';
 
 Array.prototype.popIndex = function(index) {
@@ -73,12 +79,18 @@ class Lobby extends React.Component {
       <div>
         {this.state.name ? (
           <div>
-            users: {JSON.stringify(this.state.users, 0, 1)}
+            users: <pre>{JSON.stringify(this.state.users, 0, 1)}</pre>
             <Form
               fields={['name', 'numberOfPlayers']}
               onSubmit={newGame => createGame(newGame)}
             />
-            games: {JSON.stringify(this.state.games, 0, 1)}
+            games:{' '}
+            {this.state.games.map((game, i) => (
+              <pre>
+                {JSON.stringify(game, 0, 1)}
+                <button onClick={() => joinGame(i)}>JOIN</button>
+              </pre>
+            ))}
           </div>
         ) : (
           <Form

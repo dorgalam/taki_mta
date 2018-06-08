@@ -1,7 +1,7 @@
 const base = 'http://localhost:3000/_api';
 
-const request = (relative, method, body) => {
-  return fetch(`${base}${relative}`, {
+const request = (relative, method, body) =>
+  fetch(`${base}${relative}`, {
     method,
     body: JSON.stringify(body),
     credentials: 'include',
@@ -15,24 +15,16 @@ const request = (relative, method, body) => {
       return false;
     }
   });
-};
 
-export const getName = () => {
-  return request('/name', 'GET');
-};
+export const getName = () => request('/name', 'GET');
 
-export const setName = name => {
-  return request('/name', 'POST', { name });
-};
+export const setName = name => request('/name', 'POST', { name });
 
-export const getUsers = () => {
-  return request('/users', 'GET');
-};
+export const getUsers = () => request('/users', 'GET');
 
-export const getGames = () => {
-  return request('/games', 'GET');
-};
+export const getGames = () => request('/games', 'GET');
 
-export const createGame = game => {
-  return request('/games', 'POST', { game });
-};
+export const createGame = ({ numberOfPlayers, name }) =>
+  request('/games', 'POST', { numberOfPlayers: Number(numberOfPlayers), name });
+
+export const joinGame = id => request(`/games/${id}/join`, 'GET');
