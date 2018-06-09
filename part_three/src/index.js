@@ -31,16 +31,21 @@ class Root extends React.Component {
   constructor() {
     super();
     this.state = {
-      start: true
+      inGameNum: -1
     };
-    this.restart = this.restart.bind(this);
   }
 
-  restart() {
-    this.setState({ start: false }, () => this.setState({ start: true }));
-  }
   render() {
-    return <Lobby />;
+    return this.state.inGameNum === -1 ? (
+      <Lobby
+        joinGame={num => {
+          console.log(num);
+          this.setState({ inGameNum: num });
+        }}
+      />
+    ) : (
+      <MainGameWindow gameId={this.state.inGameNum} />
+    );
   }
 }
 
@@ -74,6 +79,12 @@ class Lobby extends React.Component {
       getGames().then(games => this.setState({ games }));
     }, 1000);
   }
+
+  componentWillUnmount() {
+    clearInterval(this.pullUsers);
+    clearInterval(this.pullGames);
+  }
+
   render() {
     return (
       <div>
@@ -82,23 +93,32 @@ class Lobby extends React.Component {
             users: <pre>{JSON.stringify(this.state.users, 0, 1)}</pre>
             <Form
               fields={['name', 'numberOfPlayers']}
-              onSubmit={newGame => createGame(newGame)}
+              onSubmit={newGame =>
+                createGame(newGame).then(({ id }) => this.props.joinGame(id))
+              }
             />
             games:{' '}
             {this.state.games.map((game, i) => (
               <pre>
                 {JSON.stringify(game, 0, 1)}
-                <button onClick={() => joinGame(i)}>JOIN</button>
+                <button
+                  onClick={() => {
+                    console.log(i);
+                    this.props.joinGame(i);
+                    joinGame(i);
+                  }}
+                >
+                  JOIN
+                </button>
               </pre>
             ))}
           </div>
         ) : (
           <Form
             fields={['name']}
-            onSubmit={({ name }) => {
-              console.log(name);
-              setName(name).then(() => this.setState({ name }));
-            }}
+            onSubmit={({ name }) =>
+              setName(name).then(() => this.setState({ name }))
+            }
           />
         )}
       </div>

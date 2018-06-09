@@ -24,7 +24,17 @@ module.exports = app => {
       requestedGame.status = 'in_progress';
       requestedGame.data = new Game(requestedGame.players);
     }
-    res.send({ id });
+    res.send({ id: req.params.id });
   });
+
+  app.get('/_api/games/:id', (req, res) => {
+    const game = games[req.params.id];
+    if (game.status === 'waiting') {
+      res.json({ waiting: true });
+    } else {
+      res.json({ state: game.data.members });
+    }
+  });
+
   return app;
 };

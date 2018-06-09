@@ -2,6 +2,7 @@ import React from 'react';
 import { Bot, MiddleSection, Player } from './sections';
 import { utils, Card, enums } from './sections/cross';
 
+import { getGame } from './api';
 const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
 
@@ -70,6 +71,33 @@ class MainGameWindow extends React.Component {
     this.quit = this.quit.bind(this);
   }
 
+  quit() {
+    this.setState({
+      winner: BOT,
+      currentPlayer: -2
+    });
+  }
+
+  setStats(player) {
+    if (player === PLAYER) {
+      const { stats } = this.state;
+      this.setState({
+        stats: {
+          turns: stats.turns + 1,
+          lastCard: stats.lastCard
+        }
+      });
+    } else if (player === BOT) {
+      const { botStats } = this.state;
+      this.setState({
+        botStats: {
+          turns: botStats.turns + 1,
+          lastCard: botStats.lastCard
+        }
+      });
+    }
+  }
+
   switchPlayer(toPlayer) {
     let {
       currentPlayer,
@@ -101,11 +129,264 @@ class MainGameWindow extends React.Component {
     });
   }
 
+  setHasMove(bool) {
+    if (this.state.playerHasMove === bool) return;
+    this.setState({
+      playerHasMove: bool
+    });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerVar);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { playerDeck, botDeck } = this.state;
+    const prevPlayerDeck = prevState.playerDeck;
+    const prevBotDeck = prevState.botDeck;
+    if (playerDeck.length === 1 && prevPlayerDeck.length !== 1) {
+      const { stats } = this.state;
+      stats.lastCard++;
+      this.setState({
+        stats
+      });
+    } else if (botDeck.length === 1 && prevBotDeck.length !== 1) {
+      const { botStats } = this.state;
+      botStats.lastCard++;
+      this.setState({
+        botStats
+      });
+    }
+    if (this.state.winner === -1) {
+      let winner = this.gameOver();
+      if (winner >= 0 && !this.state.inRewind) {
+        this.setState({
+          winner: winner,
+          currentPlayer: -2
+        });
+      }
+    }
+  }
+
+  updateHistory() {
+    const { inRewind, winner } = this.state;
+    if (!inRewind && this.statsComp) {
+      const stateSnapshot = Object.assign({}, this.state, {
+        childStats: this.statsComp.current.getState()
+      });
+      delete stateSnapshot.history;
+      this.setState({ history: [...this.state.history, stateSnapshot] });
+    }
+  }
+
+  rewind() {
+    this.rewindIndex = 0;
+    this.setState({ inRewind: true });
+    console.log(this.state.inRewind);
+  }
+
+  dealCardsToPlayers() {
+    const cardsInDeck = [...this.state.deckCards],
+      playerDeck = [],
+      botDeck = [],
+      pileCards = [];
+    for (let i = 0; i < 8; ++i) {
+      playerDeck.push(cardsInDeck.pop());
+      botDeck.push(cardsInDeck.pop());
+    }
+    let card;
+    while ((card = cardsInDeck.pop())) {
+      if (!isSpecialCard(card) && card.number !== '2plus') {
+        pileCards.push(card);
+        break;
+      }
+      cardsInDeck.unshift(card);
+    }
+    this.setState({
+      deckCards: cardsInDeck,
+      playerDeck,
+      botDeck,
+      pileCards
+    });
+  }
+
+  buildNewMainDeck() {
+    const copiedDeck = [...this.state.pileCards];
+    const lastPileCard = [];
+    lastPileCard.push(copiedDeck.pop());
+    let newDeck = this.state.deckCards;
+    copiedDeck.forEach((element, index) => {
+      newDeck.push(new Card(element.card, element.card));
+    });
+    newDeck = shuffleDeck(newDeck);
+
+    this.setState({
+      deckCards: copiedDeck,
+      pileCards: lastPileCard
+    });
+    return newDeck;
+  }
+
+  playCard(index, deckName) {
+    const {
+      stats,
+      isTaki,
+      currentPlayer,
+      lstTime,
+      totalSeconds,
+      takinNumber
+    } = this.state;
+    const copiedDeck = [...this.state[deckName]];
+    const cardToPlay = copiedDeck.popIndex(index);
+    const newPile = [...this.state.pileCards, cardToPlay];
+    let takeCount = takinNumber;
+    if (cardToPlay.number === '2plus' && !isTaki) {
+      takeCount = takeCount === 1 ? 0 : takeCount;
+      takeCount += 2;
+      if (currentPlayer === BOT) {
+        this.setState({
+          msg: 'your opponent used 2plus, play with 2plus or take card'
+        });
+      }
+    }
+    if (cardToPlay.color === 'colorful') {
+      this.setState({ msg: 'pick a color' });
+      this.switchPlayer(-1);
+    }
+    if (
+      currentPlayer === PLAYER &&
+      !isTaki &&
+      (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')
+    ) {
+      this.setState({ msg: cardToPlay.number + '- you have another turn' });
+      this.setStats(currentPlayer);
+      this.statsComp.current.setTurnTime(totalSeconds - lstTime);
+      this.setState({ lstTime: totalSeconds });
+    } else if (
+      !isTaki &&
+      (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')
+    ) {
+      this.setStats(currentPlayer);
+    }
+    this.setState({
+      [deckName]: copiedDeck,
+      pileCards: newPile,
+      cardIsActive: true,
+      takinNumber: takeCount
+    });
+    this.updateHistory();
+  }
+
+  gameOver() {
+    const lastPileCard = this.state.pileCards[this.state.pileCards.length - 1];
+    const { playerDeck, botDeck } = this.state;
+    let winner = -1;
+    if (playerDeck.length === 0) {
+      if (!this.state.cardIsActive) {
+        winner = PLAYER;
+      } else if (
+        lastPileCard.number !== 'plus' &&
+        lastPileCard.number !== '2plus'
+      ) {
+        winner = PLAYER;
+      }
+    }
+    if (botDeck.length === 0) {
+      if (!this.state.cardIsActive) {
+        winner = BOT;
+      } else if (
+        lastPileCard.number !== 'plus' &&
+        lastPileCard.number !== '2plus'
+      ) {
+        winner = BOT;
+      }
+    }
+    return winner;
+  }
+
+  takeCardFromMainDeck(deckName, player) {
+    let cards = [];
+    let copiedDeck = [...this.state.deckCards];
+    for (let i = 0; i < this.state.takinNumber; i++) {
+      cards.push(copiedDeck.pop());
+      if (copiedDeck.length === 1) copiedDeck = this.buildNewMainDeck();
+    }
+    const newPile = [...this.state[deckName], ...cards];
+
+    this.setState({
+      deckCards: copiedDeck,
+      [deckName]: newPile,
+      cardIsActive: false,
+      takinNumber: 1
+    });
+    this.updateHistory();
+    this.switchPlayer(player);
+  }
+
+  closeTaki() {
+    let lastcard = this.state.pileCards[this.state.pileCards.length - 1];
+    this.setTaki(false);
+    if (lastcard.number === 'plus' || lastcard.number === 'stop') {
+      this.setState({ msg: lastcard.number + '- you have another turn' });
+      this.setStats(PLAYER);
+      this.statsComp.current.setTurnTime(
+        this.state.totalSeconds - this.state.lstTime
+      );
+    }
+    let takeCount = this.state.takinNumber;
+    if (lastcard.number === '2plus') {
+      takeCount = takeCount === 1 ? 0 : takeCount;
+      takeCount += 2;
+      this.setState({
+        takinNumber: takeCount
+      });
+    }
+    if (isSpecialCard(lastcard) && lastcard.number !== 'taki')
+      this.switchPlayer(PLAYER);
+    else {
+      this.setState({ msg: '' });
+      this.switchPlayer(BOT);
+    }
+  }
+
+  setTaki(bool) {
+    if (bool === true && this.state.currentPlayer === PLAYER) {
+      this.setState({ msg: 'taki you can put all the cards off this color' });
+    }
+    this.setState({
+      isTaki: bool
+    });
+  }
+
+  selectColor(color) {
+    let copiedDeck = [...this.state.pileCards];
+    let card = copiedDeck.pop();
+    card = new Card('_' + color, 'change_colorful');
+    copiedDeck.push(card);
+    this.setState({
+      pileCards: copiedDeck,
+      msg: ''
+    });
+    this.setStats(PLAYER);
+    this.switchPlayer(BOT);
+  }
+
   componentDidMount() {
-    this.setState(getInitialState());
+    getGame(this.props.gameId).then(game => {
+      if (!game.waiting) {
+        console.log(game.state);
+        this.setState(game.state);
+      }
+    });
+    // this.setState(getInitialState());
     this.dealCardsToPlayers();
     this.timerVar = setInterval(this.countTimer, 1000);
     this.updateHistory();
+  }
+
+  countTimer() {
+    let newTime = this.state.totalSeconds + 1;
+    this.setState({ totalSeconds: newTime });
   }
 
   getBotProps() {
