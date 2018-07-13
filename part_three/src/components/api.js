@@ -1,4 +1,4 @@
-const base = 'http://localhost:3000/_api';
+const base = 'http://localhost:3000';
 
 const request = (relative, method = 'GET', body = undefined) =>
   fetch(`${base}${relative}`, {
