@@ -98,3 +98,20 @@
     width: 88px;
     margin: 0 2px 0 5px;
 }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even){background-color: #e4e2e2}
+
+th {
+    background-color: rgb(22, 93, 201);
+    color: white;
+}

@@ -14,7 +14,7 @@ export default class Form extends React.Component {
         }}
       >
         <fieldset>
-          <legend>formname</legend>
+          <legend>add new game</legend>
           {this.props.fields.map(field => (
             <p key={field}>
               <label htmlFor={field}>

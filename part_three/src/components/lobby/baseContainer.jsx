@@ -2,8 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import LoginModal from './login-modal.jsx';
 import ChatContaier from './chatContainer.jsx';
-import { getGames, createGame } from '../api';
+import { getGames, createGame, joinGame } from '../api';
 import Form from './Form.jsx';
+import GamesTable from './GamesTable.jsx';
 
 export default class BaseContainer extends React.Component {
   constructor(args) {
@@ -18,6 +19,7 @@ export default class BaseContainer extends React.Component {
 
     this.handleSuccessedLogin = this.handleSuccessedLogin.bind(this);
     this.handleLoginError = this.handleLoginError.bind(this);
+
     this.fetchUserInfo = this.fetchUserInfo.bind(this);
     this.logoutHandler = this.logoutHandler.bind(this);
     this.pullGames = this.pullGames.bind(this);
@@ -47,6 +49,8 @@ export default class BaseContainer extends React.Component {
     this.setState(() => ({ showLogin: true }));
   }
 
+
+
   pullGames() {
     getGames().then(games => {
       this.setState({ games }, () => {
@@ -70,9 +74,16 @@ export default class BaseContainer extends React.Component {
         <div>
           <Form
             fields={['name', 'numberOfPlayers']}
-            onSubmit={newGame => createGame(newGame).then(console.log)}
+            gameSuccessHandler={this.handleSuccessedNewGame}
+            gameErrorHandler={this.handleLoginError}
+            onSubmit={newGame => createGame(newGame).then(res => {
+              console.log(res.id);
+              if (res.error !== "")
+                alert(res.error);
+            })}
           />
-          <pre>{JSON.stringify(this.state.games, 0, 1)}</pre>
+          <GamesTable games={this.state.games} user={this.state.currentUser.name}
+            onSubmit={(id) => joinGame(id).then(console.log(id))} />
         </div>
       </div>
     );
