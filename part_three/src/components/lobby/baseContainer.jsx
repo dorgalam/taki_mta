@@ -2,9 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import LoginModal from './login-modal.jsx';
 import ChatContaier from './chatContainer.jsx';
-import { getGames, createGame, joinGame } from '../api';
+import { getGames, createGame, joinGame, getUsers, deleteGame } from '../api';
 import Form from './Form.jsx';
 import GamesTable from './GamesTable.jsx';
+import UsersList from './UsersList.jsx';
 
 export default class BaseContainer extends React.Component {
   constructor(args) {
@@ -14,7 +15,8 @@ export default class BaseContainer extends React.Component {
       currentUser: {
         name: ''
       },
-      games: []
+      games: [],
+      users: {}
     };
 
     this.handleSuccessedLogin = this.handleSuccessedLogin.bind(this);
@@ -23,9 +25,11 @@ export default class BaseContainer extends React.Component {
     this.fetchUserInfo = this.fetchUserInfo.bind(this);
     this.logoutHandler = this.logoutHandler.bind(this);
     this.pullGames = this.pullGames.bind(this);
+    this.pullUsers = this.pullUsers.bind(this);
 
     this.getUserName();
     this.pullGames();
+    this.pullUsers();
   }
 
   render() {
@@ -59,6 +63,14 @@ export default class BaseContainer extends React.Component {
     });
   }
 
+  pullUsers() {
+    getUsers().then(users => {
+      this.setState({ users }, () => {
+        setTimeout(this.pullUsers, 200);
+      });
+    });
+  }
+
   renderChatRoom() {
     return (
       <div>
@@ -76,14 +88,15 @@ export default class BaseContainer extends React.Component {
             fields={['name', 'numberOfPlayers']}
             gameSuccessHandler={this.handleSuccessedNewGame}
             gameErrorHandler={this.handleLoginError}
-            onSubmit={newGame => createGame(newGame).then(res => {
-              console.log(res.id);
+            onSubmit={(newGame) => createGame(newGame, this.state.currentUser.name).then(res => {
               if (res.error !== "")
                 alert(res.error);
             })}
           />
           <GamesTable games={this.state.games} user={this.state.currentUser.name}
-            onSubmit={(id, name) => joinGame(id, name).then(console.log(id + " " + name))} />
+            onSubmit={(id, name) => joinGame(id, name)}
+            deleteGame={id => deleteGame(id)} />
+          <UsersList users={this.state.users["users"]} />
         </div>
       </div>
     );
@@ -123,6 +136,13 @@ export default class BaseContainer extends React.Component {
             `failed to logout user ${this.state.currentUser.name} `,
             response
           );
+        }
+        else {
+          for (let i = 0; i < this.state.games.length; i++) { // when logout =>quit games i'm in 
+            if (this.state.games[i].players.indexOf(this.state.currentUser.name) !== -1) {
+              joinGame(i, this.state.currentUser.name);
+            }
+          }
         }
         this.setState(() => ({ currentUser: { name: '' }, showLogin: true }));
       }

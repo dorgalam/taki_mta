@@ -20,16 +20,20 @@ export const getName = () => request('/name');
 
 export const setName = name => request('/name', 'POST', { name });
 
-export const getUsers = () => request('/users');
+export const getUsers = () => request('/users/allUsers', 'get');
 
 export const getGames = () => request('/games');
 
-export const createGame = ({ numberOfPlayers, name }) =>
-  request('/games', 'POST', { numberOfPlayers: Number(numberOfPlayers), name });
+export const deleteGame = id => request(`/games/${id}/delete`, 'post')
 
-export const joinGame = (id, name) => request(`/games/${id}/join`);
+export const createGame = (game, user) =>
+  request('/games', 'POST', { numberOfPlayers: Number(game.numberOfPlayers), name: game.name, user });
+
+export const joinGame = (id, name) => request(`/games/${id}/join`, 'post', { name });
 /*
 export const joinGame = ({ id, name }) =>
   request(`/games/${id}/join`, 'POST', { id, name });
 */
 export const getGame = id => request(`/games/${id}`);
+
+

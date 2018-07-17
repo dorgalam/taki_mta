@@ -38,9 +38,14 @@ function getUserInfo(id) {
   return { name: userList[id] };
 }
 
+function allUsers() {
+  return { users: userList };
+}
+
 module.exports = {
   userAuthentication,
   addUserToAuthList,
   removeUserFromAuthList,
-  getUserInfo
+  getUserInfo,
+  allUsers
 };

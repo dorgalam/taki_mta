@@ -22,7 +22,7 @@ gamesApi.post('/', auth.userAuthentication, (req, res) => {
         Object.assign({}, req.body, {
           status: 'waiting',
           players: [],
-          id: activeGames.length
+          creator: req.body.user
         })
       );
     }
@@ -32,7 +32,7 @@ gamesApi.post('/', auth.userAuthentication, (req, res) => {
   }
   res.send({ id: activeGames.length - 1, error: error });
 });
-/*
+/* old one
 gamesApi.get('/:id/join', (req, res) => {
   const requestedGame = activeGames[req.params.id];
   requestedGame.players.push(req.cookies.user);
@@ -45,12 +45,26 @@ gamesApi.get('/:id/join', (req, res) => {
 */
 gamesApi.post('/:id/join', (req, res) => {
   const requestedGame = activeGames[req.params.id];
-  requestedGame.players.push(req.params.name);
-  if (requestedGame.players.length === requestedGame.numberOfPlayers) {
-    requestedGame.status = 'in_progress';
-    requestedGame.data = new Game(requestedGame.players);
+  const index = requestedGame.players.indexOf(req.body.name);
+  if (index === -1) {
+    requestedGame.players.push(req.body.name);
+    if (requestedGame.players.length === requestedGame.numberOfPlayers) {
+      requestedGame.status = 'in_progress';
+      requestedGame.data = new Game(requestedGame.players);
+    }
   }
-  res.send({ id: req.params.id });
+  else {
+    requestedGame.players.splice(index, 1);
+  }
+  res.send({ id: req.params.id, index });
+});
+
+gamesApi.post('/:id/delete', (req, res) => {
+  const requestedGame = activeGames[req.params.id];
+  let index = activeGames.indexOf(requestedGame);
+  activeGames.splice(index, 1);
+
+  res.send({ index });
 });
 
 gamesApi.get('/:id', (req, res) => {
@@ -60,6 +74,17 @@ gamesApi.get('/:id', (req, res) => {
   } else {
     res.json({ state: game.data.members });
   }
+});
+
+gamesApi.get('/logout', (req, res) => {
+  const name = req.body.userName;
+  activeGames.map(game => {
+    let index = game.players.indexOf(name);
+    if (index != -1) {
+      game.players.splice(index, 1);
+    }
+  });
+  res.send(name);
 });
 
 module.exports = gamesApi;
