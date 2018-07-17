@@ -1,13 +1,3 @@
-.btn {
-    font-size: 16px;
-    padding-left: 8px;
-    padding-right: 8px;
-    cursor: pointer;
-    border-style: solid;
-    background-color: #d0f3e8;
-    border-color: #d0f3e8;
-    margin: 0 3px;
-}
 
 .chat-base-container {
     display: flex;
@@ -24,36 +14,43 @@
 
 .login-page-wrapper {
     position: absolute;
-    left: 50%;
-    transform: translate(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    font-size: 25px;
+    left: 35%;
+    top:45%;
+    background: rgb(212, 228, 248);
+    padding: 2em 2em;
+    border-radius: 1em;
+    border: 1px solid rgba(34, 36, 38, 0.15);
 }
 
-.login-page-wrapper .taki-logo {
+
+
+ .taki-logo {
     width: 250px;
     margin: 16px 0;
 }
-
-.login-page-wrapper .username-label {
+ .username-label {
     margin: 0 5px;
     font-size: 18px;
 }
 
-.login-page-wrapper .username-input {
+.username-input {
     font-size: 16px;
     line-height: 16px;
     margin: 1px;
     border: 1px solid #ccc;
 }
 
-.login-page-wrapper .submit-btn:hover {
-    background-color: #cadcff;
+ .submit-btn:hover {
+    background-color: #5f6dec !important;
     border-color: #cadcff;
 }
 
-.login-page-wrapper .login-error-message {
+.submit-btn{
+    font-size: 15px;
+}
+
+ .login-error-message {
     color: red;
     font-weight: 600;
 }
@@ -107,11 +104,108 @@ table {
 th, td {
     text-align: left;
     padding: 8px;
+    width:100px;
 }
 
-tr:nth-child(even){background-color: #e4e2e2}
+tr:nth-child(even){background-color: #e2e4e4}
+
+tr:nth-child(odd){background-color: #f8fcff}
 
 th {
     background-color: rgb(22, 93, 201);
     color: white;
 }
+
+fieldset {
+    border-radius: 0.5em;                   
+    border: 0.1em solid #ccc;                             
+    box-shadow: 0.05em 0.05em 0.05em #ccc;  
+
+}
+
+legend {
+    font-size: 20px;
+    padding: 0.2em 0.5em;
+    color:rgb(1, 15, 1);
+    text-align:left;
+}
+
+.usersList{
+    position: relative;
+    font-size:18px;
+    width:150px;
+}
+
+.Form{
+    position: absolute;
+    right:0;
+    top:0;
+    width:50%;
+}
+
+.Form div{
+    width: 20%!important;
+    display: inline-block;
+    padding-left: 24px;
+    vertical-align: top;
+}
+
+.addGame{
+    background-color: #3498db;
+    border-radius: 28px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    cursor: pointer;
+    margin-left: 40px;
+}
+
+.addGame:hover{
+    background-color: #2348eb;
+}
+
+body{
+    background-color: aliceblue;
+}
+
+.welcome{
+    position: relative;
+    left:35%;
+}
+
+.welcome_taki{
+    background-size: 420PX 180px;
+    background-image: url("./styles/assets/TAKI_logo.png") ;
+    display: block;
+}
+
+button {
+    font-size: 18px;
+    cursor: pointer;
+    border-style: solid;
+    background-color: #bee7f3;
+    border-color: #d0e8f3;
+    margin: 0 3px;
+}
+
+.btn{
+    background-color: #3498db;
+    background-image: linear-gradient(to bottom, #3498db, #2980b9);
+    border-radius: 28px;
+    font-size: 18px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+input[type=submit]:hover,button:hover,.btn:hover{
+    background-color: #2a67eb;
+    background-image: none;
+    border-color: #cadcff;
+}
+

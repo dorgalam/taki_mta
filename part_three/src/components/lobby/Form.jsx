@@ -13,10 +13,10 @@ export default class Form extends React.Component {
           this.props.onSubmit(this.state);
         }}
       >
-        <fieldset>
+        <fieldset class="Form">
           <legend>add new game</legend>
           {this.props.fields.map(field => (
-            <p key={field}>
+            <div key={field} >
               <label htmlFor={field}>
                 {field}:{' '}
                 <input
@@ -24,10 +24,10 @@ export default class Form extends React.Component {
                   onChange={e => this.setState({ [field]: e.target.value })}
                 />
               </label>
-            </p>
+            </div>
           ))}
+          <input type="submit" class="addGame" value="add game" />
         </fieldset>
-        <input type="submit" />
       </form>
     );
   }
