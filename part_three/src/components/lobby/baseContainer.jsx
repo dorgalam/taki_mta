@@ -83,7 +83,7 @@ export default class BaseContainer extends React.Component {
             })}
           />
           <GamesTable games={this.state.games} user={this.state.currentUser.name}
-            onSubmit={(id) => joinGame(id).then(console.log(id))} />
+            onSubmit={(id, name) => joinGame(id, name).then(console.log(id + " " + name))} />
         </div>
       </div>
     );

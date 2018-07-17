@@ -27,6 +27,9 @@ export const getGames = () => request('/games');
 export const createGame = ({ numberOfPlayers, name }) =>
   request('/games', 'POST', { numberOfPlayers: Number(numberOfPlayers), name });
 
-export const joinGame = id => request(`/games/${id}/join`);
-
+export const joinGame = (id, name) => request(`/games/${id}/join`);
+/*
+export const joinGame = ({ id, name }) =>
+  request(`/games/${id}/join`, 'POST', { id, name });
+*/
 export const getGame = id => request(`/games/${id}`);

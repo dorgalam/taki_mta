@@ -38,7 +38,7 @@ export default class GamesTable extends React.Component {
 
                   <td><button onClick={e => {
                     e.preventDefault();
-                    this.props.onSubmit(game.id);
+                    this.props.onSubmit(game.id, this.props.user);
                   }}>{game.players.some(player => player === this.props.user) ? "quit" : "join"}</button></td>
                 </tr>
               )) : ""}

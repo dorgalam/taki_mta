@@ -13,7 +13,7 @@ gamesApi.get('/', (req, res) => {
 
 gamesApi.post('/', auth.userAuthentication, (req, res) => {
   let error = "";
-  if ((req.body.numberOfPlayers >= 2 && req.body.numberOfPlayers <= 4)) {
+  if ((2 <= req.body.numberOfPlayers && req.body.numberOfPlayers <= 4)) {
     if (activeGames.length > 0 && activeGames.some(game => game.name === req.body.name)) {
       error = "name already exists";
     }
@@ -22,7 +22,7 @@ gamesApi.post('/', auth.userAuthentication, (req, res) => {
         Object.assign({}, req.body, {
           status: 'waiting',
           players: [],
-          id: activeGames.length - 1
+          id: activeGames.length
         })
       );
     }
@@ -32,10 +32,20 @@ gamesApi.post('/', auth.userAuthentication, (req, res) => {
   }
   res.send({ id: activeGames.length - 1, error: error });
 });
-
+/*
 gamesApi.get('/:id/join', (req, res) => {
   const requestedGame = activeGames[req.params.id];
   requestedGame.players.push(req.cookies.user);
+  if (requestedGame.players.length === requestedGame.numberOfPlayers) {
+    requestedGame.status = 'in_progress';
+    requestedGame.data = new Game(requestedGame.players);
+  }
+  res.send({ id: req.params.id });
+});
+*/
+gamesApi.post('/:id/join', (req, res) => {
+  const requestedGame = activeGames[req.params.id];
+  requestedGame.players.push(req.params.name);
   if (requestedGame.players.length === requestedGame.numberOfPlayers) {
     requestedGame.status = 'in_progress';
     requestedGame.data = new Game(requestedGame.players);
