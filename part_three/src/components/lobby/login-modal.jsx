@@ -14,10 +14,10 @@ export default class LoginModal extends React.Component {
   render() {
     return (
       <div>
-        <div class="welcome">
+        <div className="welcome">
           <h1>welcome to lior and dor's taki game</h1>
           <h2>Please enter a unique user name:</h2>
-          <img class="welcome_taki" width="420" height="180" />
+          <img className="welcome_taki" width="420" height="180" />
         </div>
         <div className="login-page-wrapper">
           <form onSubmit={this.handleLogin}>

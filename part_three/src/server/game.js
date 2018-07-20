@@ -1,4 +1,4 @@
-const PLAYER = 0;
+const { isSpecialCard } = require('./utils');
 
 const shuffleDeck = deck => {
   const times = 300 + Math.floor(Math.random() * 500);
@@ -74,16 +74,26 @@ class Card {
 }
 
 class Game {
-  constructor() {
+  constructor(players) {
+    this.players = players;
     this.members = this.getInitialState();
+    this.statsComp = {
+      current: {}
+    };
   }
   getInitialState() {
+    const stats = this.players.reduce((agr, cur) => {
+      agr[cur] = {
+        turns: 0,
+        lastCard: 0
+      };
+      return agr;
+    }, {});
     return {
       deckCards: createCardsArray().map(item => new Card(item)),
-      playerDeck: [],
-      botDeck: [],
+      playerDecks: [],
       pileCards: [],
-      currentPlayer: PLAYER,
+      currentPlayer: this.players[0],
       cardIsActive: false,
       isTaki: false,
       playerHasMove: false,
@@ -92,10 +102,7 @@ class Game {
       lstTime: 0,
       totalSeconds: 0,
       turnSwitched: 0,
-      stats: {
-        turns: 0,
-        lastCard: 0
-      },
+      stats,
       botStats: {
         turns: 0,
         lastCard: 0
@@ -124,10 +131,7 @@ class Game {
       if (toPlayer === PLAYER) {
         this.setMembers({ lstTime: totalSeconds });
       } else {
-        this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
-        this.setMembers({ msg: '' });
-      }
-      if (toPlayer === BOT) {
+        // this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
         this.setMembers({ msg: '' });
       }
     }
@@ -144,23 +148,16 @@ class Game {
   }
 
   setStats(player) {
-    if (player === PLAYER) {
-      const { stats } = this.members;
-      this.setMembers({
-        stats: {
-          turns: stats.turns + 1,
-          lastCard: stats.lastCard
+    const { stats } = this.members;
+    this.setMembers({
+      stats: {
+        ...stats,
+        [player]: {
+          turns: stats[player].turns + 1,
+          lastCard: stats[player].lastCard
         }
-      });
-    } else if (player === BOT) {
-      const { botStats } = this.members;
-      this.setMembers({
-        botStats: {
-          turns: botStats.turns + 1,
-          lastCard: botStats.lastCard
-        }
-      });
-    }
+      }
+    });
   }
   setHasMove(bool) {
     if (this.members.playerHasMove === bool) return;
@@ -173,39 +170,39 @@ class Game {
     clearInterval(this.timerVar);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { playerDeck, botDeck } = this.members;
-    const prevPlayerDeck = prevState.playerDeck;
-    const prevBotDeck = prevState.botDeck;
-    if (playerDeck.length === 1 && prevPlayerDeck.length !== 1) {
-      const { stats } = this.members;
-      stats.lastCard++;
-      this.setMembers({
-        stats
-      });
-    } else if (botDeck.length === 1 && prevBotDeck.length !== 1) {
-      const { botStats } = this.members;
-      botStats.lastCard++;
-      this.setMembers({
-        botStats
-      });
-    }
-    if (this.members.winner === -1) {
-      let winner = this.gameOver();
-      if (winner >= 0 && !this.members.inRewind) {
-        this.setMembers({
-          winner: winner,
-          currentPlayer: -2
-        });
-      }
-    }
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   const { playerDeck, botDeck } = this.members;
+  //   const prevPlayerDeck = prevState.playerDeck;
+  //   const prevBotDeck = prevState.botDeck;
+  //   if (playerDeck.length === 1 && prevPlayerDeck.length !== 1) {
+  //     const { stats } = this.members;
+  //     stats.lastCard++;
+  //     this.setMembers({
+  //       stats
+  //     });
+  //   } else if (botDeck.length === 1 && prevBotDeck.length !== 1) {
+  //     const { botStats } = this.members;
+  //     botStats.lastCard++;
+  //     this.setMembers({
+  //       botStats
+  //     });
+  //   }
+  //   if (this.members.winner === -1) {
+  //     let winner = this.gameOver();
+  //     if (winner >= 0 && !this.members.inRewind) {
+  //       this.setMembers({
+  //         winner: winner,
+  //         currentPlayer: -2
+  //       });
+  //     }
+  //   }
+  // }
 
   updateHistory() {
     const { inRewind, winner } = this.members;
     if (!inRewind && this.statsComp) {
       const stateSnapshot = Object.assign({}, this.members, {
-        childStats: this.statsComp.current.getState()
+        // childStats: this.statsComp.current.getState()
       });
       delete stateSnapshot.history;
       this.setMembers({ history: [...this.members.history, stateSnapshot] });
@@ -215,17 +212,21 @@ class Game {
   rewind() {
     this.rewindIndex = 0;
     this.setMembers({ inRewind: true });
-    console.log(this.members.inRewind);
   }
 
   dealCardsToPlayers() {
     const cardsInDeck = [...this.members.deckCards],
-      playerDeck = [],
-      botDeck = [],
+      playerDecks = [],
       pileCards = [];
+
     for (let i = 0; i < 8; ++i) {
-      playerDeck.push(cardsInDeck.pop());
-      botDeck.push(cardsInDeck.pop());
+      this.players.forEach((name, id) => {
+        if (typeof playerDecks[id] !== 'object') {
+          playerDecks[id] = [cardsInDeck.pop()];
+        } else {
+          playerDecks[id].push(cardsInDeck.pop());
+        }
+      });
     }
     let card;
     while ((card = cardsInDeck.pop())) {
@@ -237,8 +238,7 @@ class Game {
     }
     this.setMembers({
       deckCards: cardsInDeck,
-      playerDeck,
-      botDeck,
+      playerDecks,
       pileCards
     });
   }
@@ -260,40 +260,44 @@ class Game {
     return newDeck;
   }
 
-  playCard(index, deckName) {
+  playCard(index, playerName) {
     const {
       stats,
       isTaki,
       currentPlayer,
       lstTime,
       totalSeconds,
-      takinNumber
+      takinNumber,
+      playerDecks
     } = this.members;
-    const copiedDeck = [...this.members[deckName]];
+
+    const deckNum = this.players.indexOf(playerName);
+
+    const copiedDeck = [...playerDecks[deckNum]];
+
     const cardToPlay = copiedDeck.popIndex(index);
     const newPile = [...this.members.pileCards, cardToPlay];
     let takeCount = takinNumber;
     if (cardToPlay.number === '2plus' && !isTaki) {
       takeCount = takeCount === 1 ? 0 : takeCount;
       takeCount += 2;
-      if (currentPlayer === BOT) {
-        this.setMembers({
-          msg: 'your opponent used 2plus, play with 2plus or take card'
-        });
-      }
+      // if (currentPlayer === BOT) {
+      //   this.setMembers({
+      //     msg: 'your opponent used 2plus, play with 2plus or take card'
+      //   });
+      // }
     }
     if (cardToPlay.color === 'colorful') {
       this.setMembers({ msg: 'pick a color' });
       this.switchPlayer(-1);
     }
     if (
-      currentPlayer === PLAYER &&
       !isTaki &&
       (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')
     ) {
       this.setMembers({ msg: cardToPlay.number + '- you have another turn' });
       this.setStats(currentPlayer);
-      this.statsComp.current.setTurnTime(totalSeconds - lstTime);
+      // this.statsComp.current.setTurnTime(totalSeconds - lstTime);
       this.setMembers({ lstTime: totalSeconds });
     } else if (
       !isTaki &&
@@ -302,7 +306,11 @@ class Game {
       this.setStats(currentPlayer);
     }
     this.setMembers({
-      [deckName]: copiedDeck,
+      playerDecks: [
+        ...playerDecks.slice(0, deckNum),
+        copiedDeck,
+        ...playerDecks.slice(deckNum + 1)
+      ],
       pileCards: newPile,
       cardIsActive: true,
       takinNumber: takeCount
@@ -364,9 +372,9 @@ class Game {
     if (lastcard.number === 'plus' || lastcard.number === 'stop') {
       this.setMembers({ msg: lastcard.number + '- you have another turn' });
       this.setStats(PLAYER);
-      this.statsComp.current.setTurnTime(
-        this.members.totalSeconds - this.members.lstTime
-      );
+      // this.statsComp.current.setTurnTime(
+      //   this.members.totalSeconds - this.members.lstTime
+      // );
     }
     let takeCount = this.members.takinNumber;
     if (lastcard.number === '2plus') {
@@ -411,5 +419,20 @@ class Game {
     this.setMembers({ totalSeconds: newTime });
   }
 }
+
+Array.prototype.popIndex = function(index) {
+  if (index < 0 || index >= this.length) {
+    throw new Error();
+  }
+  let item = this[index];
+  let write = 0;
+  for (let i = 0; i < this.length; i++) {
+    if (index !== i) {
+      this[write++] = this[i];
+    }
+  }
+  this.length--;
+  return item;
+};
 
 module.exports = { Game };

@@ -13,10 +13,10 @@ export default class Form extends React.Component {
           this.props.onSubmit(this.state);
         }}
       >
-        <fieldset class="Form">
+        <fieldset className="Form">
           <legend>add new game</legend>
           {this.props.fields.map(field => (
-            <div key={field} >
+            <div key={field}>
               <label htmlFor={field}>
                 {field}:{' '}
                 <input
@@ -26,7 +26,7 @@ export default class Form extends React.Component {
               </label>
             </div>
           ))}
-          <input type="submit" class="addGame" value="add game" />
+          <input type="submit" className="addGame" value="add game" />
         </fieldset>
       </form>
     );

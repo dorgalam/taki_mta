@@ -1,8 +1,8 @@
 import React from 'react';
-import { Bot, MiddleSection, Player } from './sections';
-import { utils, Card, enums } from './sections/cross';
+import { Bot, MiddleSection, Player } from '.';
+import { utils, Card, enums } from './cross';
 
-import { getGame } from './api';
+import { getGame } from '../api';
 const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
 
@@ -46,8 +46,8 @@ const StartGameButton = ({}) => (
 );
 
 class MainGameWindow extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = getInitialState();
     this.baseState = this.state;
     this.countTimer = this.countTimer.bind(this);
@@ -182,7 +182,6 @@ class MainGameWindow extends React.Component {
   rewind() {
     this.rewindIndex = 0;
     this.setState({ inRewind: true });
-    console.log(this.state.inRewind);
   }
 
   dealCardsToPlayers() {
@@ -281,6 +280,7 @@ class MainGameWindow extends React.Component {
     const lastPileCard = this.state.pileCards[this.state.pileCards.length - 1];
     const { playerDeck, botDeck } = this.state;
     let winner = -1;
+    console.log(this.state);
     if (playerDeck.length === 0) {
       if (!this.state.cardIsActive) {
         winner = PLAYER;
@@ -482,7 +482,6 @@ class MainGameWindow extends React.Component {
   render() {
     return (
       <div id="wrapper" className={this.state.inRewind ? 'rewinding' : ''}>
-        <Bot {...this.getBotProps()} />
         <button id="quit" className="btn" onClick={() => this.quit()}>
           Quit{' '}
         </button>
