@@ -153,10 +153,11 @@ class Game {
     this.members = Object.assign({}, this.members, newMembers);
   }
 
-  quit() {
+  quit(player) {
+    const copiedDecks = { ...this.members.playerDecks };
+    delete copiedDecks[player];
     this.setMembers({
-      winner: BOT,
-      currentPlayer: -2
+      playerDecks: copiedDecks
     });
   }
 
@@ -302,7 +303,6 @@ class Game {
     }
     if (cardToPlay.color === 'colorful') {
       this.setMembers({ msg: 'pick a color' });
-      this.setMembers({ anotherTurn: true });
       anotherTurn = true;
     }
     if (
@@ -428,7 +428,7 @@ class Game {
       msg: ''
     });
     this.setStats(PLAYER);
-    this.nextPlayer(BOT);
+    this.nextPlayer(false);
   }
 
   countTimer() {

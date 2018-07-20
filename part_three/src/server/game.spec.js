@@ -57,4 +57,10 @@ describe('Game', () => {
     expect(game.members.playerDecks['player1']).toHaveLength(9);
     expect(game.members.deckCards).toHaveLength(101 - (4 * 8 + 1));
   });
+
+  it('should allow quitting the game', () => {
+    game.quit('player1');
+    expect(game.players).toHaveLength(4);
+    expect(Object.keys(game.members.playerDecks)).toHaveLength(3);
+  });
 });
