@@ -77,9 +77,6 @@ class Game {
   constructor(players) {
     this.players = players;
     this.members = this.getInitialState();
-    this.statsComp = {
-      current: {}
-    };
   }
   getInitialState() {
     const stats = this.players.reduce((agr, cur) => {
@@ -113,7 +110,7 @@ class Game {
       msg: ''
     };
   }
-  switchPlayer(toPlayer) {
+  nextPlayer(anotherTurn) {
     let {
       currentPlayer,
       cardIsActive,
@@ -124,18 +121,36 @@ class Game {
       totalSeconds
     } = this.members;
 
-    const lastPileCard = pileCards[pileCards.length - 1];
-    let from = currentPlayer === -1 ? PLAYER : currentPlayer;
-    if (from !== toPlayer && toPlayer !== -1) {
-      this.setStats(currentPlayer);
-      if (toPlayer === PLAYER) {
-        this.setMembers({ lstTime: totalSeconds });
-      } else {
-        // this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
-        this.setMembers({ msg: '' });
-      }
+    const currentPlayerIndex = this.players.indexOf(this.members.currentPlayer);
+
+    console.log('hiiiiiiiisii');
+
+    let nextPlayer = this.players[
+      (currentPlayerIndex + 1) % this.players.length
+    ];
+
+    if (anotherTurn) {
+      nextPlayer = this.players[currentPlayerIndex];
     }
+
+    // const lastPileCard = pileCards[pileCards.length - 1];
+    // let from = currentPlayer === -1 ? PLAYER : currentPlayer;
+    // if (from !== toPlayer && toPlayer !== -1) {
+    //   this.setStats(currentPlayer);
+    //   if (toPlayer === PLAYER) {
+    //     this.setMembers({ lstTime: totalSeconds });
+    //   } else {
+    //     // this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
+    //     this.setMembers({ msg: '' });
+    //   }
+    // }
+
+    this.setMembers({
+      currentPlayer: nextPlayer,
+      playerHasMove: false
+    });
   }
+
   setMembers(newMembers) {
     this.members = Object.assign({}, this.members, newMembers);
   }
@@ -289,7 +304,8 @@ class Game {
     }
     if (cardToPlay.color === 'colorful') {
       this.setMembers({ msg: 'pick a color' });
-      this.switchPlayer(-1);
+      this.setMembers({ anotherTurn: true });
+      this.nextPlayer(currentPlayer);
     }
     if (
       !isTaki &&
@@ -363,7 +379,7 @@ class Game {
       takinNumber: 1
     });
     this.updateHistory();
-    this.switchPlayer(player);
+    this.nextPlayer(player);
   }
 
   closeTaki() {
@@ -385,10 +401,10 @@ class Game {
       });
     }
     if (isSpecialCard(lastcard) && lastcard.number !== 'taki')
-      this.switchPlayer(PLAYER);
+      this.nextPlayer(PLAYER);
     else {
       this.setMembers({ msg: '' });
-      this.switchPlayer(BOT);
+      this.nextPlayer(BOT);
     }
   }
 
@@ -411,7 +427,7 @@ class Game {
       msg: ''
     });
     this.setStats(PLAYER);
-    this.switchPlayer(BOT);
+    this.nextPlayer(BOT);
   }
 
   countTimer() {
@@ -435,4 +451,4 @@ Array.prototype.popIndex = function(index) {
   return item;
 };
 
-module.exports = { Game };
+module.exports = { Game, Card };

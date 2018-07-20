@@ -1,4 +1,4 @@
-const { Game } = require('./game');
+const { Game, Card } = require('./game');
 
 describe('Game', () => {
   let game;
@@ -20,14 +20,19 @@ describe('Game', () => {
   });
 
   it('should play a card', () => {
-    game.playCard(2, 'player2');
+    game.members.playerDecks[0][7] = new Card('3_red');
+    game.playCard(7, 'player1');
     expect(game.members.pileCards).toHaveLength(2);
-    expect(game.members.playerDecks[1]).toHaveLength(7);
+    expect(game.members.playerDecks[0]).toHaveLength(7);
+    expect(game.members.currentPlayer).toBe('player2');
   });
 
   it('should not change player when a colorful card was played', () => {
-    game.members.playerDecks[0];
+    game.members.playerDecks[0][7] = new Card('change_colorful');
     game.playCard(7, 'player1');
+    expect(game.members.pileCards).toHaveLength(2);
+    expect(game.members.playerDecks[0]).toHaveLength(7);
+    expect(game.members.currentPlayer).toBe('player1');
   });
 
   it('should set correct stats for given player', () => {
@@ -40,4 +45,6 @@ describe('Game', () => {
       lastCard: 0
     });
   });
+
+  it('should leave current player the same', () => {});
 });
