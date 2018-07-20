@@ -88,7 +88,7 @@ class Game {
     }, {});
     return {
       deckCards: createCardsArray().map(item => new Card(item)),
-      playerDecks: [],
+      playerDecks: {},
       pileCards: [],
       currentPlayer: this.players[0],
       cardIsActive: false,
@@ -122,8 +122,6 @@ class Game {
     } = this.members;
 
     const currentPlayerIndex = this.players.indexOf(this.members.currentPlayer);
-
-    console.log('hiiiiiiiisii');
 
     let nextPlayer = this.players[
       (currentPlayerIndex + 1) % this.players.length
@@ -231,15 +229,15 @@ class Game {
 
   dealCardsToPlayers() {
     const cardsInDeck = [...this.members.deckCards],
-      playerDecks = [],
+      playerDecks = {},
       pileCards = [];
 
     for (let i = 0; i < 8; ++i) {
       this.players.forEach((name, id) => {
-        if (typeof playerDecks[id] !== 'object') {
-          playerDecks[id] = [cardsInDeck.pop()];
+        if (typeof playerDecks[name] !== 'object') {
+          playerDecks[name] = [cardsInDeck.pop()];
         } else {
-          playerDecks[id].push(cardsInDeck.pop());
+          playerDecks[name].push(cardsInDeck.pop());
         }
       });
     }
@@ -286,9 +284,9 @@ class Game {
       playerDecks
     } = this.members;
 
-    const deckNum = this.players.indexOf(playerName);
+    const copiedDeck = [...playerDecks[playerName]];
 
-    const copiedDeck = [...playerDecks[deckNum]];
+    let anotherTurn = false;
 
     const cardToPlay = copiedDeck.popIndex(index);
     const newPile = [...this.members.pileCards, cardToPlay];
@@ -305,7 +303,7 @@ class Game {
     if (cardToPlay.color === 'colorful') {
       this.setMembers({ msg: 'pick a color' });
       this.setMembers({ anotherTurn: true });
-      this.nextPlayer(currentPlayer);
+      anotherTurn = true;
     }
     if (
       !isTaki &&
@@ -322,16 +320,16 @@ class Game {
       this.setStats(currentPlayer);
     }
     this.setMembers({
-      playerDecks: [
-        ...playerDecks.slice(0, deckNum),
-        copiedDeck,
-        ...playerDecks.slice(deckNum + 1)
-      ],
+      playerDecks: {
+        ...playerDecks,
+        [playerName]: copiedDeck
+      },
       pileCards: newPile,
       cardIsActive: true,
       takinNumber: takeCount
     });
     this.updateHistory();
+    this.nextPlayer(anotherTurn);
   }
 
   gameOver() {
@@ -363,18 +361,21 @@ class Game {
     return winner;
   }
 
-  takeCardFromMainDeck(deckName, player) {
+  takeCardFromMainDeck(player, numberOfCardsToTake = 1) {
     let cards = [];
     let copiedDeck = [...this.members.deckCards];
-    for (let i = 0; i < this.members.takinNumber; i++) {
+    for (let i = 0; i < numberOfCardsToTake; i++) {
       cards.push(copiedDeck.pop());
       if (copiedDeck.length === 1) copiedDeck = this.buildNewMainDeck();
     }
-    const newPile = [...this.members[deckName], ...cards];
+    const newPlayerDeck = [...this.members.playerDecks[player], ...cards];
 
     this.setMembers({
       deckCards: copiedDeck,
-      [deckName]: newPile,
+      playerDecks: {
+        ...this.members.playerDecks,
+        [player]: newPlayerDeck
+      },
       cardIsActive: false,
       takinNumber: 1
     });

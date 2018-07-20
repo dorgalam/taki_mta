@@ -8,7 +8,7 @@
     "build-watch": "webpack --watch",
     "start": "node --inspect ./src/server.js",
     "start-watch": "nodemon --inspect ./src/server.js localhost 3000",
-    "test": "jest --watch --runInBand --verbose"
+    "test": "jest --watch --verbose"
   },
   "author": "Spivak Ofer",
   "license": "ISC",

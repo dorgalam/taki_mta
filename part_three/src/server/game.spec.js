@@ -11,27 +11,27 @@ describe('Game', () => {
   });
 
   it('create a deck for 4 players when 4 players have joined', () => {
-    expect(game.members.playerDecks).toHaveLength(4);
-    game.members.playerDecks.forEach(playerArr => {
-      expect(playerArr).toHaveLength(8);
+    expect(Object.keys(game.members.playerDecks)).toHaveLength(4);
+    players.forEach(playerName => {
+      expect(game.members.playerDecks[playerName]).toHaveLength(8);
     });
 
     expect(game.members.pileCards).toHaveLength(1);
   });
 
   it('should play a card', () => {
-    game.members.playerDecks[0][7] = new Card('3_red');
+    game.members.playerDecks['player1'][7] = new Card('3_red');
     game.playCard(7, 'player1');
     expect(game.members.pileCards).toHaveLength(2);
-    expect(game.members.playerDecks[0]).toHaveLength(7);
+    expect(game.members.playerDecks['player1']).toHaveLength(7);
     expect(game.members.currentPlayer).toBe('player2');
   });
 
   it('should not change player when a colorful card was played', () => {
-    game.members.playerDecks[0][7] = new Card('change_colorful');
+    game.members.playerDecks['player1'][7] = new Card('change_colorful');
     game.playCard(7, 'player1');
     expect(game.members.pileCards).toHaveLength(2);
-    expect(game.members.playerDecks[0]).toHaveLength(7);
+    expect(game.members.playerDecks['player1']).toHaveLength(7);
     expect(game.members.currentPlayer).toBe('player1');
   });
 
@@ -46,5 +46,15 @@ describe('Game', () => {
     });
   });
 
-  it('should leave current player the same', () => {});
+  it('should leave current player the same', () => {
+    const current = game.members.currentPlayer;
+    game.nextPlayer(true);
+    expect(game.members.currentPlayer).toBe(current);
+  });
+
+  it('should allow taking a card from the main deck', () => {
+    game.takeCardFromMainDeck('player1');
+    expect(game.members.playerDecks['player1']).toHaveLength(9);
+    expect(game.members.deckCards).toHaveLength(101 - (4 * 8 + 1));
+  });
 });
