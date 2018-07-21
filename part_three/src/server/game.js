@@ -77,6 +77,7 @@ class Game {
   constructor(players) {
     this.players = players;
     this.members = this.getInitialState();
+    this.dealCardsToPlayers();
   }
   getInitialState() {
     const stats = this.players.reduce((agr, cur) => {

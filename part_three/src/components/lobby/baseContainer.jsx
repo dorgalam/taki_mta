@@ -35,6 +35,8 @@ export default class BaseContainer extends React.Component {
   }
 
   render() {
+    // return <MainGameWindow gameId={0} playerName="player1" />;
+
     if (this.state.showLogin) {
       return (
         <LoginModal
@@ -86,9 +88,7 @@ export default class BaseContainer extends React.Component {
           games[gameJoined].numberOfPlayers ? (
           <MainGameWindow
             gameId={gameJoined}
-            playerId={games[gameJoined].players.indexOf(
-              this.state.currentUser.name
-            )}
+            playerName={this.state.currentUser.name}
           />
         ) : (
           <div>

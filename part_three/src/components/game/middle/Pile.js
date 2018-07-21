@@ -4,12 +4,13 @@ import { CardComp, utils } from '../cross';
 const { getPileStyles } = utils;
 
 class Pile extends React.Component {
-  componentDidMount() {
+  constructor() {
+    super();
     const styleArray = Array(110);
     for (let i = 0; i < 110; i++) {
       styleArray[i] = getPileStyles();
     }
-    this.setState({ styleArray });
+    this.state = { styleArray };
   }
   render() {
     const { cards } = this.props;

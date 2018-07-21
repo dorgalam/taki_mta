@@ -1,14 +1,9 @@
 import React from 'react';
 
-const TurnIdentifier = ({ myTurn }) =>
-  myTurn ? (
-    <div id="turn" className="turn">
-      <div id="turn-img" className="human-image" alt="turn" />
-    </div>
-  ) : (
-    <div id="turn" className="turn">
-      <div id="turn-img" className="bot-image" alt="turn" />
-    </div>
-  );
+const TurnIdentifier = ({ player }) => (
+  <div id="turn" className="turn">
+    <div>It's {player}'s turn</div>
+  </div>
+);
 
 export default TurnIdentifier;

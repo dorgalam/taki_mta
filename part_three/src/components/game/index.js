@@ -1,5 +1,5 @@
-import Bot from './Bot.js';
+import AnotherPlayer from './AnotherPlayer.js';
 import Player from './Player.js';
 import MiddleSection from './MiddleSection.js';
 
-export { Bot, Player, MiddleSection };
+export { AnotherPlayer, Player, MiddleSection };

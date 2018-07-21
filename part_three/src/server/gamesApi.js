@@ -6,18 +6,19 @@ const gamesApi = express.Router();
 
 let activeGames = [];
 
-
 gamesApi.get('/', (req, res) => {
   res.json(activeGames);
 });
 
 gamesApi.post('/', auth.userAuthentication, (req, res) => {
-  let error = "";
-  if ((2 <= req.body.numberOfPlayers && req.body.numberOfPlayers <= 4)) {
-    if (activeGames.length > 0 && activeGames.some(game => game.name === req.body.name)) {
-      error = "name already exists";
-    }
-    else {
+  let error = '';
+  if (2 <= req.body.numberOfPlayers && req.body.numberOfPlayers <= 4) {
+    if (
+      activeGames.length > 0 &&
+      activeGames.some(game => game.name === req.body.name)
+    ) {
+      error = 'name already exists';
+    } else {
       activeGames.push(
         Object.assign({}, req.body, {
           status: 'waiting',
@@ -26,9 +27,8 @@ gamesApi.post('/', auth.userAuthentication, (req, res) => {
         })
       );
     }
-  }
-  else {
-    error = "number of players must be 2-4";
+  } else {
+    error = 'number of players must be 2-4';
   }
   res.send({ id: activeGames.length - 1, error: error });
 });
@@ -50,13 +50,20 @@ gamesApi.post('/:id/join', (req, res) => {
     requestedGame.players.push(req.body.name);
     if (requestedGame.players.length === requestedGame.numberOfPlayers) {
       requestedGame.status = 'in_progress';
-      requestedGame.data = new Game(requestedGame.players);
+      const game = new Game(requestedGame.players);
+      game.dealCardsToPlayers();
+      requestedGame.data = game;
     }
-  }
-  else {
+  } else {
     requestedGame.players.splice(index, 1);
   }
   res.send({ id: req.params.id, index });
+});
+
+gamesApi.put('/:id', auth.userAuthentication, (req, res) => {
+  const requestedGame = activeGames[req.params.id];
+  requestedGame.data[req.body.action](...req.body.args, res.locals.user);
+  res.json({ ok: true });
 });
 
 gamesApi.post('/:id/delete', (req, res) => {

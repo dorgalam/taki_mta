@@ -17,28 +17,7 @@ class Player extends React.Component {
     if (!this.isPlayableCard(index)) {
       return;
     }
-    let card = this.props.cards[index];
-    let name = card.name;
-    const { number, color } = card;
-    if (color === "colorful") {//handle colorful
-      if (number === "taki") {
-        this.props.setTaki(true);
-        this.props.cards[index] = new Card(number + "_" + this.props.lastPileCard.color);
-      }//set last unclickable - done auto
-    }
-    this.props.playCard(index, "playerDeck");
-    if (isSpecialCard(card)) {
-      if (number === "taki") {
-        this.props.setTaki(true);
-      }
-    } else if (this.props.isTaki) {
-      this.props.switchPlayer(PLAYER);
-    } else if (number !== "") {
-      this.props.switchPlayer(BOT);
-      return;
-    }
-    if (card.name !== "change_colorful")
-      this.props.switchPlayer(PLAYER);
+    this.props.playCard(index);
   }
 
   isPlayableCard(index) {
@@ -48,13 +27,14 @@ class Player extends React.Component {
     if (isActive && isTaki) {
       return lastPileCard.color === currentCard.color;
     }
-    if (isActive && lastPileCard.number === "2plus") {
-      return currentCard.number === "2plus";
+    if (isActive && lastPileCard.number === '2plus') {
+      return currentCard.number === '2plus';
     }
     return (
-      lastPileCard.color === currentCard.color ||
-      lastPileCard.number === currentCard.number ||
-      currentCard.color === "colorful"
+      this.props.playCard !== null &&
+      (lastPileCard.color === currentCard.color ||
+        lastPileCard.number === currentCard.number ||
+        currentCard.color === 'colorful')
     );
   }
 
@@ -81,9 +61,7 @@ class Player extends React.Component {
           isFacedUp={true}
         />
       </div>
-    )
-      : null
-      ;
+    ) : null;
   }
 }
 
