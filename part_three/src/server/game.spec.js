@@ -7,7 +7,6 @@ describe('Game', () => {
   beforeEach(() => {
     players = ['player1', 'player2', 'player3', 'player4'];
     game = new Game(players);
-    game.dealCardsToPlayers();
   });
 
   it('create a deck for 4 players when 4 players have joined', () => {
@@ -29,6 +28,14 @@ describe('Game', () => {
 
   it('should not change player when a colorful card was played', () => {
     game.members.playerDecks['player1'][7] = new Card('change_colorful');
+    game.playCard(7, 'player1');
+    expect(game.members.pileCards).toHaveLength(2);
+    expect(game.members.playerDecks['player1']).toHaveLength(7);
+    expect(game.members.currentPlayer).toBe('player1');
+  });
+
+  it('should not change player when a taki card was played', () => {
+    game.members.playerDecks['player1'][7] = new Card('taki_red');
     game.playCard(7, 'player1');
     expect(game.members.pileCards).toHaveLength(2);
     expect(game.members.playerDecks['player1']).toHaveLength(7);

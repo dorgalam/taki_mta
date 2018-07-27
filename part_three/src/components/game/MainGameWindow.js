@@ -66,7 +66,11 @@ class MainGameWindow extends React.Component {
 
   gameOver() {}
 
-  takeCardFromMainDeck(deckName, player) {}
+  takeCardFromMainDeck(deckName, player) {
+    playFunc({
+      action: 'takeCardFromMainDeck'
+    });
+  }
 
   closeTaki() {}
 
@@ -108,13 +112,19 @@ class MainGameWindow extends React.Component {
       mainDeckCards: deckCards,
       pileCards: pileCards,
       player: currentPlayer, ///who's turn
-      takeCard: currentPlayer === PLAYER ? this.takeCardFromMainDeck : null,
+      takeCard:
+        currentPlayer === this.props.playerName
+          ? this.takeCardFromMainDeck
+          : null,
       isTaki: isTaki,
       stats: stats,
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
       statsRef: this.statsComp,
-      allowTake: playerHasMove === false && currentPlayer === PLAYER && !isTaki,
+      allowTake:
+        playerHasMove === false &&
+        currentPlayer === this.props.playerName &&
+        !isTaki,
       rewindProps: {
         inRewind: this.state.inRewind,
         setRewindIndex: this.setRewindIndex,
