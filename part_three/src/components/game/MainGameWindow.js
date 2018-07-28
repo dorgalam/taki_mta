@@ -7,7 +7,7 @@ import { getGame, playGameWithId } from '../api';
 const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
 
-const StartGameButton = ({}) => (
+const StartGameButton = ({ }) => (
   <button
     type="button"
     id="startGame"
@@ -28,6 +28,7 @@ class MainGameWindow extends React.Component {
     this.countTimer = this.countTimer.bind(this);
     this.setHasMove = this.setHasMove.bind(this);
     this.playCard = this.playCard.bind(this);
+    this.switchPlayer = this.switchPlayer.bind(this);
     this.setTaki = this.setTaki.bind(this);
     this.closeTaki = this.closeTaki.bind(this);
     this.takeCardFromMainDeck = this.takeCardFromMainDeck.bind(this);
@@ -51,11 +52,11 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  setStats(player) {}
+  setStats(player) { }
 
-  setHasMove(bool) {}
+  setHasMove(bool) { }
 
-  rewind() {}
+  rewind() { }
 
   playCard(index) {
     playFunc({
@@ -64,7 +65,14 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  gameOver() {}
+  switchPlayer(anotherTurn, closeTaki = false) {
+    playFunc({
+      action: 'nextPlayer',
+      args: [anotherTurn, closeTaki]
+    });
+  }
+
+  gameOver() { }
 
   takeCardFromMainDeck(deckName, player) {
     playFunc({
@@ -72,12 +80,14 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  closeTaki() {}
+  closeTaki() {
+    this.switchPlayer(false, true);
+  }
 
   selectColor(color) {
     playFunc({
       action: 'selectColor',
-      args: [index]
+      args: [color]
     });
   }
 
@@ -89,11 +99,21 @@ class MainGameWindow extends React.Component {
     }, 200);
   }
 
-  setTaki() {}
+  setTaki(setTo) {
+    /*if (setTo === true && this.state.currentPlayer === PLAYER) {
+      this.setState({ msg: 'taki you can put all the cards off this color' });
+    }*/
+    playFunc({
+      action: 'setTaki',
+      args: [setTo]
+    });
 
-  countTimer() {}
 
-  setRewindIndex(index) {}
+  }
+
+  countTimer() { }
+
+  setRewindIndex(index) { }
 
   getMiddleProps() {
     const {
@@ -102,6 +122,7 @@ class MainGameWindow extends React.Component {
       currentPlayer,
       cardIsActive,
       isTaki,
+      isChangeColor,
       playerHasMove,
       stats,
       botStats,
@@ -109,6 +130,7 @@ class MainGameWindow extends React.Component {
       msg
     } = this.state;
     return {
+      takiIdentifier: currentPlayer === this.props.playerName && isTaki,
       mainDeckCards: deckCards,
       pileCards: pileCards,
       player: currentPlayer, ///who's turn
@@ -133,7 +155,8 @@ class MainGameWindow extends React.Component {
       },
       botStats: botStats,
       winner: winner,
-      msg: msg
+      msg: msg,
+      colorIdentifier: currentPlayer === this.props.playerName && isChangeColor
     };
   }
 

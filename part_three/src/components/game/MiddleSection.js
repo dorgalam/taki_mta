@@ -29,30 +29,32 @@ const MiddleSection = ({
   statsRef,
   winner,
   rewindProps,
-  msg
+  msg,
+  takiIdentifier,
+  colorIdentifier
 }) => (
-  <div id="content">
-    <Pile cards={pileCards} />
-    <RewindUI {...rewindProps} winner={winner === -1} />
-    <MainDeck
-      cards={mainDeckCards}
-      giveCardToPlayer={takeCard}
-      allowTake={allowTake}
-    />
-    <TurnIdentifier player={player} />
-    <a id="msg">{msg}</a>
-    <TakiIdentifier
-      openTaki={player === PLAYER && isTaki}
-      closeTaki={closeTaki}
-    />
-    <ColorPick
-      choose={player === -1}
-      selectColor={color => () => selectColor(color)}
-    />
-    <EndingDisplay stats={botStats} rewindProps={rewindProps} winner={winner} />
-    {/* <Statistics ref={statsRef} curPlayer={player} inRewind={rewindProps.inRewind} botStats={botStats} gameOver={winner !== -1} {...stats} /> */}
-  </div>
-);
+    <div id="content">
+      <Pile cards={pileCards} />
+      <RewindUI {...rewindProps} winner={winner === -1} />
+      <MainDeck
+        cards={mainDeckCards}
+        giveCardToPlayer={takeCard}
+        allowTake={allowTake}
+      />
+      <TurnIdentifier player={player} />
+      <a id="msg">{msg}</a>
+      <TakiIdentifier
+        openTaki={takiIdentifier}
+        closeTaki={closeTaki}
+      />
+      <ColorPick
+        choose={colorIdentifier}
+        selectColor={color => () => selectColor(color)}
+      />
+      <EndingDisplay stats={botStats} rewindProps={rewindProps} winner={winner} />
+      {/* <Statistics ref={statsRef} curPlayer={player} inRewind={rewindProps.inRewind} botStats={botStats} gameOver={winner !== -1} {...stats} /> */}
+    </div>
+  );
 
 const ColorPick = ({ choose, selectColor }) =>
   choose ? (

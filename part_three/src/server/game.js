@@ -94,6 +94,7 @@ class Game {
       currentPlayer: this.players[0],
       cardIsActive: false,
       isTaki: false,
+      isChangeColor: false,
       playerHasMove: false,
       consecutiveBotTurn: 0,
       timerVar: 0,
@@ -111,7 +112,7 @@ class Game {
       msg: ''
     };
   }
-  nextPlayer(anotherTurn) {
+  nextPlayer(anotherTurn, closeTaki = false) {
     let {
       currentPlayer,
       cardIsActive,
@@ -122,7 +123,7 @@ class Game {
       totalSeconds
     } = this.members;
 
-    const currentPlayerIndex = this.players.indexOf(this.members.currentPlayer);
+    const currentPlayerIndex = this.players.indexOf(currentPlayer);
 
     let nextPlayer = this.players[
       (currentPlayerIndex + 1) % this.players.length
@@ -131,6 +132,10 @@ class Game {
     if (anotherTurn) {
       nextPlayer = this.players[currentPlayerIndex];
     }
+    if (closeTaki) {
+      this.closeTaki();
+    }
+
 
     // const lastPileCard = pileCards[pileCards.length - 1];
     // let from = currentPlayer === -1 ? PLAYER : currentPlayer;
@@ -302,9 +307,21 @@ class Game {
       //   });
       // }
     }
-    if (cardToPlay.color === 'colorful') {
-      this.setMembers({ msg: 'pick a color' });
+    if (isTaki) {
       anotherTurn = true;
+    }
+    else {
+      if (cardToPlay.number === 'taki') {
+        this.setMembers({ isTaki: true });
+        anotherTurn = true;
+      }
+      if (cardToPlay.number === 'plus') {
+        anotherTurn = true;
+      }
+      if (cardToPlay.color === 'colorful') {
+        this.setMembers({ msg: 'pick a color', isChangeColor: true });
+        anotherTurn = true;
+      }
     }
     if (
       !isTaki &&
@@ -329,8 +346,12 @@ class Game {
       cardIsActive: true,
       takinNumber: takeCount
     });
+
     this.updateHistory();
     this.nextPlayer(anotherTurn);
+    if (cardToPlay.number === 'stop' && !isTaki) {
+      this.nextPlayer(anotherTurn);
+    }
   }
 
   gameOver() {
@@ -362,10 +383,10 @@ class Game {
     return winner;
   }
 
-  takeCardFromMainDeck(player, numberOfCardsToTake = 1) {
+  takeCardFromMainDeck(player) {
     let cards = [];
     let copiedDeck = [...this.members.deckCards];
-    for (let i = 0; i < numberOfCardsToTake; i++) {
+    for (let i = 0; i < this.members.takinNumber; i++) {
       cards.push(copiedDeck.pop());
       if (copiedDeck.length === 1) copiedDeck = this.buildNewMainDeck();
     }
@@ -381,7 +402,7 @@ class Game {
       takinNumber: 1
     });
     this.updateHistory();
-    this.nextPlayer(player);
+    this.nextPlayer(false, false);
   }
 
   closeTaki() {
@@ -403,19 +424,19 @@ class Game {
       });
     }
     if (isSpecialCard(lastcard) && lastcard.number !== 'taki')
-      this.nextPlayer(PLAYER);
+      this.nextPlayer(true, true);
     else {
       this.setMembers({ msg: '' });
-      this.nextPlayer(BOT);
+      this.nextPlayer(false, true);
     }
   }
 
-  setTaki(bool) {
-    if (bool === true && this.members.currentPlayer === PLAYER) {
+  setTaki(setTo) {
+    /*if (bool === true && this.members.currentPlayer === PLAYER) {
       this.setMembers({ msg: 'taki you can put all the cards off this color' });
-    }
+    }*/
     this.setMembers({
-      isTaki: bool
+      isTaki: setTo
     });
   }
 
@@ -426,10 +447,11 @@ class Game {
     copiedDeck.push(card);
     this.setMembers({
       pileCards: copiedDeck,
+      isChangeColor: false,
       msg: ''
     });
     this.setStats(PLAYER);
-    this.nextPlayer(false);
+    this.nextPlayer(false, false);
   }
 
   countTimer() {
@@ -438,7 +460,7 @@ class Game {
   }
 }
 
-Array.prototype.popIndex = function(index) {
+Array.prototype.popIndex = function (index) {
   if (index < 0 || index >= this.length) {
     throw new Error();
   }
