@@ -181,7 +181,7 @@ body {
   min-height: 100%;
 }
 
-#bot {
+.rival {
   width: 100%;
   display: inline-block;
   text-align: center;

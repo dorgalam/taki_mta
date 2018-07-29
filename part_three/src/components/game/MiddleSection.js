@@ -29,7 +29,8 @@ const MiddleSection = ({
   msg,
   takiIdentifier,
   colorIdentifier,
-  playersFinished
+  playersFinished,
+  allStats
 }) => (
     <div id="content">
       <Pile cards={pileCards} />
@@ -48,7 +49,7 @@ const MiddleSection = ({
         choose={colorIdentifier}
         selectColor={color => () => selectColor(color)}
       />
-      <EndingDisplay stats={stats} winner={winner} playersFinished={playersFinished} />
+      <EndingDisplay stats={stats} allStats={allStats} winner={winner} playersFinished={playersFinished} />
       <Statistics ref={statsRef} curPlayer={player} gameOver={winner !== -1} {...stats} />
     </div>
   );

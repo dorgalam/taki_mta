@@ -2,11 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import LoginModal from './login-modal.jsx';
 import ChatContaier from './chatContainer.jsx';
-import { getGames, createGame, joinGame, getUsers, deleteGame } from '../api';
+import { getGames, createGame, joinGame, getUsers, deleteGame, quitGame } from '../api';
 import Form from './Form.jsx';
 import GamesTable from './GamesTable.jsx';
 import UsersList from './UsersList.jsx';
 import MainGameWindow from '../game/MainGameWindow';
+import WaitingRoom from '../game/WaitingRoom.jsx';
 
 export default class BaseContainer extends React.Component {
   constructor(args) {
@@ -28,6 +29,7 @@ export default class BaseContainer extends React.Component {
     this.pullGames = this.pullGames.bind(this);
     this.pullUsers = this.pullUsers.bind(this);
     this.handleJoinSubmit = this.handleJoinSubmit.bind(this);
+    this.handleQuitSubmit = this.handleQuitSubmit.bind(this);
 
     this.getUserName();
     this.pullGames();
@@ -75,53 +77,61 @@ export default class BaseContainer extends React.Component {
 
   handleJoinSubmit(id, name) {
     joinGame(id, name).then(res => {
-      this.setState({ gameJoined: id });
+      this.setState({ gameJoined: res.id });
+    });
+  }
+
+  handleQuitSubmit(id, name) {
+    joinGame(id, name).then(res => {
+      this.setState({ gameJoined: undefined });
     });
   }
 
   renderChatRoom() {
     const { games, gameJoined } = this.state;
+
     return (
       <div>
         {typeof gameJoined !== 'undefined' &&
-        games[gameJoined].players.length ===
-          games[gameJoined].numberOfPlayers ? (
-          <MainGameWindow
-            gameId={gameJoined}
-            playerName={this.state.currentUser.name}
-          />
-        ) : (
-          <div>
-            <div className="chat-base-container">
-              <div className="user-info-area">
-                Hello {this.state.currentUser.name}
-                <button className="logout btn" onClick={this.logoutHandler}>
-                  Logout
+          games[gameJoined].players.length === games[gameJoined].numberOfPlayers ? (
+            <MainGameWindow
+              gameId={gameJoined}
+              gameName={games[gameJoined].name}
+              playerName={this.state.currentUser.name}
+            />
+          ) : typeof gameJoined !== 'undefined' ? (<WaitingRoom user={this.state.currentUser.name} playerName={this.state.currentUser.name}
+            game={games[gameJoined]} gameId={gameJoined} onSubmit={this.handleQuitSubmit} />) : (
+              <div>
+                <div className="chat-base-container">
+                  <div className="user-info-area">
+                    Hello {this.state.currentUser.name}
+                    <button className="logout btn" onClick={this.logoutHandler}>
+                      Logout
                 </button>
+                  </div>
+                  <ChatContaier />
+                </div>
+                <div>
+                  <Form
+                    fields={['name', 'numberOfPlayers']}
+                    gameSuccessHandler={this.handleSuccessedNewGame}
+                    gameErrorHandler={this.handleLoginError}
+                    onSubmit={newGame =>
+                      createGame(newGame, this.state.currentUser.name).then(res => {
+                        if (res.error !== '') alert(res.error);
+                      })
+                    }
+                  />
+                  <GamesTable
+                    games={this.state.games}
+                    user={this.state.currentUser.name}
+                    onSubmit={this.handleJoinSubmit}
+                    deleteGame={deleteGame}
+                  />
+                  <UsersList users={this.state.users['users']} />
+                </div>
               </div>
-              <ChatContaier />
-            </div>
-            <div>
-              <Form
-                fields={['name', 'numberOfPlayers']}
-                gameSuccessHandler={this.handleSuccessedNewGame}
-                gameErrorHandler={this.handleLoginError}
-                onSubmit={newGame =>
-                  createGame(newGame, this.state.currentUser.name).then(res => {
-                    if (res.error !== '') alert(res.error);
-                  })
-                }
-              />
-              <GamesTable
-                games={this.state.games}
-                user={this.state.currentUser.name}
-                onSubmit={this.handleJoinSubmit}
-                deleteGame={deleteGame}
-              />
-              <UsersList users={this.state.users['users']} />
-            </div>
-          </div>
-        )}
+            )}
       </div>
     );
   }

@@ -58,6 +58,11 @@ export default class LoginModal extends React.Component {
             errMessage: 'User name already exist, please try another one'
           }));
         }
+        else if (response.status === 402) {
+          this.setState(() => ({
+            errMessage: 'User name empty is illegal, please try another one'
+          }));
+        }
         this.props.loginErrorHandler();
       }
     });

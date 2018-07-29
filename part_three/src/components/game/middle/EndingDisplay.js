@@ -2,31 +2,27 @@ import React from 'react';
 import RewindUI from './RewindUI.js';
 import { Player } from '../index.js';
 
-function printWinners(player, place) {
+function printWinners(player, place, stats) {
   return (
     <tr>
-      <td>{player}</td><td>{place}</td>
+      <td>{player}</td><td>{place}</td><td>{stats.turns}</td><td>{getAverage(stats.turnsTime)}</td><td>{stats.lastCard}</td>
     </tr>
   );
 };
 
-const EndingDisplay = ({ stats, winner, playersFinished }) =>
+function getAverage(turnsTime) {
+  return (
+    turnsTime.reduce((sum, item) => sum + item, 0) / turnsTime.length || 0
+  ).toFixed(2);
+}
+
+const EndingDisplay = ({ winner, playersFinished, allStats }) =>
   winner > -1 ? (
     <div id="ending" className="popup">
-      <div id="bot-stats" className="bot_stats">
-        <h1>Bot Stats:</h1>
-        <h2>
-          Turns played:
-          <a id="bot_num_turns">{stats.turns}</a>
-        </h2>
-        <h2 style={{ fontSize: '90%' }}>
-          Last card declerations:
-          <a id="bot_last_one">{stats.lastCard}</a>
-        </h2>
-      </div>
       <table><tbody>
-        <tr><th>player name:</th><th>place:</th></tr>
-        {playersFinished.map((player, index) => printWinners(player, index + 1))}
+        <tr><th>player name:</th><th>place:</th><th>player turns:</th>
+          <th>player avg time:</th><th>player last card declaration:</th></tr>
+        {playersFinished.map((player, index) => printWinners(player, index + 1, allStats[player]))}
       </tbody></table>
     </div>
   ) : null;

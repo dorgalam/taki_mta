@@ -13,17 +13,17 @@ gamesApi.get('/', (req, res) => {
 gamesApi.post('/', auth.userAuthentication, (req, res) => {
   let error = '';
   if (2 <= req.body.numberOfPlayers && req.body.numberOfPlayers <= 4) {
-    if (
-      activeGames.length > 0 &&
-      activeGames.some(game => game.name === req.body.name)
-    ) {
+    if (activeGames.length > 0 && activeGames.some(game => game.name === req.body.name)) {
       error = 'name already exists';
-    } else {
+    } else if (!req.body.name) {
+      error = 'you must give name to your game';
+    }
+    else {
       activeGames.push(
         Object.assign({}, req.body, {
           status: 'waiting',
           players: [],
-          creator: req.body.user
+          creator: req.body.user,
         })
       );
     }
@@ -32,18 +32,57 @@ gamesApi.post('/', auth.userAuthentication, (req, res) => {
   }
   res.send({ id: activeGames.length - 1, error: error });
 });
-/* old one
-gamesApi.get('/:id/join', (req, res) => {
+/*
+gamesApi.post('/:id/join', (req, res) => {
   const requestedGame = activeGames[req.params.id];
-  requestedGame.players.push(req.cookies.user);
-  if (requestedGame.players.length === requestedGame.numberOfPlayers) {
-    requestedGame.status = 'in_progress';
-    requestedGame.data = new Game(requestedGame.players);
+  const index = requestedGame.players.indexOf(req.body.name);
+  if (index === -1) {
+    requestedGame.players.push(req.body.name);
+    if (requestedGame.players.length === requestedGame.numberOfPlayers) {
+      requestedGame.status = 'in_progress';
+      const game = new Game(requestedGame.players);
+      game.dealCardsToPlayers();
+      requestedGame.data = game;
+    }
+  } else {
+    requestedGame.players.splice(index, 1);
   }
-  res.send({ id: req.params.id });
+  res.send({ id: req.params.id, index });
 });
 */
+
+function indexOfGames(games, name) {
+  for (let i = 0; i < games.length; i++) {
+    if (games[i].name === name) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 gamesApi.post('/:id/join', (req, res) => {
+  const requestedGameIndex = indexOfGames(activeGames, req.params.id);
+  if (requestedGameIndex === -1) {
+    res.send({ id: -1, requestedGameIndex, err: 'game not found' });
+    return;
+  }
+  const requestedGame = activeGames[requestedGameIndex];
+  const index = requestedGame.players.indexOf(req.body.name);
+  if (index === -1) {
+    requestedGame.players.push(req.body.name);
+    if (requestedGame.players.length === requestedGame.numberOfPlayers) {
+      requestedGame.status = 'in_progress';
+      const game = new Game(requestedGame.players);
+      game.dealCardsToPlayers();
+      requestedGame.data = game;
+    }
+  } else {
+    requestedGame.players.splice(index, 1);
+  }
+  res.send({ id: requestedGameIndex, index });
+});
+
+gamesApi.post('/:id/quit', (req, res) => {
   const requestedGame = activeGames[req.params.id];
   const index = requestedGame.players.indexOf(req.body.name);
   if (index === -1) {
@@ -75,7 +114,12 @@ gamesApi.post('/:id/delete', (req, res) => {
 });
 
 gamesApi.get('/:id', (req, res) => {
-  const game = activeGames[req.params.id];
+  const requestedGameIndex = indexOfGames(activeGames, req.params.id);
+  if (requestedGameIndex === -1) {
+    res.send({ id: req.params.id, requestedGameIndex, err: 'game not found' });
+    return;
+  }
+  const game = activeGames[requestedGameIndex];
   if (game.status === 'waiting') {
     res.json({ waiting: true });
   } else {

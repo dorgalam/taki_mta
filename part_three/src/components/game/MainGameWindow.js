@@ -2,7 +2,7 @@ import React from 'react';
 import { AnotherPlayer, MiddleSection, Player } from '.';
 import { utils, Card, enums } from './cross';
 
-import { getGame, playGameWithId } from '../api';
+import { getGame, playGameWithId, joinGame } from '../api';
 
 const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
@@ -24,8 +24,8 @@ let getGameInterval;
 class MainGameWindow extends React.Component {
   constructor(props) {
     super(props);
+    this.declaredWinner = false;
     this.baseState = this.state;
-    this.countTimer = this.countTimer.bind(this);
     this.setHasMove = this.setHasMove.bind(this);
     this.playCard = this.playCard.bind(this);
     this.switchPlayer = this.switchPlayer.bind(this);
@@ -89,14 +89,17 @@ class MainGameWindow extends React.Component {
 
   componentDidMount() {
     setInterval(() => {
-      getGame(this.props.gameId).then(game => {
+      getGame(this.props.gameName).then(game => {
         this.setState(Object.assign(game.state, { render: true }));
       });
     }, 200);
   }
 
   componentDidUpdate() {
-    this.countTimer();
+    if (!this.declaredWinner && this.state.playersFinished && this.state.playersFinished.length !== 0) {
+      this.declaredWinner = true;
+      alert('the winner is ' + this.state.playersFinished[0]);
+    }
   }
 
   setTaki(setTo) {
@@ -109,13 +112,6 @@ class MainGameWindow extends React.Component {
     });
 
 
-  }
-
-  countTimer() {
-    playFunc({
-      action: 'countTimer'
-    });
-    console.log(1);
   }
 
   getMiddleProps() {
@@ -143,6 +139,7 @@ class MainGameWindow extends React.Component {
           : null,
       isTaki: isTaki,
       stats: stats[this.props.playerName],
+      allStats: stats,
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
       statsRef: this.statsComp,
@@ -181,19 +178,23 @@ class MainGameWindow extends React.Component {
   }
 
   render() {
+    let showQuit = this.state.playersFinished ?
+      this.state.playersFinished.indexOf(this.props.playerName) !== -1 ? false : true : true;
     return (
       <div>
         {this.state.render ? (
           <div id="wrapper">
+            <button hidden={showQuit} onClick={e => joinGame(this.props.gameName, this.props.playerName)}> quit</button>
             {Object.keys(this.state.playerDecks)
               .filter(name => name !== this.props.playerName)
               .map(player => (
-                <AnotherPlayer cards={this.state.playerDecks[player]} />
+                <AnotherPlayer name={player} cards={this.state.playerDecks[player]} />
               ))}
             <MiddleSection {...this.getMiddleProps()} />
             <Player {...this.getPlayerProps()} />
           </div>
-        ) : null}
+        ) : null
+        }
       </div>
     );
   }

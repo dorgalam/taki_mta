@@ -73,11 +73,15 @@ class Card {
   }
 }
 
+let timerVar;
+
 class Game {
   constructor(players) {
     this.players = players;
     this.members = this.getInitialState();
     this.dealCardsToPlayers();
+    this.countTimer = this.countTimer.bind(this);
+    timerVar = setInterval(this.countTimer, 500);
   }
   getInitialState() {
     const stats = this.players.reduce((agr, cur) => {
@@ -97,7 +101,6 @@ class Game {
       isTaki: false,
       isChangeColor: false,
       playerHasMove: false,
-      timerVar: 0,
       lstTime: 0,
       totalSeconds: 0,
       turnSwitched: 0,
@@ -109,9 +112,6 @@ class Game {
     };
   }
 
-  setCountTimer() {
-    //this.timerVar = setInterval(this.countTimer, 1000);
-  }
 
   nextPlayer(anotherTurn, closeTaki = false) {
     let {
@@ -443,7 +443,7 @@ class Game {
   }
 
   countTimer() {
-    let newTime = this.members.totalSeconds + 1;
+    let newTime = this.members.totalSeconds + 0.5;
     this.setMembers({ totalSeconds: newTime });
   }
 }

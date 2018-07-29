@@ -41,8 +41,7 @@ class Statistics extends React.Component {
     );
   }
 
-  getAverage() {
-    const { turnsTime } = this.state;
+  getAverage(turnsTime) {
     return (
       turnsTime.reduce((sum, item) => sum + item, 0) / turnsTime.length || 0
     ).toFixed(2);
@@ -70,7 +69,7 @@ class Statistics extends React.Component {
   render() {
     const { gameOver, curPlayer, turnsTime } = this.props;
     return (
-      <div id={gameOver ? 'side' : ''}>
+      <div>
         <div id="stats-section">
           <div id="p1-stats" className="stats">
             <h1>Your Stats:</h1>
@@ -84,7 +83,7 @@ class Statistics extends React.Component {
             </h2>
             <h2>
               Average turn time:
-              <div id="avg_time">{turnsTime.length > 0 ? turnsTime[turnsTime.length - 1] : 0}</div>
+              <div id="avg_time">{this.getAverage(turnsTime)}</div>
             </h2>
             <h2>
               Last card declerations:
