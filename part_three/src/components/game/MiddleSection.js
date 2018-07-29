@@ -6,8 +6,7 @@ import {
   Pile,
   TakiIdentifier,
   TurnIdentifier,
-  Statistics,
-  RewindUI
+  Statistics
 } from './middle';
 
 import { utils, Card, enums } from './cross';
@@ -25,17 +24,15 @@ const MiddleSection = ({
   selectColor,
   allowTake,
   stats,
-  botStats,
   statsRef,
   winner,
-  rewindProps,
   msg,
   takiIdentifier,
-  colorIdentifier
+  colorIdentifier,
+  playersFinished
 }) => (
     <div id="content">
       <Pile cards={pileCards} />
-      <RewindUI {...rewindProps} winner={winner === -1} />
       <MainDeck
         cards={mainDeckCards}
         giveCardToPlayer={takeCard}
@@ -51,8 +48,8 @@ const MiddleSection = ({
         choose={colorIdentifier}
         selectColor={color => () => selectColor(color)}
       />
-      <EndingDisplay stats={botStats} rewindProps={rewindProps} winner={winner} />
-      {/* <Statistics ref={statsRef} curPlayer={player} inRewind={rewindProps.inRewind} botStats={botStats} gameOver={winner !== -1} {...stats} /> */}
+      <EndingDisplay stats={stats} winner={winner} playersFinished={playersFinished} />
+      <Statistics ref={statsRef} curPlayer={player} gameOver={winner !== -1} {...stats} />
     </div>
   );
 

@@ -83,7 +83,8 @@ class Game {
     const stats = this.players.reduce((agr, cur) => {
       agr[cur] = {
         turns: 0,
-        lastCard: 0
+        lastCard: 0,
+        turnsTime: []
       };
       return agr;
     }, {});
@@ -96,22 +97,22 @@ class Game {
       isTaki: false,
       isChangeColor: false,
       playerHasMove: false,
-      consecutiveBotTurn: 0,
       timerVar: 0,
       lstTime: 0,
       totalSeconds: 0,
       turnSwitched: 0,
       stats,
-      botStats: {
-        turns: 0,
-        lastCard: 0
-      },
-      history: [],
       winner: -1,
       takinNumber: 1,
-      msg: ''
+      msg: '',
+      playersFinished: []
     };
   }
+
+  setCountTimer() {
+    //this.timerVar = setInterval(this.countTimer, 1000);
+  }
+
   nextPlayer(anotherTurn, closeTaki = false) {
     let {
       currentPlayer,
@@ -120,34 +121,33 @@ class Game {
       isTaki,
       consecutiveBotTurn,
       lstTime,
-      totalSeconds
+      totalSeconds,
+      playersFinished
     } = this.members;
-
+    if (this.gameOver()) {//move to end display
+      this.setMembers({ winner: true });
+      return;
+    }
     const currentPlayerIndex = this.players.indexOf(currentPlayer);
 
-    let nextPlayer = this.players[
-      (currentPlayerIndex + 1) % this.players.length
-    ];
+    let nextPlayer = this.players[(currentPlayerIndex + 1) % this.players.length];
 
     if (anotherTurn) {
       nextPlayer = this.players[currentPlayerIndex];
     }
     if (closeTaki) {
-      this.closeTaki();
+      nextPlayer = this.closeTaki();
+    }
+    const nextIndex = this.players.indexOf(nextPlayer);
+    while (playersFinished.indexOf(nextPlayer) !== -1) {
+      nextPlayer = this.players[(nextIndex + 1) % this.players.length];
     }
 
-
-    // const lastPileCard = pileCards[pileCards.length - 1];
-    // let from = currentPlayer === -1 ? PLAYER : currentPlayer;
-    // if (from !== toPlayer && toPlayer !== -1) {
-    //   this.setStats(currentPlayer);
-    //   if (toPlayer === PLAYER) {
-    //     this.setMembers({ lstTime: totalSeconds });
-    //   } else {
-    //     // this.statsComp.current.setTurnTime(totalSeconds - lstTime); // player turn ends calculate his turn time
-    //     this.setMembers({ msg: '' });
-    //   }
-    // }
+    if (!anotherTurn) {
+      this.setStats(currentPlayer);
+      this.setMembers({ lstTime: totalSeconds });
+      this.setMembers({ msg: '' });
+    }
 
     this.setMembers({
       currentPlayer: nextPlayer,
@@ -168,17 +168,24 @@ class Game {
   }
 
   setStats(player) {
-    const { stats } = this.members;
+    const { stats, totalSeconds, lstTime } = this.members;
+    let lastCard = stats[player].lastCard;
+    if (this.members.playerDecks[player].length === 1) {
+      lastCard++;
+    }
+    const turns = [...stats[player].turnsTime, totalSeconds - lstTime];
     this.setMembers({
       stats: {
         ...stats,
         [player]: {
           turns: stats[player].turns + 1,
-          lastCard: stats[player].lastCard
+          lastCard: lastCard,
+          turnsTime: turns
         }
       }
     });
   }
+
   setHasMove(bool) {
     if (this.members.playerHasMove === bool) return;
     this.setMembers({
@@ -189,6 +196,8 @@ class Game {
   componentWillUnmount() {
     clearInterval(this.timerVar);
   }
+
+
 
   // componentDidUpdate(prevProps, prevState) {
   //   const { playerDeck, botDeck } = this.members;
@@ -218,21 +227,7 @@ class Game {
   //   }
   // }
 
-  updateHistory() {
-    const { inRewind, winner } = this.members;
-    if (!inRewind && this.statsComp) {
-      const stateSnapshot = Object.assign({}, this.members, {
-        // childStats: this.statsComp.current.getState()
-      });
-      delete stateSnapshot.history;
-      this.setMembers({ history: [...this.members.history, stateSnapshot] });
-    }
-  }
 
-  rewind() {
-    this.rewindIndex = 0;
-    this.setMembers({ inRewind: true });
-  }
 
   dealCardsToPlayers() {
     const cardsInDeck = [...this.members.deckCards],
@@ -288,24 +283,19 @@ class Game {
       lstTime,
       totalSeconds,
       takinNumber,
-      playerDecks
+      playerDecks,
+      pileCards
     } = this.members;
 
     const copiedDeck = [...playerDecks[playerName]];
-
+    const lastPileCard = pileCards[pileCards.length - 1];
     let anotherTurn = false;
 
-    const cardToPlay = copiedDeck.popIndex(index);
-    const newPile = [...this.members.pileCards, cardToPlay];
+    let cardToPlay = copiedDeck.popIndex(index);
     let takeCount = takinNumber;
     if (cardToPlay.number === '2plus' && !isTaki) {
       takeCount = takeCount === 1 ? 0 : takeCount;
       takeCount += 2;
-      // if (currentPlayer === BOT) {
-      //   this.setMembers({
-      //     msg: 'your opponent used 2plus, play with 2plus or take card'
-      //   });
-      // }
     }
     if (isTaki) {
       anotherTurn = true;
@@ -314,6 +304,9 @@ class Game {
       if (cardToPlay.number === 'taki') {
         this.setMembers({ isTaki: true });
         anotherTurn = true;
+        if (cardToPlay.color === 'colorful') {
+          cardToPlay = new Card('taki_' + lastPileCard.color, 'taki_colorful');
+        }
       }
       if (cardToPlay.number === 'plus') {
         anotherTurn = true;
@@ -323,20 +316,12 @@ class Game {
         anotherTurn = true;
       }
     }
-    if (
-      !isTaki &&
-      (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')
-    ) {
+    if (!isTaki && (cardToPlay.number === 'plus')) {
       this.setMembers({ msg: cardToPlay.number + '- you have another turn' });
       this.setStats(currentPlayer);
-      // this.statsComp.current.setTurnTime(totalSeconds - lstTime);
       this.setMembers({ lstTime: totalSeconds });
-    } else if (
-      !isTaki &&
-      (cardToPlay.number === 'plus' || cardToPlay.number === 'stop')
-    ) {
-      this.setStats(currentPlayer);
     }
+    const newPile = [...this.members.pileCards, cardToPlay];
     this.setMembers({
       playerDecks: {
         ...playerDecks,
@@ -347,7 +332,6 @@ class Game {
       takinNumber: takeCount
     });
 
-    this.updateHistory();
     this.nextPlayer(anotherTurn);
     if (cardToPlay.number === 'stop' && !isTaki) {
       this.nextPlayer(anotherTurn);
@@ -358,29 +342,26 @@ class Game {
     const lastPileCard = this.members.pileCards[
       this.members.pileCards.length - 1
     ];
-    const { playerDeck, botDeck } = this.members;
-    let winner = -1;
-    if (playerDeck.length === 0) {
-      if (!this.members.cardIsActive) {
-        winner = PLAYER;
-      } else if (
-        lastPileCard.number !== 'plus' &&
-        lastPileCard.number !== '2plus'
-      ) {
-        winner = PLAYER;
+    const { cardIsActive, playersFinished } = this.members;
+    this.players.forEach((playerName) => {
+      if (playersFinished.indexOf(playerName) === -1) {
+        if (this.members.playerDecks[playerName].length === 0) {
+          if (!cardIsActive || lastPileCard.number !== 'plus' && lastPileCard.number !== '2plus') {
+            playersFinished.push(playerName);
+          }
+        }
       }
+    });
+    let end = playersFinished.length + 1 >= this.players.length;
+    if (end) {///put the last player at the players finished list
+      this.players.forEach((playerName) => {
+        if (playersFinished.indexOf(playerName) === -1) {
+          playersFinished.push(playerName);
+        }
+      });
     }
-    if (botDeck.length === 0) {
-      if (!this.members.cardIsActive) {
-        winner = BOT;
-      } else if (
-        lastPileCard.number !== 'plus' &&
-        lastPileCard.number !== '2plus'
-      ) {
-        winner = BOT;
-      }
-    }
-    return winner;
+    return end;
+    //if all the players finished then game is over
   }
 
   takeCardFromMainDeck(player) {
@@ -401,19 +382,21 @@ class Game {
       cardIsActive: false,
       takinNumber: 1
     });
-    this.updateHistory();
     this.nextPlayer(false, false);
   }
 
   closeTaki() {
     let lastcard = this.members.pileCards[this.members.pileCards.length - 1];
     this.setTaki(false);
-    if (lastcard.number === 'plus' || lastcard.number === 'stop') {
+    const currentPlayerIndex = this.players.indexOf(this.members.currentPlayer);
+    let nextPlayer = this.players[
+      (currentPlayerIndex + 1) % this.players.length
+    ];
+    if (lastcard.number === 'plus') {
+      nextPlayer = this.players[currentPlayerIndex];
       this.setMembers({ msg: lastcard.number + '- you have another turn' });
-      this.setStats(PLAYER);
-      // this.statsComp.current.setTurnTime(
-      //   this.members.totalSeconds - this.members.lstTime
-      // );
+      this.setStats(this.members.currentPlayer);
+      this.setMembers({ lstTime: totalSeconds });
     }
     let takeCount = this.members.takinNumber;
     if (lastcard.number === '2plus') {
@@ -423,16 +406,16 @@ class Game {
         takinNumber: takeCount
       });
     }
-    if (isSpecialCard(lastcard) && lastcard.number !== 'taki')
-      this.nextPlayer(true, true);
-    else {
-      this.setMembers({ msg: '' });
-      this.nextPlayer(false, true);
+    if (lastcard.number === 'stop') {
+      nextPlayer = this.players[
+        (currentPlayerIndex + 2) % this.players.length
+      ];
     }
+    return nextPlayer;
   }
 
   setTaki(setTo) {
-    /*if (bool === true && this.members.currentPlayer === PLAYER) {
+    /*if (setTo) {
       this.setMembers({ msg: 'taki you can put all the cards off this color' });
     }*/
     this.setMembers({
@@ -444,14 +427,19 @@ class Game {
     let copiedDeck = [...this.members.pileCards];
     let card = copiedDeck.pop();
     card = new Card('_' + color, 'change_colorful');
-    copiedDeck.push(card);
+    copiedDeck.push(card);/*
+    const currentPlayerIndex = this.players.indexOf(this.members.currentPlayer);
+    let nextPlayer = this.players[
+      (currentPlayerIndex + 1) % this.players.length
+    ];
+    this.setStats(this.members.currentPlayer);*/
+    this.nextPlayer(false, false);
     this.setMembers({
       pileCards: copiedDeck,
       isChangeColor: false,
-      msg: ''
+      msg: '',
     });
-    this.setStats(PLAYER);
-    this.nextPlayer(false, false);
+
   }
 
   countTimer() {

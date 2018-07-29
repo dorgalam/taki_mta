@@ -2,16 +2,17 @@ import React from 'react';
 import RewindUI from './RewindUI.js';
 import { Player } from '../index.js';
 
-const EndingDisplay = ({ stats, winner, rewindProps }) =>
+function printWinners(player, place) {
+  return (
+    <tr>
+      <td>{player}</td><td>{place}</td>
+    </tr>
+  );
+};
+
+const EndingDisplay = ({ stats, winner, playersFinished }) =>
   winner > -1 ? (
     <div id="ending" className="popup">
-      <RewindUI {...rewindProps} winner={winner === -1} />
-      <div id={winner === 0 ? 'celebrate' : 'hidden'}>
-        <img id="barney" alt="gif" height="150" width="150" />
-      </div>
-      <div id={winner === 1 ? 'loser' : 'hidden'}>
-        <img id="loser" alt="gif" height="150" width="150" />
-      </div>
       <div id="bot-stats" className="bot_stats">
         <h1>Bot Stats:</h1>
         <h2>
@@ -23,6 +24,10 @@ const EndingDisplay = ({ stats, winner, rewindProps }) =>
           <a id="bot_last_one">{stats.lastCard}</a>
         </h2>
       </div>
+      <table><tbody>
+        <tr><th>player name:</th><th>place:</th></tr>
+        {playersFinished.map((player, index) => printWinners(player, index + 1))}
+      </tbody></table>
     </div>
   ) : null;
 

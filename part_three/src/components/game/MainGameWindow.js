@@ -35,10 +35,8 @@ class MainGameWindow extends React.Component {
     this.selectColor = this.selectColor.bind(this);
     this.getMiddleProps = this.getMiddleProps.bind(this);
     this.getPlayerProps = this.getPlayerProps.bind(this);
-    this.setRewindIndex = this.setRewindIndex.bind(this);
     this.statsComp = React.createRef();
     this.setStats = this.setStats.bind(this);
-    this.rewind = this.rewind.bind(this);
     this.gameOver = this.gameOver.bind(this);
     this.quit = this.quit.bind(this);
     this.state = {};
@@ -56,8 +54,6 @@ class MainGameWindow extends React.Component {
 
   setHasMove(bool) { }
 
-  rewind() { }
-
   playCard(index) {
     playFunc({
       action: 'playCard',
@@ -74,7 +70,7 @@ class MainGameWindow extends React.Component {
 
   gameOver() { }
 
-  takeCardFromMainDeck(deckName, player) {
+  takeCardFromMainDeck() {
     playFunc({
       action: 'takeCardFromMainDeck'
     });
@@ -99,6 +95,10 @@ class MainGameWindow extends React.Component {
     }, 200);
   }
 
+  componentDidUpdate() {
+    this.countTimer();
+  }
+
   setTaki(setTo) {
     /*if (setTo === true && this.state.currentPlayer === PLAYER) {
       this.setState({ msg: 'taki you can put all the cards off this color' });
@@ -111,9 +111,12 @@ class MainGameWindow extends React.Component {
 
   }
 
-  countTimer() { }
-
-  setRewindIndex(index) { }
+  countTimer() {
+    playFunc({
+      action: 'countTimer'
+    });
+    console.log(1);
+  }
 
   getMiddleProps() {
     const {
@@ -125,9 +128,9 @@ class MainGameWindow extends React.Component {
       isChangeColor,
       playerHasMove,
       stats,
-      botStats,
       winner,
-      msg
+      msg,
+      playersFinished
     } = this.state;
     return {
       takiIdentifier: currentPlayer === this.props.playerName && isTaki,
@@ -139,7 +142,7 @@ class MainGameWindow extends React.Component {
           ? this.takeCardFromMainDeck
           : null,
       isTaki: isTaki,
-      stats: stats,
+      stats: stats[this.props.playerName],
       closeTaki: this.closeTaki,
       selectColor: this.selectColor,
       statsRef: this.statsComp,
@@ -147,16 +150,10 @@ class MainGameWindow extends React.Component {
         playerHasMove === false &&
         currentPlayer === this.props.playerName &&
         !isTaki,
-      rewindProps: {
-        inRewind: this.state.inRewind,
-        setRewindIndex: this.setRewindIndex,
-        numberOfTurns: this.state.history.length,
-        rewind: this.rewind
-      },
-      botStats: botStats,
       winner: winner,
       msg: msg,
-      colorIdentifier: currentPlayer === this.props.playerName && isChangeColor
+      colorIdentifier: currentPlayer === this.props.playerName && isChangeColor,
+      playersFinished: playersFinished
     };
   }
 
@@ -187,25 +184,12 @@ class MainGameWindow extends React.Component {
     return (
       <div>
         {this.state.render ? (
-          <div id="wrapper" className={this.state.inRewind ? 'rewinding' : ''}>
-            <button id="quit" className="btn" onClick={() => this.quit()}>
-              Quit{' '}
-            </button>
+          <div id="wrapper">
             {Object.keys(this.state.playerDecks)
               .filter(name => name !== this.props.playerName)
               .map(player => (
                 <AnotherPlayer cards={this.state.playerDecks[player]} />
               ))}
-            <button
-              type="button"
-              id="restart"
-              className="clickable btn"
-              onClick={this.props.restart}
-              disabled={!this.state.inRewind}
-              hidden={!this.state.inRewind}
-            >
-              Restart
-            </button>
             <MiddleSection {...this.getMiddleProps()} />
             <Player {...this.getPlayerProps()} />
           </div>

@@ -49,7 +49,8 @@ describe('Game', () => {
 
     expect(game.members.stats['player3']).toEqual({
       turns: 3,
-      lastCard: 0
+      lastCard: 0,
+      turnsTime: [0, 0, 0]
     });
   });
 
@@ -70,4 +71,24 @@ describe('Game', () => {
     expect(game.players).toHaveLength(4);
     expect(Object.keys(game.members.playerDecks)).toHaveLength(3);
   });
+
+  it('should put taki_red', () => {
+    let lastPileCard = new Card('2_red');
+    let cardToPlay = new Card('taki_' + lastPileCard.color, 'taki_colorful');
+    expect(cardToPlay.color).toBe('red');
+    expect(cardToPlay.number).toBe('taki');
+  });
+
+  it('should add time of the turn', () => {
+    game.setStats('player3');
+    game.setStats('player3');
+    game.setStats('player3');
+
+    expect(game.members.stats['player3']).toEqual({
+      turns: 3,
+      lastCard: 0,
+      turnsTime: [0, 0, 0]
+    });
+  });
+
 });
