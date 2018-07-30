@@ -153,7 +153,6 @@ class Game {
     }
 
     const nextPlayer = this.getNextPlayer(anotherTurn, closeTaki);
-
     this.setMembers({
       currentPlayer: nextPlayer,
       playerHasMove: false

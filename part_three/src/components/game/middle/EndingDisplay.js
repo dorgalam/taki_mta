@@ -19,7 +19,9 @@ function getAverage(turnsTime) {
 const EndingDisplay = ({ winner, playersFinished, allStats }) =>
   winner > -1 ? (
     <div id="ending" className="popup">
-      <table><tbody>
+      <h1 class="endMiddle">the game is over!</h1>
+      <h2 class="endMiddle" >stats table:</h2>
+      <table class="end-Stats"><tbody>
         <tr><th>player name:</th><th>place:</th><th>player turns:</th>
           <th>player avg time:</th><th>player last card declaration:</th></tr>
         {playersFinished.map((player, index) => printWinners(player, index + 1, allStats[player]))}

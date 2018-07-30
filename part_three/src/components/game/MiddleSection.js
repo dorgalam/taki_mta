@@ -49,8 +49,8 @@ const MiddleSection = ({
         choose={colorIdentifier}
         selectColor={color => () => selectColor(color)}
       />
-      <EndingDisplay stats={stats} allStats={allStats} winner={winner} playersFinished={playersFinished} />
       <Statistics ref={statsRef} curPlayer={player} gameOver={winner !== -1} {...stats} />
+      <EndingDisplay stats={stats} allStats={allStats} winner={winner} playersFinished={playersFinished} />
     </div>
   );
 
