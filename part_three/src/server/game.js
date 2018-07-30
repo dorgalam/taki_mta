@@ -108,7 +108,8 @@ class Game {
       winner: -1,
       takinNumber: 1,
       msg: '',
-      playersFinished: []
+      playersFinished: [],
+      chat: []
     };
   }
   /*
@@ -137,7 +138,9 @@ class Game {
 
     const currentPlayerIndex = this.players.indexOf(currentPlayer);
 
-    let nextPlayer = this.players[(currentPlayerIndex + 1) % this.players.length];
+    let nextPlayer = this.players[
+      (currentPlayerIndex + 1) % this.players.length
+    ];
 
     if (anotherTurn) {
       nextPlayer = this.players[currentPlayerIndex];
@@ -146,7 +149,8 @@ class Game {
       nextPlayer = this.closeTaki();
     }
 
-    if (this.gameOver()) {//move to end display
+    if (this.gameOver()) {
+      //move to end display
       this.setMembers({ winner: true });
       return;
     }
@@ -209,8 +213,6 @@ class Game {
     clearInterval(this.timerVar);
   }
 
-
-
   // componentDidUpdate(prevProps, prevState) {
   //   const { playerDeck, botDeck } = this.members;
   //   const prevPlayerDeck = prevState.playerDeck;
@@ -238,8 +240,6 @@ class Game {
   //     }
   //   }
   // }
-
-
 
   dealCardsToPlayers() {
     const cardsInDeck = [...this.members.deckCards],
@@ -315,8 +315,7 @@ class Game {
     }
     if (isTaki) {
       anotherTurn = true;
-    }
-    else {
+    } else {
       if (cardToPlay.number === 'taki') {
         this.setTaki(true);
         anotherTurn = true;
@@ -328,12 +327,17 @@ class Game {
         anotherTurn = true;
       }
       if (cardToPlay.color === 'colorful') {
-        this.setMembers({ msg: currentPlayer + ' need to pick a color', isChangeColor: true });
+        this.setMembers({
+          msg: currentPlayer + ' need to pick a color',
+          isChangeColor: true
+        });
         anotherTurn = true;
       }
     }
-    if (!isTaki && (cardToPlay.number === 'plus')) {
-      this.setMembers({ msg: cardToPlay.number + currentPlayer + '- have another turn' });
+    if (!isTaki && cardToPlay.number === 'plus') {
+      this.setMembers({
+        msg: cardToPlay.number + currentPlayer + '- have another turn'
+      });
       this.setStats(currentPlayer);
       this.setMembers({ lstTime: totalSeconds });
     }
@@ -350,7 +354,9 @@ class Game {
 
     this.nextPlayer(anotherTurn);
     if (cardToPlay.number === 'stop' && !isTaki) {
-      this.setMembers({ msg: cardToPlay.number + '- skip on ' + this.members.currentPlayer });
+      this.setMembers({
+        msg: cardToPlay.number + '- skip on ' + this.members.currentPlayer
+      });
       this.nextPlayer(anotherTurn);
     }
   }
@@ -359,20 +365,31 @@ class Game {
     const lastPileCard = this.members.pileCards[
       this.members.pileCards.length - 1
     ];
-    const { cardIsActive, playersFinished, isTaki, isChangeColor } = this.members;
-    this.players.forEach((playerName) => {
+    const {
+      cardIsActive,
+      playersFinished,
+      isTaki,
+      isChangeColor
+    } = this.members;
+    this.players.forEach(playerName => {
       if (playersFinished.indexOf(playerName) === -1) {
         if (this.members.playerDecks[playerName].length === 0) {
-          if (!cardIsActive || lastPileCard.number !== 'plus' && lastPileCard.number !== '2plus'
-            && !isTaki && !isChangeColor) {
+          if (
+            !cardIsActive ||
+            (lastPileCard.number !== 'plus' &&
+              lastPileCard.number !== '2plus' &&
+              !isTaki &&
+              !isChangeColor)
+          ) {
             playersFinished.push(playerName);
           }
         }
       }
     });
     let end = playersFinished.length + 1 >= this.players.length;
-    if (end) {///put the last player at the players finished list
-      this.players.forEach((playerName) => {
+    if (end) {
+      ///put the last player at the players finished list
+      this.players.forEach(playerName => {
         if (playersFinished.indexOf(playerName) === -1) {
           playersFinished.push(playerName);
         }
@@ -416,7 +433,9 @@ class Game {
     ];
     if (lastcard.number === 'plus') {
       nextPlayer = this.players[currentPlayerIndex];
-      this.setMembers({ msg: lastcard.number + nextPlayer + ' - have another turn' });
+      this.setMembers({
+        msg: lastcard.number + nextPlayer + ' - have another turn'
+      });
       this.setStats(this.members.currentPlayer);
       this.setMembers({ lstTime: totalSeconds });
     }
@@ -430,17 +449,21 @@ class Game {
       });
     }
     if (lastcard.number === 'stop') {
-      this.setMembers({ msg: lastcard.number + ' - skip on ' + nextPlayer + ' turn' });
-      nextPlayer = this.players[
-        (currentPlayerIndex + 2) % this.players.length
-      ];
+      this.setMembers({
+        msg: lastcard.number + ' - skip on ' + nextPlayer + ' turn'
+      });
+      nextPlayer = this.players[(currentPlayerIndex + 2) % this.players.length];
     }
     return nextPlayer;
   }
 
   setTaki(setTo) {
     if (setTo) {
-      this.setMembers({ msg: this.members.currentPlayer + ' used taki and can put all the cards of this color' });
+      this.setMembers({
+        msg:
+          this.members.currentPlayer +
+          ' used taki and can put all the cards of this color'
+      });
     }
     this.setMembers({
       isTaki: setTo
@@ -456,18 +479,23 @@ class Game {
     this.setMembers({
       pileCards: copiedDeck,
       isChangeColor: false,
-      msg: '',
+      msg: ''
     });
-
   }
 
   countTimer() {
     let newTime = this.members.totalSeconds + 0.5;
     this.setMembers({ totalSeconds: newTime });
   }
+
+  sendMessage(message, sender) {
+    this.setMembers({
+      chat: [...this.members.chat, { sender, message }]
+    });
+  }
 }
 
-Array.prototype.popIndex = function (index) {
+Array.prototype.popIndex = function(index) {
   if (index < 0 || index >= this.length) {
     throw new Error();
   }

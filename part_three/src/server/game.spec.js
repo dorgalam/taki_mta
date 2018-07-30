@@ -91,4 +91,25 @@ describe('Game', () => {
     });
   });
 
+  it('should allow sending a new message to chat', () => {
+    game.sendMessage('first message sent', 'player1');
+
+    expect(game.members.chat).toContainEqual({
+      sender: 'player1',
+      message: 'first message sent'
+    });
+
+    game.sendMessage('second message sent', 'player2');
+
+    expect(game.members.chat).toEqual([
+      {
+        sender: 'player1',
+        message: 'first message sent'
+      },
+      {
+        sender: 'player2',
+        message: 'second message sent'
+      }
+    ]);
+  });
 });

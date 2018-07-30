@@ -510,11 +510,21 @@ a {
   background-image: url('./assets/bot.png');
 }
 
-#backToLobby{
+#backToLobby {
   z-index: 150;
   position: fixed;
 }
 
-#ending{
+#ending {
   padding-top: 40px;
+}
+
+.chat-container {
+  width: 220px;
+  background-color: rgb(121, 35, 50);
+}
+
+.messages {
+  height: 200px;
+  overflow-y: auto;
 }

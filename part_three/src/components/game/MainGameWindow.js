@@ -1,13 +1,14 @@
 import React from 'react';
 import { AnotherPlayer, MiddleSection, Player } from '.';
 import { utils, Card, enums } from './cross';
+import Form from '../lobby/Form.jsx';
 
 import { getGame, playGameWithId, deleteGameFromUser } from '../api';
 
 const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
 
-const StartGameButton = ({ }) => (
+const StartGameButton = ({}) => (
   <button
     type="button"
     id="startGame"
@@ -51,9 +52,9 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  setStats(player) { }
+  setStats(player) {}
 
-  setHasMove(bool) { }
+  setHasMove(bool) {}
 
   playCard(index) {
     playFunc({
@@ -69,7 +70,14 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  gameOver() { }
+  sendMessage(message) {
+    return playFunc({
+      action: 'sendMessage',
+      args: [message]
+    });
+  }
+
+  gameOver() {}
 
   takeCardFromMainDeck() {
     playFunc({
@@ -112,8 +120,6 @@ class MainGameWindow extends React.Component {
       action: 'setTaki',
       args: [setTo]
     });
-
-
   }
 
   getMiddleProps() {
@@ -180,28 +186,90 @@ class MainGameWindow extends React.Component {
   }
 
   render() {
-    let showQuit = this.state.playersFinished ?
-      this.state.playersFinished.indexOf(this.props.playerName) !== -1 ? false : true : true;
+    let showQuit = this.state.playersFinished
+      ? this.state.playersFinished.indexOf(this.props.playerName) !== -1
+        ? false
+        : true
+      : true;
     return (
       <div>
         {this.state.render ? (
           <div id="wrapper">
-            <button id="backToLobby" hidden={showQuit} onClick={e => {
-              this.props.quitGame(this.props.gameName, this.props.playerName);
-              clearInterval(interval);
-            }}> quit</button>
+            <button
+              id="backToLobby"
+              hidden={showQuit}
+              onClick={e => {
+                this.props.quitGame(this.props.gameName, this.props.playerName);
+                clearInterval(interval);
+              }}
+            >
+              {' '}
+              quit
+            </button>
             {Object.keys(this.state.playerDecks)
               .filter(name => name !== this.props.playerName)
               .map(player => (
-                <AnotherPlayer name={player} cards={this.state.playerDecks[player]}
-                  won={this.state.playersFinished.indexOf(player) !== -1} />
+                <AnotherPlayer
+                  name={player}
+                  cards={this.state.playerDecks[player]}
+                  won={this.state.playersFinished.indexOf(player) !== -1}
+                />
               ))}
+            <Chat send={this.sendMessage} messages={this.state.chat} />
             <MiddleSection {...this.getMiddleProps()} />
             <Player {...this.getPlayerProps()} />
-            <a hidden={showQuit}>you finished the game:you can wait for the others or go back to lobby</a>
+            <a hidden={showQuit}>
+              you finished the game:you can wait for the others or go back to
+              lobby
+            </a>
           </div>
-        ) : null
-        }
+        ) : null}
+      </div>
+    );
+  }
+}
+
+class Chat extends React.PureComponent {
+  constructor() {
+    super();
+    this.state = { message: '' };
+    this.messagesRef = React.createRef();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.messages.length !== this.props.messages.length) {
+      this.messagesRef.current.scrollTop = this.messagesRef.current.scrollHeight;
+    }
+  }
+
+  render() {
+    return (
+      <div className="chat-container">
+        Chat
+        <div ref={this.messagesRef} className="messages">
+          {this.props.messages.map(({ sender, message }, i) => (
+            <p key={i}>
+              {sender}: {message}
+            </p>
+          ))}
+        </div>
+        <div className="chat-send">
+          <form
+            style={{ width: '100%' }}
+            onSubmit={e => {
+              e.preventDefault();
+              this.props.send(this.state.message).then(() => {
+                this.setState({ message: '' });
+              });
+            }}
+          >
+            <input
+              value={this.state.message}
+              onChange={e => this.setState({ message: e.target.value })}
+            />
+            <input type="submit" value="send" />
+          </form>
+        </div>
       </div>
     );
   }
