@@ -4,7 +4,7 @@ import LoginModal from './login-modal.jsx';
 import ChatContaier from './chatContainer.jsx';
 import {
   getGames, createGame, joinGame, getUsers, deleteGame, getUserGame, addGameToUser, deleteGameFromUser
-  , isEmptyGame, cleanGame
+  , isEmptyGame, cleanGame, getUserID
 } from '../api';
 import Form from './Form.jsx';
 import GamesTable from './GamesTable.jsx';
@@ -21,7 +21,8 @@ export default class BaseContainer extends React.Component {
         name: ''
       },
       games: [],
-      users: {}
+      users: {},
+      userID: ''
     };
 
     this.handleSuccessedLogin = this.handleSuccessedLogin.bind(this);
@@ -35,11 +36,14 @@ export default class BaseContainer extends React.Component {
     this.handleJoinSubmit = this.handleJoinSubmit.bind(this);
     this.handleQuitSubmit = this.handleQuitSubmit.bind(this);
     this.handleQuitInGame = this.handleQuitInGame.bind(this);
+    this.getUserId = this.getUserId.bind(this);
+
 
     this.getUserName();
     this.pullGames();
     this.pullUsers();
     this.pullUserGame();
+    this.getUserId();
   }
 
   render() {
@@ -108,9 +112,10 @@ export default class BaseContainer extends React.Component {
     deleteGameFromUser(id, name).then(res => {
       this.setState({ userGame: undefined });
       isEmptyGame(id).then(res => {
-        // if (res) {
-        cleanGame(id).then(res => console.log(res));
-        // }
+        console.log(res.empty);
+        if (res.empty) {
+          cleanGame(id).then(res => console.log(res));
+        }
       }); //check if no user on this game and if not then empty game from players
     });
   }
@@ -129,6 +134,10 @@ export default class BaseContainer extends React.Component {
       }
     }
     return -1;*/
+  }
+
+  getUserId() {
+    getUserID().then(res => this.setState({ userID: res.id }));
   }
 
   renderChatRoom() {
@@ -169,6 +178,7 @@ export default class BaseContainer extends React.Component {
                   />
                   <GamesTable
                     games={this.state.games}
+                    userID={this.state.userID}
                     user={this.state.currentUser.name}
                     onSubmit={this.handleJoinSubmit}
                     deleteGame={deleteGame}

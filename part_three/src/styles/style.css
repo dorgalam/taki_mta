@@ -27,8 +27,8 @@
     height: 80px;
   }
   #msg {
-    font-size: 12px !important;
-    color: whitesmoke;
+    font-size: 14px !important;
+    color: blue !important;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   }
   #quit, #restart {
@@ -84,7 +84,7 @@
   }
   #msg {
     font-size: 10px !important;
-    color: whitesmoke;
+    color: blue;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   }
   div.bot_stats {
@@ -487,12 +487,6 @@ h1 {
   display: flex;
   flex-direction: row;
   justify-content: center;
-}
-
-#msg {
-  font-size: 18px;
-  color: whitesmoke;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 a {

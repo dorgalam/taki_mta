@@ -48,9 +48,11 @@ export const getUserGame = () =>
 export const isEmptyGame = (gameName) =>
   request(`/users/isEmptyGame`, 'post', { gameName });
 
+export const getUserID = () =>
+  request(`/users/getUserID`, 'get');
 
 export const cleanGame = (id) =>
-  request(`/games/cleanGame`, 'post', { id });//while in play
+  request(`/games/cleanGame`, 'post', { id });
 
 export const quitGame = (id, name) =>
   request(`/games/${id}/join`, 'post', { name });//while in play

@@ -11,7 +11,7 @@ gamesApi.get('/', (req, res) => {
 });
 
 gamesApi.post('/cleanGame', (req, res) => {
-  const requestedGameIndex = indexOfGames(activeGames, req.params.id);
+  const requestedGameIndex = indexOfGames(activeGames, req.body.id);
   if (requestedGameIndex === -1) {
     res.send({ id: -1, requestedGameIndex, err: 'game not found' });
     return;
@@ -36,6 +36,7 @@ gamesApi.post('/', auth.userAuthentication, (req, res) => {
           status: 'waiting',
           players: [],
           creator: req.body.user,
+          creatorID: req.session.id
         })
       );
     }

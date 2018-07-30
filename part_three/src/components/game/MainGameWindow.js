@@ -20,6 +20,7 @@ const StartGameButton = ({ }) => (
 
 let playFunc;
 let getGameInterval;
+let interval;
 
 class MainGameWindow extends React.Component {
   constructor(props) {
@@ -57,7 +58,7 @@ class MainGameWindow extends React.Component {
   playCard(index) {
     playFunc({
       action: 'playCard',
-      args: [index]
+      args: [index, this.props.playerName]
     });
   }
 
@@ -72,7 +73,8 @@ class MainGameWindow extends React.Component {
 
   takeCardFromMainDeck() {
     playFunc({
-      action: 'takeCardFromMainDeck'
+      action: 'takeCardFromMainDeck',
+      args: [this.props.playerName]
     });
   }
 
@@ -88,20 +90,20 @@ class MainGameWindow extends React.Component {
   }
 
   componentDidMount() {
-    setInterval(() => {
+    interval = setInterval(() => {
       getGame(this.props.gameName).then(game => {
         this.setState(Object.assign(game.state, { render: true }));
       });
-    }, 300);
+    }, 200);
   }
-
-  componentDidUpdate() {
-    if (!this.declaredWinner && this.state.playersFinished && this.state.playersFinished.length !== 0) {
-      this.declaredWinner = true;
-      alert('the winner is ' + this.state.playersFinished[0]);
+  /*
+    componentDidUpdate() {
+      if (!this.declaredWinner && this.state.playersFinished && this.state.playersFinished.length !== 0) {
+        this.declaredWinner = true;
+        alert('the winner is ' + this.state.playersFinished[0]);
+      }
     }
-  }
-
+  */
   setTaki(setTo) {
     /*if (setTo === true && this.state.currentPlayer === PLAYER) {
       this.setState({ msg: 'taki you can put all the cards off this color' });
@@ -184,14 +186,19 @@ class MainGameWindow extends React.Component {
       <div>
         {this.state.render ? (
           <div id="wrapper">
-            <button id="backToLobby" hidden={showQuit} onClick={e => this.props.quitGame(this.props.gameName, this.props.playerName)}> quit</button>
+            <button id="backToLobby" hidden={showQuit} onClick={e => {
+              this.props.quitGame(this.props.gameName, this.props.playerName);
+              clearInterval(interval);
+            }}> quit</button>
             {Object.keys(this.state.playerDecks)
               .filter(name => name !== this.props.playerName)
               .map(player => (
-                <AnotherPlayer name={player} cards={this.state.playerDecks[player]} />
+                <AnotherPlayer name={player} cards={this.state.playerDecks[player]}
+                  won={this.state.playersFinished.indexOf(player) !== -1} />
               ))}
             <MiddleSection {...this.getMiddleProps()} />
             <Player {...this.getPlayerProps()} />
+            <a hidden={showQuit}>you finished the game:you can wait for the others or go back to lobby</a>
           </div>
         ) : null
         }

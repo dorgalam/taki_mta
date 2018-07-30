@@ -149,7 +149,6 @@ class Game {
     if (!anotherTurn) {
       this.setStats(currentPlayer);
       this.setMembers({ lstTime: totalSeconds });
-      this.setMembers({ msg: '' });
     }
 
     this.setMembers({
@@ -289,7 +288,10 @@ class Game {
       playerDecks,
       pileCards
     } = this.members;
-
+    if (currentPlayer !== playerName) {
+      return;
+    }
+    this.setMembers({ msg: '' });
     const copiedDeck = [...playerDecks[playerName]];
     const lastPileCard = pileCards[pileCards.length - 1];
     let anotherTurn = false;
@@ -297,6 +299,7 @@ class Game {
     let cardToPlay = copiedDeck.popIndex(index);
     let takeCount = takinNumber;
     if (cardToPlay.number === '2plus' && !isTaki) {
+      this.setMembers({ msg: '2plus used' });
       takeCount = takeCount === 1 ? 0 : takeCount;
       takeCount += 2;
     }
@@ -305,7 +308,7 @@ class Game {
     }
     else {
       if (cardToPlay.number === 'taki') {
-        this.setMembers({ isTaki: true });
+        this.setTaki(true);
         anotherTurn = true;
         if (cardToPlay.color === 'colorful') {
           cardToPlay = new Card('taki_' + lastPileCard.color, 'taki_colorful');
@@ -320,7 +323,7 @@ class Game {
       }
     }
     if (!isTaki && (cardToPlay.number === 'plus')) {
-      this.setMembers({ msg: cardToPlay.number + '- you have another turn' });
+      this.setMembers({ msg: cardToPlay.number + '- have another turn' });
       this.setStats(currentPlayer);
       this.setMembers({ lstTime: totalSeconds });
     }
@@ -337,6 +340,7 @@ class Game {
 
     this.nextPlayer(anotherTurn);
     if (cardToPlay.number === 'stop' && !isTaki) {
+      this.setMembers({ msg: cardToPlay.number + '- skip one player' });
       this.nextPlayer(anotherTurn);
     }
   }
@@ -345,11 +349,12 @@ class Game {
     const lastPileCard = this.members.pileCards[
       this.members.pileCards.length - 1
     ];
-    const { cardIsActive, playersFinished, isTaki } = this.members;
+    const { cardIsActive, playersFinished, isTaki, isChangeColor } = this.members;
     this.players.forEach((playerName) => {
       if (playersFinished.indexOf(playerName) === -1) {
         if (this.members.playerDecks[playerName].length === 0) {
-          if (!cardIsActive || lastPileCard.number !== 'plus' && lastPileCard.number !== '2plus' && !isTaki) {
+          if (!cardIsActive || lastPileCard.number !== 'plus' && lastPileCard.number !== '2plus'
+            && !isTaki && !isChangeColor) {
             playersFinished.push(playerName);
           }
         }
@@ -368,6 +373,10 @@ class Game {
   }
 
   takeCardFromMainDeck(player) {
+    if (this.members.currentPlayer !== player) {
+      return;
+    }
+    this.setMembers({ msg: '' });
     let cards = [];
     let copiedDeck = [...this.members.deckCards];
     for (let i = 0; i < this.members.takinNumber; i++) {
@@ -397,7 +406,7 @@ class Game {
     ];
     if (lastcard.number === 'plus') {
       nextPlayer = this.players[currentPlayerIndex];
-      this.setMembers({ msg: lastcard.number + '- you have another turn' });
+      this.setMembers({ msg: lastcard.number + '- have another turn' });
       this.setStats(this.members.currentPlayer);
       this.setMembers({ lstTime: totalSeconds });
     }
@@ -406,7 +415,8 @@ class Game {
       takeCount = takeCount === 1 ? 0 : takeCount;
       takeCount += 2;
       this.setMembers({
-        takinNumber: takeCount
+        takinNumber: takeCount,
+        msg: '2plus used'
       });
     }
     if (lastcard.number === 'stop') {
@@ -418,9 +428,9 @@ class Game {
   }
 
   setTaki(setTo) {
-    /*if (setTo) {
-      this.setMembers({ msg: 'taki you can put all the cards off this color' });
-    }*/
+    if (setTo) {
+      this.setMembers({ msg: 'taki can put all the cards off this color' });
+    }
     this.setMembers({
       isTaki: setTo
     });
@@ -430,12 +440,7 @@ class Game {
     let copiedDeck = [...this.members.pileCards];
     let card = copiedDeck.pop();
     card = new Card('_' + color, 'change_colorful');
-    copiedDeck.push(card);/*
-    const currentPlayerIndex = this.players.indexOf(this.members.currentPlayer);
-    let nextPlayer = this.players[
-      (currentPlayerIndex + 1) % this.players.length
-    ];
-    this.setStats(this.members.currentPlayer);*/
+    copiedDeck.push(card);
     this.nextPlayer(false, false);
     this.setMembers({
       pileCards: copiedDeck,

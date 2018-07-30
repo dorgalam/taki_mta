@@ -25,6 +25,10 @@ userManagement.post('/addGame', (req, res) => {
 	res.json({ gameinfo });
 });
 
+userManagement.get('/getUserID', (req, res) => {
+	res.send({ id: req.session.id });
+});
+
 userManagement.post('/deleteGame', (req, res) => {
 	const gameinfo = auth.deleteGame(req.session.id);
 	res.json({ gameinfo });
