@@ -23,12 +23,11 @@ class Player extends React.Component {
   isPlayableCard(index) {
     const { lastPileCard, cards, isActive, isTaki } = this.props;
     const currentCard = cards[index];
-    let bool = false;
     if (isActive && isTaki) {
-      return lastPileCard.color === currentCard.color;
+      return this.props.playCard !== null && lastPileCard.color === currentCard.color;
     }
     if (isActive && lastPileCard.number === '2plus') {
-      return currentCard.number === '2plus';
+      return this.props.playCard !== null && currentCard.number === '2plus';
     }
     return (
       this.props.playCard !== null &&
