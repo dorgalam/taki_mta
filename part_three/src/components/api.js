@@ -36,6 +36,25 @@ export const createGame = (game, user) =>
 export const joinGame = (id, name) =>
   request(`/games/${id}/join`, 'post', { name });
 
+export const addGameToUser = (gameName, name) =>
+  request(`/users/addGame`, 'post', { gameName, name });
+
+export const deleteGameFromUser = (gameName, name) =>
+  request(`/users/deleteGame`, 'post', { gameName, name });
+
+export const getUserGame = () =>
+  request(`/users/getGame`, 'post');
+
+export const isEmptyGame = (gameName) =>
+  request(`/users/isEmptyGame`, 'post', { gameName });
+
+
+export const cleanGame = (id) =>
+  request(`/games/cleanGame`, 'post', { id });//while in play
+
+export const quitGame = (id, name) =>
+  request(`/games/${id}/join`, 'post', { name });//while in play
+
 export const getGame = id => request(`/games/${id}`);
 
 export const playGameWithId = (id, body) =>

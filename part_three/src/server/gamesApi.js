@@ -10,6 +10,18 @@ gamesApi.get('/', (req, res) => {
   res.json(activeGames);
 });
 
+gamesApi.post('/cleanGame', (req, res) => {
+  const requestedGameIndex = indexOfGames(activeGames, req.params.id);
+  if (requestedGameIndex === -1) {
+    res.send({ id: -1, requestedGameIndex, err: 'game not found' });
+    return;
+  }
+  const requestedGame = activeGames[requestedGameIndex];
+  requestedGame.status = 'waiting';
+  requestedGame.players = [];
+  res.json(activeGames);
+});
+
 gamesApi.post('/', auth.userAuthentication, (req, res) => {
   let error = '';
   if (2 <= req.body.numberOfPlayers && req.body.numberOfPlayers <= 4) {
@@ -78,12 +90,18 @@ gamesApi.post('/:id/join', (req, res) => {
     }
   } else {
     requestedGame.players.splice(index, 1);
+    requestedGame.status = 'waiting';
   }
   res.send({ id: requestedGameIndex, index });
 });
 
-gamesApi.post('/:id/quit', (req, res) => {
-  const requestedGame = activeGames[req.params.id];
+gamesApi.post('/:id/join', (req, res) => {
+  const requestedGameIndex = indexOfGames(activeGames, req.params.id);
+  if (requestedGameIndex === -1) {
+    res.send({ id: -1, requestedGameIndex, err: 'game not found' });
+    return;
+  }
+  const requestedGame = activeGames[requestedGameIndex];
   const index = requestedGame.players.indexOf(req.body.name);
   if (index === -1) {
     requestedGame.players.push(req.body.name);
@@ -95,8 +113,9 @@ gamesApi.post('/:id/quit', (req, res) => {
     }
   } else {
     requestedGame.players.splice(index, 1);
+    requestedGame.status = 'waiting';
   }
-  res.send({ id: req.params.id, index });
+  res.send({ id: requestedGameIndex, index });
 });
 
 gamesApi.put('/:id', auth.userAuthentication, (req, res) => {

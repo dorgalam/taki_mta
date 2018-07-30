@@ -20,6 +20,26 @@ userManagement.post('/addUser', auth.addUserToAuthList, (req, res) => {
 	res.sendStatus(200);
 });
 
+userManagement.post('/addGame', (req, res) => {
+	const gameinfo = auth.addGame(req.body.gameName, req.session.id);
+	res.json({ gameinfo });
+});
+
+userManagement.post('/deleteGame', (req, res) => {
+	const gameinfo = auth.deleteGame(req.session.id);
+	res.json({ gameinfo });
+});
+
+userManagement.post('/getGame', (req, res) => {
+	const gameinfo = auth.getGame(req.session.id);
+	res.json({ gameinfo });
+});
+
+userManagement.post('/isEmptyGame', (req, res) => {
+	const empty = auth.isEmptyGame(req.body.gameName);
+	res.json({ empty });
+});
+
 userManagement.get('/logout', [
 	(req, res, next) => {
 		const userinfo = auth.getUserInfo(req.session.id);

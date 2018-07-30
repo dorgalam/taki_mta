@@ -1,4 +1,5 @@
 const userList = {};
+const userGamesList = {};
 
 function userAuthentication(req, res, next) {
   if (userList[req.session.id] === undefined) {
@@ -40,6 +41,30 @@ function getUserInfo(id) {
   return { name: userList[id] };
 }
 
+function addGame(gameName, id) {
+  userGamesList[id] = gameName;
+  return { game: userGamesList[id] };
+}
+
+function getGame(id) {
+  return { game: userGamesList[id] };
+}
+
+function deleteGame(id) {
+  delete userGamesList[id];
+  return;
+}
+
+function isEmptyGame(gameName) {
+  for (sessionid in userGamesList) {
+    const name = userGamesList[sessionid];
+    if (name === gameName) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function allUsers() {
   return { users: userList };
 }
@@ -49,5 +74,9 @@ module.exports = {
   addUserToAuthList,
   removeUserFromAuthList,
   getUserInfo,
-  allUsers
+  allUsers,
+  addGame,
+  getGame,
+  deleteGame,
+  isEmptyGame
 };

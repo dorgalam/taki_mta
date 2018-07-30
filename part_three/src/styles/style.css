@@ -515,3 +515,12 @@ a {
 .bot-image {
   background-image: url('./assets/bot.png');
 }
+
+#backToLobby{
+  z-index: 150;
+  position: fixed;
+}
+
+#ending{
+  padding-top: 40px;
+}

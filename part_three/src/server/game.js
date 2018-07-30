@@ -124,10 +124,7 @@ class Game {
       totalSeconds,
       playersFinished
     } = this.members;
-    if (this.gameOver()) {//move to end display
-      this.setMembers({ winner: true });
-      return;
-    }
+
     const currentPlayerIndex = this.players.indexOf(currentPlayer);
 
     let nextPlayer = this.players[(currentPlayerIndex + 1) % this.players.length];
@@ -138,6 +135,12 @@ class Game {
     if (closeTaki) {
       nextPlayer = this.closeTaki();
     }
+
+    if (this.gameOver()) {//move to end display
+      this.setMembers({ winner: true });
+      return;
+    }
+
     const nextIndex = this.players.indexOf(nextPlayer);
     while (playersFinished.indexOf(nextPlayer) !== -1) {
       nextPlayer = this.players[(nextIndex + 1) % this.players.length];
@@ -342,11 +345,11 @@ class Game {
     const lastPileCard = this.members.pileCards[
       this.members.pileCards.length - 1
     ];
-    const { cardIsActive, playersFinished } = this.members;
+    const { cardIsActive, playersFinished, isTaki } = this.members;
     this.players.forEach((playerName) => {
       if (playersFinished.indexOf(playerName) === -1) {
         if (this.members.playerDecks[playerName].length === 0) {
-          if (!cardIsActive || lastPileCard.number !== 'plus' && lastPileCard.number !== '2plus') {
+          if (!cardIsActive || lastPileCard.number !== 'plus' && lastPileCard.number !== '2plus' && !isTaki) {
             playersFinished.push(playerName);
           }
         }

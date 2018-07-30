@@ -2,7 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import LoginModal from './login-modal.jsx';
 import ChatContaier from './chatContainer.jsx';
-import { getGames, createGame, joinGame, getUsers, deleteGame, quitGame } from '../api';
+import {
+  getGames, createGame, joinGame, getUsers, deleteGame, getUserGame, addGameToUser, deleteGameFromUser
+  , isEmptyGame, cleanGame
+} from '../api';
 import Form from './Form.jsx';
 import GamesTable from './GamesTable.jsx';
 import UsersList from './UsersList.jsx';
@@ -28,12 +31,15 @@ export default class BaseContainer extends React.Component {
     this.logoutHandler = this.logoutHandler.bind(this);
     this.pullGames = this.pullGames.bind(this);
     this.pullUsers = this.pullUsers.bind(this);
+    this.pullUserGame = this.pullUserGame.bind(this);
     this.handleJoinSubmit = this.handleJoinSubmit.bind(this);
     this.handleQuitSubmit = this.handleQuitSubmit.bind(this);
+    this.handleQuitInGame = this.handleQuitInGame.bind(this);
 
     this.getUserName();
     this.pullGames();
     this.pullUsers();
+    this.pullUserGame();
   }
 
   render() {
@@ -62,7 +68,16 @@ export default class BaseContainer extends React.Component {
   pullGames() {
     getGames().then(games => {
       this.setState({ games }, () => {
-        setTimeout(this.pullGames, 200);
+        setTimeout(this.pullGames, 300);
+      });
+    });
+  }
+
+  pullUserGame() {
+    getUserGame().then(res => {
+      let game = res ? res.gameinfo.game : undefined;
+      this.setState({ userGame: game }, () => {
+        setTimeout(this.pullUserGame, 300);
       });
     });
   }
@@ -70,7 +85,7 @@ export default class BaseContainer extends React.Component {
   pullUsers() {
     getUsers().then(users => {
       this.setState({ users }, () => {
-        setTimeout(this.pullUsers, 200);
+        setTimeout(this.pullUsers, 300);
       });
     });
   }
@@ -78,28 +93,58 @@ export default class BaseContainer extends React.Component {
   handleJoinSubmit(id, name) {
     joinGame(id, name).then(res => {
       this.setState({ gameJoined: res.id });
+      addGameToUser(id, name).then(res => this.setState({ userGame: res.gameinfo.game }));
     });
   }
 
   handleQuitSubmit(id, name) {
     joinGame(id, name).then(res => {
       this.setState({ gameJoined: undefined });
+      deleteGameFromUser(id, name).then(res => this.setState({ userGame: undefined }));
     });
   }
 
-  renderChatRoom() {
-    const { games, gameJoined } = this.state;
+  handleQuitInGame(id, name) {
+    deleteGameFromUser(id, name).then(res => {
+      this.setState({ userGame: undefined });
+      isEmptyGame(id).then(res => {
+        // if (res) {
+        cleanGame(id).then(res => console.log(res));
+        // }
+      }); //check if no user on this game and if not then empty game from players
+    });
+  }
 
+  inGame(games, name) {
+    for (let i = 0; i < games.length; i++) {
+      if (games[i].name === name) {
+        return i;
+      }
+    }
+    return -1;
+    /*old inGame by games not by user
+    for (let i = 0; i < games.length; i++) {
+      if (games[i].players.indexOf(this.state.currentUser.name) !== -1) {
+        return i;
+      }
+    }
+    return -1;*/
+  }
+
+  renderChatRoom() {
+    const { games, userGame } = this.state;
+    const gameJoined = this.inGame(games, userGame);
     return (
       <div>
-        {typeof gameJoined !== 'undefined' &&
+        {gameJoined !== -1 &&
           games[gameJoined].players.length === games[gameJoined].numberOfPlayers ? (
             <MainGameWindow
+              quitGame={this.handleQuitInGame}
               gameId={gameJoined}
               gameName={games[gameJoined].name}
               playerName={this.state.currentUser.name}
             />
-          ) : typeof gameJoined !== 'undefined' ? (<WaitingRoom user={this.state.currentUser.name} playerName={this.state.currentUser.name}
+          ) : gameJoined !== -1 ? (<WaitingRoom user={this.state.currentUser.name} playerName={this.state.currentUser.name}
             game={games[gameJoined]} gameId={gameJoined} onSubmit={this.handleQuitSubmit} />) : (
               <div>
                 <div className="chat-base-container">

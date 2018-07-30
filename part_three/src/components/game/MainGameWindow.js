@@ -2,7 +2,7 @@ import React from 'react';
 import { AnotherPlayer, MiddleSection, Player } from '.';
 import { utils, Card, enums } from './cross';
 
-import { getGame, playGameWithId, joinGame } from '../api';
+import { getGame, playGameWithId, deleteGameFromUser } from '../api';
 
 const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
@@ -92,7 +92,7 @@ class MainGameWindow extends React.Component {
       getGame(this.props.gameName).then(game => {
         this.setState(Object.assign(game.state, { render: true }));
       });
-    }, 200);
+    }, 300);
   }
 
   componentDidUpdate() {
@@ -184,7 +184,7 @@ class MainGameWindow extends React.Component {
       <div>
         {this.state.render ? (
           <div id="wrapper">
-            <button hidden={showQuit} onClick={e => joinGame(this.props.gameName, this.props.playerName)}> quit</button>
+            <button id="backToLobby" hidden={showQuit} onClick={e => this.props.quitGame(this.props.gameName, this.props.playerName)}> quit</button>
             {Object.keys(this.state.playerDecks)
               .filter(name => name !== this.props.playerName)
               .map(player => (
