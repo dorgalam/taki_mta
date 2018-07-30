@@ -112,30 +112,9 @@ class Game {
       chat: []
     };
   }
-  /*
-    getNextPlayer() {
-      const { currentPlayer } = this.members;
-      const currentPlayerIndex = this.players.indexOf(currentPlayer);
-      const nextIndex = this.players.indexOf(nextPlayer);
-      while (playersFinished.indexOf(nextPlayer) !== -1) {
-        nextPlayer = this.players[(nextIndex + 1) % this.players.length];
-      }
-      return nextPlayer;
-    }
-  */
 
-  nextPlayer(anotherTurn, closeTaki = false) {
-    let {
-      currentPlayer,
-      cardIsActive,
-      pileCards,
-      isTaki,
-      consecutiveBotTurn,
-      lstTime,
-      totalSeconds,
-      playersFinished
-    } = this.members;
-
+  getNextPlayer(anotherTurn, closeTaki) {
+    const { currentPlayer, playersFinished } = this.members;
     const currentPlayerIndex = this.players.indexOf(currentPlayer);
 
     let nextPlayer = this.players[
@@ -150,7 +129,6 @@ class Game {
     }
 
     if (this.gameOver()) {
-      //move to end display
       this.setMembers({ winner: true });
       return;
     }
@@ -159,11 +137,22 @@ class Game {
     while (playersFinished.indexOf(nextPlayer) !== -1) {
       nextPlayer = this.players[(nextIndex + 1) % this.players.length];
     }
+    return nextPlayer;
+  }
+
+
+  nextPlayer(anotherTurn, closeTaki = false) {
+    let {
+      currentPlayer,
+      totalSeconds,
+    } = this.members;
 
     if (!anotherTurn) {
       this.setStats(currentPlayer);
       this.setMembers({ lstTime: totalSeconds });
     }
+
+    const nextPlayer = this.getNextPlayer(anotherTurn, closeTaki);
 
     this.setMembers({
       currentPlayer: nextPlayer,
@@ -213,34 +202,6 @@ class Game {
     clearInterval(this.timerVar);
   }
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   const { playerDeck, botDeck } = this.members;
-  //   const prevPlayerDeck = prevState.playerDeck;
-  //   const prevBotDeck = prevState.botDeck;
-  //   if (playerDeck.length === 1 && prevPlayerDeck.length !== 1) {
-  //     const { stats } = this.members;
-  //     stats.lastCard++;
-  //     this.setMembers({
-  //       stats
-  //     });
-  //   } else if (botDeck.length === 1 && prevBotDeck.length !== 1) {
-  //     const { botStats } = this.members;
-  //     botStats.lastCard++;
-  //     this.setMembers({
-  //       botStats
-  //     });
-  //   }
-  //   if (this.members.winner === -1) {
-  //     let winner = this.gameOver();
-  //     if (winner >= 0 && !this.members.inRewind) {
-  //       this.setMembers({
-  //         winner: winner,
-  //         currentPlayer: -2
-  //       });
-  //     }
-  //   }
-  // }
-
   dealCardsToPlayers() {
     const cardsInDeck = [...this.members.deckCards],
       playerDecks = {},
@@ -288,16 +249,7 @@ class Game {
   }
 
   playCard(index, playerName) {
-    const {
-      stats,
-      isTaki,
-      currentPlayer,
-      lstTime,
-      totalSeconds,
-      takinNumber,
-      playerDecks,
-      pileCards
-    } = this.members;
+    const { isTaki, currentPlayer, totalSeconds, takinNumber, playerDecks, pileCards } = this.members;
     if (currentPlayer !== playerName) {
       return;
     }
@@ -305,11 +257,10 @@ class Game {
     const copiedDeck = [...playerDecks[playerName]];
     const lastPileCard = pileCards[pileCards.length - 1];
     let anotherTurn = false;
-
     let cardToPlay = copiedDeck.popIndex(index);
     let takeCount = takinNumber;
     if (cardToPlay.number === '2plus' && !isTaki) {
-      this.setMembers({ msg: 'must use 2plus' });
+      this.setMembers({ msg: this.getNextPlayer() + ' must use 2plus' });
       takeCount = takeCount === 1 ? 0 : takeCount;
       takeCount += 2;
     }
@@ -475,12 +426,12 @@ class Game {
     let card = copiedDeck.pop();
     card = new Card('_' + color, 'change_colorful');
     copiedDeck.push(card);
-    this.nextPlayer(false, false);
     this.setMembers({
       pileCards: copiedDeck,
       isChangeColor: false,
       msg: ''
     });
+    this.nextPlayer(false, false);
   }
 
   countTimer() {
@@ -495,7 +446,7 @@ class Game {
   }
 }
 
-Array.prototype.popIndex = function(index) {
+Array.prototype.popIndex = function (index) {
   if (index < 0 || index >= this.length) {
     throw new Error();
   }

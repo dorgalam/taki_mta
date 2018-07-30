@@ -520,8 +520,9 @@ a {
 }
 
 .chat-container {
-  width: 220px;
-  background-color: rgb(121, 35, 50);
+  width: 200px;
+  height: 20%;
+  background-color: rgb(105, 110, 179);
 }
 
 .messages {
