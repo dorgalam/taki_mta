@@ -80,7 +80,7 @@ export default class BaseContainer extends React.Component {
   pullUserGame() {
     getUserGame().then(res => {
       let game = res ? res.gameinfo.game : undefined;
-      this.setState({ userGame: game }, () => {
+      this.setState({ userGame: decodeURI(game) }, () => {
         setTimeout(this.pullUserGame, 300);
       });
     });
@@ -97,7 +97,7 @@ export default class BaseContainer extends React.Component {
   handleJoinSubmit(id, name) {
     joinGame(id, name).then(res => {
       this.setState({ gameJoined: res.id });
-      addGameToUser(id, name).then(res => this.setState({ userGame: res.gameinfo.game }));
+      addGameToUser(id, name).then(res => this.setState({ userGame: decodeURI(res.gameinfo.game) }));
     });
   }
 
@@ -173,6 +173,7 @@ export default class BaseContainer extends React.Component {
                     onSubmit={newGame =>
                       createGame(newGame, this.state.currentUser.name).then(res => {
                         if (res.error !== '') alert(res.error);
+                        console.log(encodeURI(newGame.name));
                       })
                     }
                   />

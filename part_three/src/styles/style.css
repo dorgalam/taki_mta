@@ -8,10 +8,21 @@
     left: 0px;
   }
 
+  
+  body #side-stats {
+    right: -180px;
+    transition: 200ms all;
+  }
+  body #side-stats:hover {
+    transition: 200ms all;
+    right: 0px;
+  }
+
+
 @media only screen and (max-width: 980px) {
   body .card {
-    width: 70px;
-    height: 110px;
+    width: 60px !important;
+    height: 90px !important;
   }
   body .color_tooltip {
     width: 120px;
@@ -47,8 +58,8 @@
 
 @media only screen and (max-width: 850px) {
   body .card {
-    width: 60px;
-    height: 100px;
+    width: 45px !important;
+    height: 75px !important;
   }
   body #turn-img {
     width: 70px;
@@ -73,7 +84,26 @@
   }
 }
 
+
+@media only screen and (max-width: 660px) {
+  body .card {
+    width: 35px !important;
+    height: 55px !important;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  body .card {
+    width: 25px !important;
+    height: 45px !important;
+  }
+}
+
 @media only screen and (max-height: 444px) {
+  body .card {
+    width: 40px !important;
+    height: 65px !important;
+  }
   body #turn-img {
     width: 50px !important;
     height: 50px !important;
@@ -122,8 +152,9 @@
 }
 
 #side-bar {
+  top:30px;
   width: 200px;
-  height: 100%;
+  height: 400px;
   position: absolute;
   transition: 200ms all;
   left: 0;
@@ -133,6 +164,22 @@
 
 #side-bar:hover {
   left: 0;
+  transition: 200ms all;
+}
+
+
+#side-stats {
+  width: 200px;
+  font-size:12px;
+  position: absolute;
+  transition: 200ms all;
+  right: 0;
+  z-index: 10;
+  background-color: rgb(105, 110, 179); 
+}
+
+#side-stats:hover {
+  right: 0;
   transition: 200ms all;
 }
 
@@ -147,9 +194,9 @@ body {
   position: absolute;
   height: 20%;
   top: 60%;
-  left: 60% !important;
+  left: 54%;
 }
-
+/*
 #stats-section {
   width:300px;
   font-size: 12px;
@@ -157,7 +204,7 @@ body {
   left: 20%;
   position: relative;
 }
-
+*/
 #actions-section {
   background-color: aquamarine;
   height: 20%;
@@ -194,10 +241,20 @@ body {
 
 #player {
   position: relative;
-  width: 100%;
+  width: 70%;
+  left:15%;
   display: inline-block;
   text-align: center;
 }
+
+/*
+#player{
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}*/
 
 #player>.cards>.card {
   margin-top: 30px;
@@ -227,7 +284,7 @@ body {
 
 #pile {
   position: absolute;
-  top: 50%;
+  top: 65%;
   left: 50%;
   width: 210px;
   height: 200px;
@@ -364,14 +421,14 @@ body {
 #stats-section>#p1-stats>h2 {
   margin-top: 0;
 }
-
+/*
 div.stats {
   text-align: left;
   width: 20%;
   font-size: 12px;
   color: rgb(38, 146, 235);
 }
-
+*/
 h2>a {
   color: rgb(105, 224, 115);
 }
@@ -515,6 +572,7 @@ a {
 #backToLobby {
   z-index: 150;
   position: fixed;
+  right:0;
 }
 
 #ending {
@@ -527,7 +585,7 @@ a {
 }
 
 .messages {
-  height: 500px;
+  height: 360px;
   overflow-y: auto;
 }
 
@@ -546,8 +604,8 @@ a {
 }
 
 #player0 .card,#player1 .card,#player2 .card{
-  width: 60px !important;
-  height: 90px !important;
+  width: 55px ;
+  height: 90px ;
 }
 
 #player1{
@@ -572,5 +630,11 @@ a {
 
 .endMiddle{
   position:relative;
+  left:30%;
+}
+
+.finished{
+  bottom: 5%;
+  position: relative;
   left:30%;
 }

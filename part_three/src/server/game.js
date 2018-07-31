@@ -286,7 +286,7 @@ class Game {
     }
     if (!isTaki && cardToPlay.number === 'plus') {
       this.setMembers({
-        msg: cardToPlay.number + currentPlayer + '- have another turn'
+        msg: cardToPlay.number + ' - ' + currentPlayer + '- have another turn'
       });
       this.setStats(currentPlayer);
       this.setMembers({ lstTime: totalSeconds });
@@ -384,7 +384,7 @@ class Game {
     if (lastcard.number === 'plus') {
       nextPlayer = this.players[currentPlayerIndex];
       this.setMembers({
-        msg: lastcard.number + nextPlayer + ' - have another turn'
+        msg: lastcard.number + ' - ' + nextPlayer + ' - have another turn'
       });
       this.setStats(this.members.currentPlayer);
       this.setMembers({ lstTime: totalSeconds });

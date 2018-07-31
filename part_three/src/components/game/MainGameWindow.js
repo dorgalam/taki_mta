@@ -128,6 +128,7 @@ class MainGameWindow extends React.Component {
       pileCards,
       currentPlayer,
       cardIsActive,
+      totalSeconds,
       isTaki,
       isChangeColor,
       playerHasMove,
@@ -158,7 +159,8 @@ class MainGameWindow extends React.Component {
       winner: winner,
       msg: msg,
       colorIdentifier: currentPlayer === this.props.playerName && isChangeColor,
-      playersFinished: playersFinished
+      playersFinished: playersFinished,
+      clock: totalSeconds
     };
   }
 
@@ -205,7 +207,7 @@ class MainGameWindow extends React.Component {
                 }}
               >
                 {' '}
-                quit
+                back to lobby
             </button>
               {Object.keys(this.state.playerDecks)
                 .filter(name => name !== this.props.playerName)
@@ -220,8 +222,8 @@ class MainGameWindow extends React.Component {
                 ))}
               <MiddleSection {...this.getMiddleProps()} />
               <Player {...this.getPlayerProps()} />
-              <a hidden={showQuit}>
-                you finished the game:you can wait for the others or go back to
+              <a hidden={showQuit} className="finished">
+                you finished the game:you can go back to
                 lobby
             </a>
             </div>

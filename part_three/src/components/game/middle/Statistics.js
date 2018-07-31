@@ -14,22 +14,14 @@ class Statistics extends React.Component {
     this.getSeconds = this.getSeconds.bind(this);
   }
 
-  componentDidMount() {
-    this.timerInterval = setInterval(() => {
-      this.setState({
-        elapsed: new Date() - this.state.timeStarted
-      });
-    }, 100);
+  getHours(clock) {
+    return Math.floor(clock / (60 * 60));
   }
-
-  getHours() {
-    return Math.floor(this.state.elapsed / (60 * 60 * 1000));
+  getMinutes(clock) {
+    return Math.floor(clock / (60)) % 60;
   }
-  getMinutes() {
-    return Math.floor(this.state.elapsed / (60 * 1000)) % 60;
-  }
-  getSeconds() {
-    return Math.floor(this.state.elapsed / 1000) % 60;
+  getSeconds(clock) {
+    return Math.floor(clock) % 60;
   }
 
   setTurnTime(date) {
@@ -51,45 +43,29 @@ class Statistics extends React.Component {
     return this.state;
   }
 
-  overrideState(newState) {
-    clearInterval(this.timerInterval);
-    this.setState(newState);
-  }
-
-  componentDidUpdate() {
-    if (this.props.gameOver) {
-      clearInterval(this.timerInterval);
-    }
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timerInterval);
-  }
-
   render() {
-    const { gameOver, curPlayer, turnsTime } = this.props;
+    const { turnsTime, clock } = this.props;
     return (
-      <div>
-        <div id="stats-section">
-          <div id="p1-stats" className="stats">
-            <h1>Your Stats:</h1>
-            <h2>
-              Clock
-              <a id="timer">{` ${this.getHours()}:${this.getMinutes()}:${this.getSeconds()}`}</a>
-            </h2>
-            <h2>
-              Number of turns:
+
+      <div id="side-stats">
+        <div id="p1-stats" className="stats">
+          <h1>Your Stats:</h1>
+          <h2>
+            Clock
+              <a id="timer">{` ${this.getHours(clock)}:${this.getMinutes(clock)}:${this.getSeconds(clock)}`}</a>
+          </h2>
+          <h2>
+            Number of turns:
               <div id="turns">{this.props.turns}</div>
-            </h2>
-            <h2>
-              Average turn time:
+          </h2>
+          <h2>
+            Average turn time:
               <div id="avg_time">{this.getAverage(turnsTime)}</div>
-            </h2>
-            <h2>
-              Last card declerations:
+          </h2>
+          <h2>
+            Last card declerations:
               <div id="last_one">{this.props.lastCard}</div>
-            </h2>
-          </div>
+          </h2>
         </div>
       </div>
     );
