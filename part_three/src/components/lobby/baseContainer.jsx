@@ -234,7 +234,9 @@ export default class BaseContainer extends React.Component {
               ) !== -1
             ) {
               console.log(this.state.games[i].name);
-              this.handleQuitSubmit(this.state.games[i].name, this.state.currentUser.name);
+              if (this.state.games[i].status === 'waiting') {
+                this.handleQuitSubmit(this.state.games[i].name, this.state.currentUser.name);
+              }
             }
           }
         }
