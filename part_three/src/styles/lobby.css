@@ -53,6 +53,10 @@
     font-weight: 600;
 }
 
+#wrapper {
+    overflow-x: hidden;
+}
+
 .chat-contaier {
     flex-grow: 1;
     display: flex;
@@ -103,7 +107,7 @@ th, td {
     text-align: left;
     padding: 8px;
     width: 100px;
-    border: 1px solid #CCC; 
+    border: 1px solid #CCC;
 }
 
 tr:nth-child(even) {
@@ -164,7 +168,7 @@ legend {
 }
 
 body {
-    background-color: aliceblue;
+    background-color: lightskyblue;
 }
 
 .welcome {
@@ -206,6 +210,6 @@ input[type=submit]:hover, button:hover, .btn:hover {
     border-color: #cadcff;
 }
 
-:disabled{
+:disabled {
     cursor: not-allowed;
-  }
+}

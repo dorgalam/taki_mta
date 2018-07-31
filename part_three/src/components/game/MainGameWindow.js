@@ -8,7 +8,7 @@ import { getGame, playGameWithId, deleteGameFromUser } from '../api';
 const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
 
-const StartGameButton = ({ }) => (
+const StartGameButton = ({}) => (
   <button
     type="button"
     id="startGame"
@@ -52,9 +52,9 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  setStats(player) { }
+  setStats(player) {}
 
-  setHasMove(bool) { }
+  setHasMove(bool) {}
 
   playCard(index) {
     playFunc({
@@ -77,7 +77,7 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  gameOver() { }
+  gameOver() {}
 
   takeCardFromMainDeck() {
     playFunc({
@@ -196,19 +196,24 @@ class MainGameWindow extends React.Component {
     return (
       <div id="mainGame">
         {this.state.render ? (
-          <div> <Chat send={this.sendMessage} messages={this.state.chat} />
+          <div>
+            {' '}
+            <Chat send={this.sendMessage} messages={this.state.chat} />
             <div id="wrapper">
               <button
                 id="backToLobby"
                 hidden={showQuit}
                 onClick={e => {
-                  this.props.quitGame(this.props.gameName, this.props.playerName);
+                  this.props.quitGame(
+                    this.props.gameName,
+                    this.props.playerName
+                  );
                   clearInterval(interval);
                 }}
               >
                 {' '}
                 back to lobby
-            </button>
+              </button>
               {Object.keys(this.state.playerDecks)
                 .filter(name => name !== this.props.playerName)
                 .map((player, index) => (
@@ -223,9 +228,8 @@ class MainGameWindow extends React.Component {
               <MiddleSection {...this.getMiddleProps()} />
               <Player {...this.getPlayerProps()} />
               <a hidden={showQuit} className="finished">
-                you finished the game:you can go back to
-                lobby
-            </a>
+                you finished the game:you can go back to lobby
+              </a>
             </div>
           </div>
         ) : null}
@@ -252,7 +256,7 @@ class Chat extends React.PureComponent {
       <div id="side-bar" class="side-bar">
         <div className="chat-container">
           Chat
-        <div ref={this.messagesRef} className="messages">
+          <div ref={this.messagesRef} className="messages">
             {this.props.messages.map(({ sender, message }, i) => (
               <p key={i}>
                 {sender}: {message}
@@ -273,7 +277,11 @@ class Chat extends React.PureComponent {
                 value={this.state.message}
                 onChange={e => this.setState({ message: e.target.value })}
               />
-              <input type="submit" value="send" />
+              <input
+                disabled={this.state.message.length === 0}
+                type="submit"
+                value="send"
+              />
             </form>
           </div>
         </div>
