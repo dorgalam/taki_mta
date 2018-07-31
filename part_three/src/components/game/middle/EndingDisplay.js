@@ -5,7 +5,7 @@ import { Player } from '../index.js';
 function printWinners(player, place, stats) {
   return (
     <tr>
-      <td>{player}</td><td>{place}</td><td>{stats.turns}</td><td>{getAverage(stats.turnsTime)}</td><td>{stats.lastCard}</td>
+      <td>{place}</td><td>{player}</td><td>{stats.turns}</td><td>{getAverage(stats.turnsTime)}</td><td>{stats.lastCard}</td>
     </tr>
   );
 };
@@ -22,7 +22,7 @@ const EndingDisplay = ({ winner, playersFinished, allStats }) =>
       <h1 class="endMiddle">the game is over!</h1>
       <h2 class="endMiddle" >stats table:</h2>
       <table class="end-Stats"><tbody>
-        <tr><th>player name:</th><th>place:</th><th>player turns:</th>
+        <tr><th>place:</th><th>player name:</th><th>player turns:</th>
           <th>player avg time:</th><th>player last card declaration:</th></tr>
         {playersFinished.map((player, index) => printWinners(player, index + 1, allStats[player]))}
       </tbody></table>

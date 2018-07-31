@@ -155,7 +155,7 @@ export default class BaseContainer extends React.Component {
           ) : gameJoined !== -1 ? (
             <WaitingRoom user={this.state.currentUser.name} playerName={this.state.currentUser.name}
               game={games[gameJoined]} gameId={gameJoined} onSubmit={this.handleQuitSubmit} logout={this.logoutHandler} />) : (
-              <div>
+              <div id="lobby">
                 <div className="chat-base-container">
                   <div className="user-info-area">
                     Hello {this.state.currentUser.name}

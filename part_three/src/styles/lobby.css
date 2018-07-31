@@ -171,6 +171,10 @@ body {
     background-color: lightskyblue;
 }
 
+#lobby{
+    background-color: aliceblue;
+}
+
 .welcome {
     position: relative;
     left: 35%;
