@@ -133,9 +133,10 @@ class Game {
       return;
     }
 
-    const nextIndex = this.players.indexOf(nextPlayer);
+    let nextIndex = this.players.indexOf(nextPlayer);
     while (playersFinished.indexOf(nextPlayer) !== -1) {
       nextPlayer = this.players[(nextIndex + 1) % this.players.length];
+      nextIndex++;
     }
     return nextPlayer;
   }

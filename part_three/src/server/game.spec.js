@@ -112,4 +112,15 @@ describe('Game', () => {
       }
     ]);
   });
+  it(' next player check', () => {
+    game.nextPlayer(false, false);
+    game.members.playersFinished.push('player3');
+    game.members.playersFinished.push('player1');
+    game.nextPlayer(false, false);
+    expect(game.members.currentPlayer).toEqual('player4');
+    game.nextPlayer(false, false);
+    expect(game.members.currentPlayer).toEqual('player2');
+    game.nextPlayer(false, false);
+    expect(game.members.currentPlayer).toEqual('player4');
+  });
 });
