@@ -8,7 +8,7 @@ import { getGame, playGameWithId, deleteGameFromUser } from '../api';
 const { createCardsArray, isSpecialCard, shuffleDeck } = utils;
 const { PLAYER, BOT } = enums;
 
-const StartGameButton = ({}) => (
+const StartGameButton = ({ }) => (
   <button
     type="button"
     id="startGame"
@@ -52,9 +52,14 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  setStats(player) {}
+  setStats(player) { }
 
-  setHasMove(bool) {}
+  setHasMove(bool) {
+    if (this.state.playerHasMove === bool) {
+      return;
+    }
+    this.setState({ playerHasMove: bool });
+  }
 
   playCard(index) {
     playFunc({
@@ -77,7 +82,7 @@ class MainGameWindow extends React.Component {
     });
   }
 
-  gameOver() {}
+  gameOver() { }
 
   takeCardFromMainDeck() {
     playFunc({
@@ -155,7 +160,7 @@ class MainGameWindow extends React.Component {
       allowTake:
         playerHasMove === false &&
         currentPlayer === this.props.playerName &&
-        !isTaki,
+        !isTaki && !isChangeColor,
       winner: winner,
       msg: msg,
       colorIdentifier: currentPlayer === this.props.playerName && isChangeColor,
