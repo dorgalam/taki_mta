@@ -47,8 +47,6 @@ export default class BaseContainer extends React.Component {
   }
 
   render() {
-    // return <MainGameWindow gameId={0} playerName="player1" />;
-
     if (this.state.showLogin) {
       return (
         <LoginModal
@@ -88,8 +86,16 @@ export default class BaseContainer extends React.Component {
 
   pullUsers() {
     getUsers().then(users => {
+      console.log(users);
+      if (!users) {
+        this.setState({ showLogin: true });
+      }
+      else {
+        this.getUserName();
+        this.setState({ showLogin: false });
+      }
       this.setState({ users }, () => {
-        setTimeout(this.pullUsers, 300);
+        setTimeout(this.pullUsers, 800);
       });
     });
   }
@@ -127,13 +133,6 @@ export default class BaseContainer extends React.Component {
       }
     }
     return -1;
-    /*old inGame by games not by user
-    for (let i = 0; i < games.length; i++) {
-      if (games[i].players.indexOf(this.state.currentUser.name) !== -1) {
-        return i;
-      }
-    }
-    return -1;*/
   }
 
   getUserId() {
@@ -153,13 +152,14 @@ export default class BaseContainer extends React.Component {
               gameName={games[gameJoined].name}
               playerName={this.state.currentUser.name}
             />
-          ) : gameJoined !== -1 ? (<WaitingRoom user={this.state.currentUser.name} playerName={this.state.currentUser.name}
-            game={games[gameJoined]} gameId={gameJoined} onSubmit={this.handleQuitSubmit} />) : (
+          ) : gameJoined !== -1 ? (
+            <WaitingRoom user={this.state.currentUser.name} playerName={this.state.currentUser.name}
+              game={games[gameJoined]} gameId={gameJoined} onSubmit={this.handleQuitSubmit} logout={this.logoutHandler} />) : (
               <div>
                 <div className="chat-base-container">
                   <div className="user-info-area">
                     Hello {this.state.currentUser.name}
-                    <button className="logout btn" onClick={this.logoutHandler}>
+                    <button className="logout" onClick={this.logoutHandler}>
                       Logout
                 </button>
                   </div>
@@ -233,7 +233,8 @@ export default class BaseContainer extends React.Component {
                 this.state.currentUser.name
               ) !== -1
             ) {
-              joinGame(i, this.state.currentUser.name);
+              console.log(this.state.games[i].name);
+              this.handleQuitSubmit(this.state.games[i].name, this.state.currentUser.name);
             }
           }
         }

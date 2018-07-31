@@ -34,7 +34,7 @@ export const createGame = (game, user) =>
   });
 
 export const joinGame = (id, name) =>
-  request(`/games/${encodeURI(id)}/join`, 'post', { name });
+  request(`/games/${encodeURI(id)}/join`, 'post', { name }).then(console.log(encodeURI(id), name));
 
 export const addGameToUser = (gameName, name) =>
   request(`/users/addGame`, 'post', { gameName: encodeURI(gameName), name });
