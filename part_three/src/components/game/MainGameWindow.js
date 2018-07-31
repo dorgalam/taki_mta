@@ -194,7 +194,7 @@ class MainGameWindow extends React.Component {
         : true
       : true;
     return (
-      <div>
+      <div id="mainGame">
         {this.state.render ? (
           <div> <Chat send={this.sendMessage} messages={this.state.chat} />
             <div id="wrapper">

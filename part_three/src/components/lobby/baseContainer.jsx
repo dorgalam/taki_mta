@@ -163,7 +163,6 @@ export default class BaseContainer extends React.Component {
                       Logout
                 </button>
                   </div>
-                  <ChatContaier />
                 </div>
                 <div>
                   <Form
