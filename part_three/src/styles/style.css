@@ -20,6 +20,9 @@
 
 
 @media only screen and (max-width: 980px) {
+  div.turn {
+    font-size: 10px;
+  }
   body .card {
     width: 60px !important;
     height: 90px !important;
@@ -86,6 +89,9 @@
 
 
 @media only screen and (max-width: 660px) {
+  div.turn {
+    font-size: 8px;
+   }
   body .card {
     width: 35px !important;
     height: 55px !important;
@@ -192,9 +198,12 @@ body {
 
 #closeT {
   position: absolute;
-  height: 20%;
-  top: 60%;
+  cursor: pointer;
   left: 54%;
+}
+
+#closeT:hover {
+  background: #3448db;
 }
 /*
 #stats-section {
@@ -446,8 +455,15 @@ div.bot_stats {
 }
 
 div.turn {
+  background: #3498db;
+  background-image: linear-gradient(to bottom, #3498db, #2980b9);
+  border-radius: 28px;
+  font-family: Arial;
+  color: #ffffff;
+  padding: 6px 10px 6px 10px;
   position: absolute;
-  left: 55%;
+  left: 20%;
+  top:50%;
   opacity: 1;
 }
 

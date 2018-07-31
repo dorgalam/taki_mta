@@ -3,9 +3,9 @@ import React from 'react';
 const TakiIdentifier = ({ openTaki, closeTaki }) =>
   openTaki ? (
     <div id="closeT" className="turn">
-      <button onClick={closeTaki} id="closeTaki">
+      <div onClick={closeTaki} id="closeTaki">
         Close taki
-      </button>
+      </div>
     </div>
   ) : null;
 
