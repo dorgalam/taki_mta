@@ -15,9 +15,9 @@
     position: absolute;
     font-size: 25px;
     left: 35%;
-    top: 45%;
+    top: 55%;
     background: rgb(212, 228, 248);
-    padding: 2em 2em;
+    padding: 10px 20px;
     border-radius: 1em;
     border: 1px solid rgba(34, 36, 38, 0.15);
 }
@@ -172,6 +172,9 @@ body {
 }
 
 #lobby{
+    position: absolute;
+    height: 100%;
+    width: 100%;
     background-color: aliceblue;
 }
 

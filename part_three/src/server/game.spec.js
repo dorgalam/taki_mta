@@ -123,4 +123,19 @@ describe('Game', () => {
     game.nextPlayer(false, false);
     expect(game.members.currentPlayer).toEqual('player4');
   });
+  it('pile check', () => {
+    game.members.playerDecks['player1'][0] = new Card("plus_yellow");
+    game.members.playerDecks['player1'][5] = new Card("plus_red");
+    game.members.playerDecks['player1'][2] = new Card("1_yellow");
+    game.members.pileCards[0] = new Card("2_yellow");
+    game.playCard(0, 'player1');
+    game.playCard(4, 'player1');
+    game.playCard(1, 'player1');
+    expect(game.members.currentPlayer).toEqual('player2');
+    expect(game.members.pileCards[0].card).toEqual('2_yellow');
+    expect(game.members.pileCards[1].card).toEqual('plus_yellow');
+    expect(game.members.pileCards[2].card).toEqual('plus_red');
+    expect(game.members.pileCards[3].card).toEqual('1_yellow');
+
+  });
 });

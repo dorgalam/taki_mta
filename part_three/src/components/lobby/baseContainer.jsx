@@ -157,56 +157,55 @@ export default class BaseContainer extends React.Component {
     return (
       <div>
         {gameJoined !== -1 &&
-        games[gameJoined].players.length ===
+          games[gameJoined].players.length ===
           games[gameJoined].numberOfPlayers ? (
-          <MainGameWindow
-            quitGame={this.handleQuitInGame}
-            gameId={gameJoined}
-            gameName={games[gameJoined].name}
-            playerName={this.state.currentUser.name}
-          />
-        ) : gameJoined !== -1 ? (
-          <WaitingRoom
-            user={this.state.currentUser.name}
-            playerName={this.state.currentUser.name}
-            game={games[gameJoined]}
-            gameId={gameJoined}
-            onSubmit={this.handleQuitSubmit}
-            logout={this.logoutHandler}
-          />
-        ) : (
-          <div id="lobby">
-            <div className="chat-base-container">
-              <div className="user-info-area">
-                Hello {this.state.currentUser.name}
-                <button className="logout" onClick={this.logoutHandler}>
-                  Logout
+            <MainGameWindow
+              quitGame={this.handleQuitInGame}
+              gameId={gameJoined}
+              gameName={games[gameJoined].name}
+              playerName={this.state.currentUser.name}
+            />
+          ) : gameJoined !== -1 ? (
+            <WaitingRoom
+              user={this.state.currentUser.name}
+              playerName={this.state.currentUser.name}
+              game={games[gameJoined]}
+              gameId={gameJoined}
+              onSubmit={this.handleQuitSubmit}
+              logout={this.logoutHandler}
+            />
+          ) : (
+              <div id="lobby">
+                <div className="chat-base-container">
+                  <div className="user-info-area">
+                    Hello {this.state.currentUser.name}
+                    <button className="logout" onClick={this.logoutHandler}>
+                      Logout
                 </button>
+                  </div>
+                </div>
+                <div>
+                  <Form
+                    fields={['name', 'numberOfPlayers']}
+                    gameSuccessHandler={this.handleSuccessedNewGame}
+                    gameErrorHandler={this.handleLoginError}
+                    onSubmit={newGame =>
+                      createGame(newGame, this.state.currentUser.name).then(res => {
+                        if (res.error !== '') alert(res.error);
+                      })
+                    }
+                  />
+                  <GamesTable
+                    games={this.state.games}
+                    userID={this.state.userID}
+                    user={this.state.currentUser.name}
+                    onSubmit={this.handleJoinSubmit}
+                    deleteGame={deleteGame}
+                  />
+                  <UsersList users={this.state.users['users']} />
+                </div>
               </div>
-            </div>
-            <div>
-              <Form
-                fields={['name', 'numberOfPlayers']}
-                gameSuccessHandler={this.handleSuccessedNewGame}
-                gameErrorHandler={this.handleLoginError}
-                onSubmit={newGame =>
-                  createGame(newGame, this.state.currentUser.name).then(res => {
-                    if (res.error !== '') alert(res.error);
-                    console.log(encodeURI(newGame.name));
-                  })
-                }
-              />
-              <GamesTable
-                games={this.state.games}
-                userID={this.state.userID}
-                user={this.state.currentUser.name}
-                onSubmit={this.handleJoinSubmit}
-                deleteGame={deleteGame}
-              />
-              <UsersList users={this.state.users['users']} />
-            </div>
-          </div>
-        )}
+            )}
       </div>
     );
   }

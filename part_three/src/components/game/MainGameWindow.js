@@ -107,20 +107,10 @@ class MainGameWindow extends React.Component {
       getGame(this.props.gameName).then(game => {
         this.setState(Object.assign(game.state, { render: true }));
       });
-    }, 200);
+    }, 500);
   }
-  /*
-    componentDidUpdate() {
-      if (!this.declaredWinner && this.state.playersFinished && this.state.playersFinished.length !== 0) {
-        this.declaredWinner = true;
-        alert('the winner is ' + this.state.playersFinished[0]);
-      }
-    }
-  */
+
   setTaki(setTo) {
-    /*if (setTo === true && this.state.currentPlayer === PLAYER) {
-      this.setState({ msg: 'taki you can put all the cards off this color' });
-    }*/
     playFunc({
       action: 'setTaki',
       args: [setTo]
