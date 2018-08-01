@@ -34,30 +34,27 @@ export const createGame = (game, user) =>
   });
 
 export const joinGame = (id, name) =>
-  request(`/games/${encodeURI(id)}/join`, 'post', { name }).then(console.log(encodeURI(id), name));
+  request(`/games/${encodeURIComponent(id)}/join`, 'post', { name });
 
 export const addGameToUser = (gameName, name) =>
-  request(`/users/addGame`, 'post', { gameName: encodeURI(gameName), name });
+  request(`/users/addGame`, 'post', { gameName, name });
 
 export const deleteGameFromUser = (gameName, name) =>
-  request(`/users/deleteGame`, 'post', { gameName: encodeURI(gameName), name });
+  request(`/users/deleteGame`, 'post', { gameName, name });
 
-export const getUserGame = () =>
-  request(`/users/getGame`, 'post');
+export const getUserGame = () => request(`/users/getGame`, 'post');
 
-export const isEmptyGame = (gameName) =>
-  request(`/users/isEmptyGame`, 'post', { gameName: encodeURI(gameName) });
+export const isEmptyGame = gameName =>
+  request(`/users/isEmptyGame`, 'post', { gameName });
 
-export const getUserID = () =>
-  request(`/users/getUserID`, 'get');
+export const getUserID = () => request(`/users/getUserID`, 'get');
 
-export const cleanGame = (id) =>
-  request(`/games/cleanGame`, 'post', { id });
+export const cleanGame = id => request(`/games/cleanGame`, 'post', { id });
 
 export const quitGame = (id, name) =>
-  request(`/games/${id}/join`, 'post', { name });//while in play
+  request(`/games/${id}/join`, 'post', { name }); //while in play
 
-export const getGame = id => request(`/games/${encodeURI(id)}`);
+export const getGame = id => request(`/games/${encodeURIComponent(id)}`);
 
 export const playGameWithId = (id, body) =>
   request(`/games/${id}`, 'put', body);

@@ -3,8 +3,17 @@ import ReactDOM from 'react-dom';
 import LoginModal from './login-modal.jsx';
 import ChatContaier from './chatContainer.jsx';
 import {
-  getGames, createGame, joinGame, getUsers, deleteGame, getUserGame, addGameToUser, deleteGameFromUser
-  , isEmptyGame, cleanGame, getUserID
+  getGames,
+  createGame,
+  joinGame,
+  getUsers,
+  deleteGame,
+  getUserGame,
+  addGameToUser,
+  deleteGameFromUser,
+  isEmptyGame,
+  cleanGame,
+  getUserID
 } from '../api';
 import Form from './Form.jsx';
 import GamesTable from './GamesTable.jsx';
@@ -37,7 +46,6 @@ export default class BaseContainer extends React.Component {
     this.handleQuitSubmit = this.handleQuitSubmit.bind(this);
     this.handleQuitInGame = this.handleQuitInGame.bind(this);
     this.getUserId = this.getUserId.bind(this);
-
 
     this.getUserName();
     this.pullGames();
@@ -78,7 +86,7 @@ export default class BaseContainer extends React.Component {
   pullUserGame() {
     getUserGame().then(res => {
       let game = res ? res.gameinfo.game : undefined;
-      this.setState({ userGame: decodeURI(game) }, () => {
+      this.setState({ userGame: game }, () => {
         setTimeout(this.pullUserGame, 300);
       });
     });
@@ -89,8 +97,7 @@ export default class BaseContainer extends React.Component {
       console.log(users);
       if (!users) {
         this.setState({ showLogin: true });
-      }
-      else {
+      } else {
         this.getUserName();
         this.setState({ showLogin: false });
       }
@@ -103,14 +110,19 @@ export default class BaseContainer extends React.Component {
   handleJoinSubmit(id, name) {
     joinGame(id, name).then(res => {
       this.setState({ gameJoined: res.id });
-      addGameToUser(id, name).then(res => this.setState({ userGame: decodeURI(res.gameinfo.game) }));
+      addGameToUser(id, name).then(res => {
+        console.log(res.gameinfo.game);
+        this.setState({ userGame: res.gameinfo.game });
+      });
     });
   }
 
   handleQuitSubmit(id, name) {
     joinGame(id, name).then(res => {
       this.setState({ gameJoined: undefined });
-      deleteGameFromUser(id, name).then(res => this.setState({ userGame: undefined }));
+      deleteGameFromUser(id, name).then(res =>
+        this.setState({ userGame: undefined })
+      );
     });
   }
 
@@ -145,48 +157,56 @@ export default class BaseContainer extends React.Component {
     return (
       <div>
         {gameJoined !== -1 &&
-          games[gameJoined].players.length === games[gameJoined].numberOfPlayers ? (
-            <MainGameWindow
-              quitGame={this.handleQuitInGame}
-              gameId={gameJoined}
-              gameName={games[gameJoined].name}
-              playerName={this.state.currentUser.name}
-            />
-          ) : gameJoined !== -1 ? (
-            <WaitingRoom user={this.state.currentUser.name} playerName={this.state.currentUser.name}
-              game={games[gameJoined]} gameId={gameJoined} onSubmit={this.handleQuitSubmit} logout={this.logoutHandler} />) : (
-              <div id="lobby">
-                <div className="chat-base-container">
-                  <div className="user-info-area">
-                    Hello {this.state.currentUser.name}
-                    <button className="logout" onClick={this.logoutHandler}>
-                      Logout
+        games[gameJoined].players.length ===
+          games[gameJoined].numberOfPlayers ? (
+          <MainGameWindow
+            quitGame={this.handleQuitInGame}
+            gameId={gameJoined}
+            gameName={games[gameJoined].name}
+            playerName={this.state.currentUser.name}
+          />
+        ) : gameJoined !== -1 ? (
+          <WaitingRoom
+            user={this.state.currentUser.name}
+            playerName={this.state.currentUser.name}
+            game={games[gameJoined]}
+            gameId={gameJoined}
+            onSubmit={this.handleQuitSubmit}
+            logout={this.logoutHandler}
+          />
+        ) : (
+          <div id="lobby">
+            <div className="chat-base-container">
+              <div className="user-info-area">
+                Hello {this.state.currentUser.name}
+                <button className="logout" onClick={this.logoutHandler}>
+                  Logout
                 </button>
-                  </div>
-                </div>
-                <div>
-                  <Form
-                    fields={['name', 'numberOfPlayers']}
-                    gameSuccessHandler={this.handleSuccessedNewGame}
-                    gameErrorHandler={this.handleLoginError}
-                    onSubmit={newGame =>
-                      createGame(newGame, this.state.currentUser.name).then(res => {
-                        if (res.error !== '') alert(res.error);
-                        console.log(encodeURI(newGame.name));
-                      })
-                    }
-                  />
-                  <GamesTable
-                    games={this.state.games}
-                    userID={this.state.userID}
-                    user={this.state.currentUser.name}
-                    onSubmit={this.handleJoinSubmit}
-                    deleteGame={deleteGame}
-                  />
-                  <UsersList users={this.state.users['users']} />
-                </div>
               </div>
-            )}
+            </div>
+            <div>
+              <Form
+                fields={['name', 'numberOfPlayers']}
+                gameSuccessHandler={this.handleSuccessedNewGame}
+                gameErrorHandler={this.handleLoginError}
+                onSubmit={newGame =>
+                  createGame(newGame, this.state.currentUser.name).then(res => {
+                    if (res.error !== '') alert(res.error);
+                    console.log(encodeURI(newGame.name));
+                  })
+                }
+              />
+              <GamesTable
+                games={this.state.games}
+                userID={this.state.userID}
+                user={this.state.currentUser.name}
+                onSubmit={this.handleJoinSubmit}
+                deleteGame={deleteGame}
+              />
+              <UsersList users={this.state.users['users']} />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -235,7 +255,10 @@ export default class BaseContainer extends React.Component {
             ) {
               console.log(this.state.games[i].name);
               if (this.state.games[i].status === 'waiting') {
-                this.handleQuitSubmit(this.state.games[i].name, this.state.currentUser.name);
+                this.handleQuitSubmit(
+                  this.state.games[i].name,
+                  this.state.currentUser.name
+                );
               }
             }
           }
