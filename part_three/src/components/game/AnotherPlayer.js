@@ -7,7 +7,7 @@ class AnotherPlayer extends React.Component {
   render() {
     return (
       <div class="rival">
-        <a>{this.props.name} deck:</a>
+        <a class="who">{this.props.name} deck: </a>
         <a>{this.props.won ? 'finished the game' : ''}</a>
         <div id={this.props.index}>
           <PlayerDeck

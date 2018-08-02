@@ -454,6 +454,13 @@ div.bot_stats {
   top: 50%;
 }
 
+a.who{
+  background: lightblue;
+  border-radius: 20px;
+  color: black;
+  padding: 2px 6px 2px 6px;
+}
+
 div.turn {
   background: #3498db;
   background-image: linear-gradient(to bottom, #3498db, #2980b9);
